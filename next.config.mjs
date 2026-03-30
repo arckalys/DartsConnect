@@ -1,7 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  // Cloudflare Pages compatibility
-  output: undefined,
-};
+const nextConfig = {};
 
 export default nextConfig;
