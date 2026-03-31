@@ -1,25 +1,37 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Dartboard from "@/components/Dartboard";
 import TournamentCard from "@/components/TournamentCard";
 import Footer from "@/components/Footer";
-import { MOCK_TOURNAMENTS } from "@/lib/data";
+import { createClient } from "@/lib/supabase";
+import { Tournament } from "@/lib/types";
 
 export const runtime = "edge";
 
 export default function HomePage() {
   const router = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
+  const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("tournois")
+      .select("*")
+      .order("date_tournoi", { ascending: true })
+      .then(({ data }) => {
+        setTournaments(data ?? []);
+        setLoading(false);
+      });
+  }, []);
 
   // Stats
-  const totalPlayers = MOCK_TOURNAMENTS.reduce((s, t) => s + t.players, 0);
-  const totalRegions = [...new Set(MOCK_TOURNAMENTS.map((t) => t.region))].length;
-  const upcoming = [...MOCK_TOURNAMENTS]
-    .sort((a, b) => new Date(a.date_tournoi).getTime() - new Date(b.date_tournoi).getTime())
-    .slice(0, 3);
+  const totalRegions = [...new Set(tournaments.map((t) => t.region))].length;
+  const upcoming = tournaments.slice(0, 3);
 
   // Scroll reveal
   useEffect(() => {
@@ -33,7 +45,7 @@ export default function HomePage() {
     );
     document.querySelectorAll(".reveal").forEach((r) => observer.observe(r));
     return () => observer.disconnect();
-  }, []);
+  }, [loading]);
 
   function heroSearch() {
     const q = searchRef.current?.value || "";
@@ -90,7 +102,7 @@ export default function HomePage() {
       {/* ── STATS ── */}
       <div className="bg-[#111] border-t border-b border-[rgba(255,255,255,0.08)] px-10 py-8 flex justify-center">
         <div className="flex-1 max-w-[280px] text-center px-8 border-r border-[rgba(255,255,255,0.08)]">
-          <div className="font-barlow-condensed text-[2.8rem] font-black text-[#e8220a] leading-none mb-1">{MOCK_TOURNAMENTS.length}</div>
+          <div className="font-barlow-condensed text-[2.8rem] font-black text-[#e8220a] leading-none mb-1">{tournaments.length}</div>
           <div className="text-[0.85rem] text-[#777] font-medium">Tournois</div>
         </div>
         <div className="flex-1 max-w-[280px] text-center px-8 border-r border-[rgba(255,255,255,0.08)]">
@@ -98,8 +110,8 @@ export default function HomePage() {
           <div className="text-[0.85rem] text-[#777] font-medium">Régions</div>
         </div>
         <div className="flex-1 max-w-[280px] text-center px-8">
-          <div className="font-barlow-condensed text-[2.8rem] font-black text-[#e8220a] leading-none mb-1">{totalPlayers}</div>
-          <div className="text-[0.85rem] text-[#777] font-medium">Joueurs inscrits</div>
+          <div className="font-barlow-condensed text-[2.8rem] font-black text-[#e8220a] leading-none mb-1">{tournaments.reduce((s, t) => s + (t.nb_joueurs ?? 0), 0)}</div>
+          <div className="text-[0.85rem] text-[#777] font-medium">Places disponibles</div>
         </div>
       </div>
 
@@ -141,23 +153,36 @@ export default function HomePage() {
               Voir tout →
             </Link>
           </div>
-          <div className="grid grid-cols-3 gap-4">
-            {upcoming.map((t, i) => (
-              <TournamentCard
-                key={t.id}
-                nom={t.nom}
-                ville={t.ville}
-                region={t.region}
-                date_tournoi={t.date_tournoi}
-                format={t.format}
-                nb_joueurs={t.nb_joueurs}
-                players={t.players}
-                prize={t.prize}
-                statut={t.statut}
-                delay={i}
-              />
-            ))}
-          </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
+            </div>
+          ) : upcoming.length > 0 ? (
+            <div className="grid grid-cols-3 gap-4">
+              {upcoming.map((t, i) => (
+                <TournamentCard
+                  key={t.id}
+                  nom={t.nom}
+                  ville={t.ville}
+                  region={t.region}
+                  date_tournoi={t.date_tournoi}
+                  format={t.format}
+                  nb_joueurs={t.nb_joueurs}
+                  players={t.players ?? 0}
+                  prize={t.prize ?? 0}
+                  statut={t.statut}
+                  delay={i}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 text-[#777]">
+              <div className="text-[3rem] mb-4 opacity-40">🎯</div>
+              <div className="font-barlow-condensed font-extrabold text-[1.4rem] text-[#666] mb-2">Aucun tournoi pour le moment</div>
+              <div className="text-[0.88rem]">Les tournois apparaîtront ici dès qu&apos;ils seront publiés</div>
+            </div>
+          )}
         </div>
       </div>
 

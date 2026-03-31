@@ -4,8 +4,8 @@ import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import TournamentCard from "@/components/TournamentCard";
 import TournamentRow from "@/components/TournamentRow";
-import { MOCK_TOURNAMENTS } from "@/lib/data";
-import { REGIONS } from "@/lib/types";
+import { createClient } from "@/lib/supabase";
+import { Tournament, REGIONS } from "@/lib/types";
 
 export const runtime = "edge";
 
@@ -15,6 +15,8 @@ export default function TournoisPage() {
   const searchParams = useSearchParams();
   const initialQ = searchParams.get("q") || "";
 
+  const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(initialQ);
   const [region, setRegion] = useState("");
   const [dateFilter, setDateFilter] = useState("");
@@ -22,11 +24,23 @@ export default function TournoisPage() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [page, setPage] = useState(1);
 
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("tournois")
+      .select("*")
+      .order("date_tournoi", { ascending: true })
+      .then(({ data }) => {
+        setTournaments(data ?? []);
+        setLoading(false);
+      });
+  }, []);
+
   // Reset page on filter change
   useEffect(() => setPage(1), [search, region, dateFilter, sort]);
 
   const filtered = useMemo(() => {
-    let data = [...MOCK_TOURNAMENTS];
+    let data = [...tournaments];
     const q = search.toLowerCase();
     const now = new Date();
 
@@ -43,11 +57,11 @@ export default function TournoisPage() {
     }
 
     if (sort === "date") data.sort((a, b) => new Date(a.date_tournoi).getTime() - new Date(b.date_tournoi).getTime());
-    else if (sort === "prize") data.sort((a, b) => b.prize - a.prize);
-    else if (sort === "places") data.sort((a, b) => (a.nb_joueurs - a.players) - (b.nb_joueurs - b.players));
+    else if (sort === "prize") data.sort((a, b) => (b.prize ?? 0) - (a.prize ?? 0));
+    else if (sort === "places") data.sort((a, b) => (a.nb_joueurs - (a.players ?? 0)) - (b.nb_joueurs - (b.players ?? 0)));
 
     return data;
-  }, [search, region, dateFilter, sort]);
+  }, [tournaments, search, region, dateFilter, sort]);
 
   const paged = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
@@ -66,7 +80,11 @@ export default function TournoisPage() {
         <div className="max-w-[1200px] mx-auto pb-6">
           <div className="font-barlow-condensed font-black text-[2.4rem] uppercase tracking-[0.5px]">Tous les tournois</div>
           <div className="text-[0.88rem] text-[#777] mt-1">
-            <span className="text-[#e8220a] font-bold">{filtered.length}</span> tournois trouvés
+            {loading ? (
+              <span className="text-[#555]">Chargement...</span>
+            ) : (
+              <><span className="text-[#e8220a] font-bold">{filtered.length}</span> tournois trouvés</>
+            )}
           </div>
         </div>
       </div>
@@ -130,69 +148,81 @@ export default function TournoisPage() {
 
       {/* Content */}
       <div className="max-w-[1200px] mx-auto px-10 py-8">
-        {/* Sort bar */}
-        <div className="flex items-center justify-between mb-5">
-          <span className="text-[0.82rem] text-[#777]">{filtered.length} tournoi{filtered.length > 1 ? "s" : ""}</span>
-          <select value={sort} onChange={(e) => setSort(e.target.value)} className="!bg-transparent !border-none !text-[#777] !text-[0.82rem] !w-auto !p-0 cursor-pointer">
-            <option value="date">Trier par date</option>
-            <option value="prize">Trier par dotation</option>
-            <option value="places">Trier par places restantes</option>
-          </select>
-        </div>
-
-        {/* Grid view */}
-        {view === "grid" && filtered.length > 0 && (
-          <div className="grid grid-cols-3 gap-4">
-            {paged.map((t, i) => (
-              <TournamentCard key={t.id} nom={t.nom} ville={t.ville} region={t.region} date_tournoi={t.date_tournoi} format={t.format} nb_joueurs={t.nb_joueurs} players={t.players} prize={t.prize} statut={t.statut} delay={i} />
-            ))}
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
           </div>
-        )}
-
-        {/* List view */}
-        {view === "list" && filtered.length > 0 && (
-          <div className="flex flex-col gap-[10px]">
-            <div className="grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr_auto] gap-4 px-[1.4rem] text-[0.72rem] font-bold uppercase tracking-[1px] text-[#777]">
-              <div>Tournoi</div><div>Date</div><div>Région</div><div>Dotation</div><div>Joueurs</div><div></div>
+        ) : (
+          <>
+            {/* Sort bar */}
+            <div className="flex items-center justify-between mb-5">
+              <span className="text-[0.82rem] text-[#777]">{filtered.length} tournoi{filtered.length > 1 ? "s" : ""}</span>
+              <select value={sort} onChange={(e) => setSort(e.target.value)} className="!bg-transparent !border-none !text-[#777] !text-[0.82rem] !w-auto !p-0 cursor-pointer">
+                <option value="date">Trier par date</option>
+                <option value="prize">Trier par dotation</option>
+                <option value="places">Trier par places restantes</option>
+              </select>
             </div>
-            {paged.map((t, i) => (
-              <TournamentRow key={t.id} nom={t.nom} ville={t.ville} region={t.region} date_tournoi={t.date_tournoi} format={t.format} nb_joueurs={t.nb_joueurs} players={t.players} prize={t.prize} statut={t.statut} delay={i} />
-            ))}
-          </div>
-        )}
 
-        {/* Empty state */}
-        {filtered.length === 0 && (
-          <div className="text-center py-16 text-[#777]">
-            <div className="text-[3rem] mb-4 opacity-40">🎯</div>
-            <div className="font-barlow-condensed font-extrabold text-[1.4rem] text-[#666] mb-2">Aucun tournoi trouvé</div>
-            <div className="text-[0.88rem]">Essaie de modifier tes critères de recherche</div>
-          </div>
-        )}
+            {/* Grid view */}
+            {view === "grid" && filtered.length > 0 && (
+              <div className="grid grid-cols-3 gap-4">
+                {paged.map((t, i) => (
+                  <TournamentCard key={t.id} nom={t.nom} ville={t.ville} region={t.region} date_tournoi={t.date_tournoi} format={t.format} nb_joueurs={t.nb_joueurs} players={t.players ?? 0} prize={t.prize ?? 0} statut={t.statut} delay={i} />
+                ))}
+              </div>
+            )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-[6px] mt-10">
-            {page > 1 && (
-              <button onClick={() => { setPage(page - 1); window.scrollTo({ top: 200, behavior: "smooth" }); }} className="w-9 h-9 rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#777] text-[0.85rem] cursor-pointer flex items-center justify-center transition-all hover:bg-[#e8220a] hover:text-white hover:border-[#e8220a] font-barlow">
-                ‹
-              </button>
+            {/* List view */}
+            {view === "list" && filtered.length > 0 && (
+              <div className="flex flex-col gap-[10px]">
+                <div className="grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr_auto] gap-4 px-[1.4rem] text-[0.72rem] font-bold uppercase tracking-[1px] text-[#777]">
+                  <div>Tournoi</div><div>Date</div><div>Région</div><div>Dotation</div><div>Joueurs</div><div></div>
+                </div>
+                {paged.map((t, i) => (
+                  <TournamentRow key={t.id} nom={t.nom} ville={t.ville} region={t.region} date_tournoi={t.date_tournoi} format={t.format} nb_joueurs={t.nb_joueurs} players={t.players ?? 0} prize={t.prize ?? 0} statut={t.statut} delay={i} />
+                ))}
+              </div>
             )}
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <button
-                key={p}
-                onClick={() => { setPage(p); window.scrollTo({ top: 200, behavior: "smooth" }); }}
-                className={`w-9 h-9 rounded-lg border text-[0.85rem] cursor-pointer flex items-center justify-center transition-all font-barlow ${p === page ? "bg-[#e8220a] text-white border-[#e8220a]" : "border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#777] hover:bg-[#e8220a] hover:text-white hover:border-[#e8220a]"}`}
-              >
-                {p}
-              </button>
-            ))}
-            {page < totalPages && (
-              <button onClick={() => { setPage(page + 1); window.scrollTo({ top: 200, behavior: "smooth" }); }} className="w-9 h-9 rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#777] text-[0.85rem] cursor-pointer flex items-center justify-center transition-all hover:bg-[#e8220a] hover:text-white hover:border-[#e8220a] font-barlow">
-                ›
-              </button>
+
+            {/* Empty state */}
+            {filtered.length === 0 && (
+              <div className="text-center py-16 text-[#777]">
+                <div className="text-[3rem] mb-4 opacity-40">🎯</div>
+                <div className="font-barlow-condensed font-extrabold text-[1.4rem] text-[#666] mb-2">
+                  {hasFilters ? "Aucun tournoi trouvé" : "Aucun tournoi pour le moment"}
+                </div>
+                <div className="text-[0.88rem]">
+                  {hasFilters ? "Essaie de modifier tes critères de recherche" : "Les tournois apparaîtront ici dès qu'ils seront publiés"}
+                </div>
+              </div>
             )}
-          </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center gap-[6px] mt-10">
+                {page > 1 && (
+                  <button onClick={() => { setPage(page - 1); window.scrollTo({ top: 200, behavior: "smooth" }); }} className="w-9 h-9 rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#777] text-[0.85rem] cursor-pointer flex items-center justify-center transition-all hover:bg-[#e8220a] hover:text-white hover:border-[#e8220a] font-barlow">
+                    ‹
+                  </button>
+                )}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => { setPage(p); window.scrollTo({ top: 200, behavior: "smooth" }); }}
+                    className={`w-9 h-9 rounded-lg border text-[0.85rem] cursor-pointer flex items-center justify-center transition-all font-barlow ${p === page ? "bg-[#e8220a] text-white border-[#e8220a]" : "border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#777] hover:bg-[#e8220a] hover:text-white hover:border-[#e8220a]"}`}
+                  >
+                    {p}
+                  </button>
+                ))}
+                {page < totalPages && (
+                  <button onClick={() => { setPage(page + 1); window.scrollTo({ top: 200, behavior: "smooth" }); }} className="w-9 h-9 rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#777] text-[0.85rem] cursor-pointer flex items-center justify-center transition-all hover:bg-[#e8220a] hover:text-white hover:border-[#e8220a] font-barlow">
+                    ›
+                  </button>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
