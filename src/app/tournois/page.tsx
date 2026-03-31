@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { Suspense, useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import TournamentCard from "@/components/TournamentCard";
 import TournamentRow from "@/components/TournamentRow";
@@ -12,6 +12,26 @@ export const runtime = "edge";
 const PER_PAGE = 9;
 
 export default function TournoisPage() {
+  return (
+    <Suspense fallback={
+      <div className="animate-page-in">
+        <div className="pt-[88px] px-10 bg-gradient-to-b from-[rgba(232,34,10,0.04)] to-transparent border-b border-[rgba(255,255,255,0.08)]">
+          <div className="max-w-[1200px] mx-auto pb-6">
+            <div className="font-barlow-condensed font-black text-[2.4rem] uppercase tracking-[0.5px]">Tous les tournois</div>
+            <div className="text-[0.88rem] text-[#555] mt-1">Chargement...</div>
+          </div>
+        </div>
+        <div className="flex items-center justify-center py-16">
+          <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
+        </div>
+      </div>
+    }>
+      <TournoisContent />
+    </Suspense>
+  );
+}
+
+function TournoisContent() {
   const searchParams = useSearchParams();
   const initialQ = searchParams.get("q") || "";
 
@@ -25,15 +45,21 @@ export default function TournoisPage() {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase
-      .from("tournois")
-      .select("*")
-      .order("date_tournoi", { ascending: true })
-      .then(({ data }) => {
-        setTournaments(data ?? []);
+    async function fetchTournaments() {
+      try {
+        const supabase = createClient();
+        const { data } = await supabase
+          .from("tournois")
+          .select("*")
+          .order("date_tournoi", { ascending: true });
+        if (data) setTournaments(data);
+      } catch {
+        // Supabase unavailable — show empty state
+      } finally {
         setLoading(false);
-      });
+      }
+    }
+    fetchTournaments();
   }, []);
 
   // Reset page on filter change

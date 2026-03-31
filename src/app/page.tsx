@@ -18,15 +18,21 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase
-      .from("tournois")
-      .select("*")
-      .order("date_tournoi", { ascending: true })
-      .then(({ data }) => {
-        setTournaments(data ?? []);
+    async function fetchTournaments() {
+      try {
+        const supabase = createClient();
+        const { data } = await supabase
+          .from("tournois")
+          .select("*")
+          .order("date_tournoi", { ascending: true });
+        if (data) setTournaments(data);
+      } catch {
+        // Supabase unavailable — show empty state
+      } finally {
         setLoading(false);
-      });
+      }
+    }
+    fetchTournaments();
   }, []);
 
   // Stats
