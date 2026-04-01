@@ -1,18 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { createClient } from "@/lib/supabase";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState("");
 
   const links = [
     { href: "/", label: "Accueil", id: "home" },
     { href: "/tournois", label: "Tournois", id: "tournois" },
     { href: "/inscriptions", label: "Mes inscriptions", id: "inscriptions" },
   ];
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user?.user_metadata?.avatar_url) {
+        setAvatarUrl(session.user.user_metadata.avatar_url);
+      }
+    });
+  }, [pathname]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] bg-[rgba(10,10,10,0.95)] backdrop-blur-[12px] border-b border-[rgba(255,255,255,0.08)]">
@@ -59,9 +71,19 @@ export default function Navbar() {
           </Link>
           <Link
             href="/auth"
-            className="w-[34px] h-[34px] rounded-full bg-[#181818] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[1rem] transition-colors duration-200 hover:border-[#e8220a] no-underline"
+            className="relative w-[34px] h-[34px] rounded-full bg-[#181818] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[1rem] transition-colors duration-200 hover:border-[#e8220a] no-underline overflow-hidden"
           >
-            👤
+            {avatarUrl ? (
+              <Image
+                src={avatarUrl}
+                alt="Profil"
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            ) : (
+              "👤"
+            )}
           </Link>
 
           {/* Hamburger button - mobile/tablet */}

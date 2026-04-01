@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase";
 import { REGIONS, NIVEAU_LABELS } from "@/lib/types";
 import type { User } from "@supabase/supabase-js";
@@ -49,6 +50,9 @@ export default function AuthPage() {
   const [eNiveau, setENiveau] = useState("debutant");
   const [eRegion, setERegion] = useState("");
   const [eBio, setEBio] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarLoading, setAvatarLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Password validation
   const pwRuleLen = rPwd.length >= 8;
@@ -75,8 +79,65 @@ export default function AuthPage() {
     setENiveau(m.niveau || "debutant");
     setERegion(m.region || "");
     setEBio(m.bio || "");
+    setAvatarUrl(m.avatar_url || "");
     setUser(u);
     setView("profile");
+  }
+
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    // Validate file
+    if (!file.type.startsWith("image/")) {
+      return showError("Le fichier doit être une image (JPG, PNG, etc.).");
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      return showError("L'image ne doit pas dépasser 2 Mo.");
+    }
+
+    setAvatarLoading(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const filePath = `${user.id}/avatar.${ext}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) {
+        setAvatarLoading(false);
+        return showError("Erreur upload : " + uploadError.message);
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      const publicUrl = urlData.publicUrl + "?t=" + Date.now();
+
+      // Save URL in user metadata
+      const { data, error: updateError } = await supabase.auth.updateUser({
+        data: { avatar_url: publicUrl },
+      });
+
+      if (updateError) {
+        setAvatarLoading(false);
+        return showError("Erreur mise à jour : " + updateError.message);
+      }
+
+      setAvatarUrl(publicUrl);
+      if (data.user) setUser(data.user);
+      showSuccess("Photo de profil mise à jour !");
+    } catch {
+      showError("Erreur lors de l'upload.");
+    } finally {
+      setAvatarLoading(false);
+      // Reset input
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   }
 
   // Auto-login check
@@ -290,7 +351,41 @@ export default function AuthPage() {
         <div className="w-full max-w-[520px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-6 sm:p-10 animate-fade-up">
           {/* Avatar */}
           <div className="flex flex-col items-center gap-3 mb-6">
-            <div className="w-[72px] h-[72px] rounded-full bg-[#111] border-2 border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[1.8rem]">👤</div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarUpload}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={avatarLoading}
+              className="relative w-[84px] h-[84px] rounded-full bg-[#111] border-2 border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[1.8rem] cursor-pointer group overflow-hidden transition-all hover:border-[#e8220a] disabled:cursor-wait"
+            >
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt="Avatar"
+                  fill
+                  className="object-cover rounded-full"
+                  unoptimized
+                />
+              ) : (
+                <span>👤</span>
+              )}
+              {/* Overlay on hover */}
+              <div className="absolute inset-0 bg-[rgba(0,0,0,0.5)] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                {avatarLoading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
+                    <circle cx="12" cy="13" r="4" />
+                  </svg>
+                )}
+              </div>
+            </button>
             <div>
               <div className="font-barlow-condensed font-extrabold text-[1.4rem] text-center">{displayName}</div>
               <div className="text-[0.84rem] text-[#777] text-center">{user?.email}</div>
