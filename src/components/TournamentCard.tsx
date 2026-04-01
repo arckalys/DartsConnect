@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { STATUS_LABELS } from "@/lib/types";
 import type { TournamentStatus } from "@/lib/types";
 import { fmtDate } from "@/lib/data";
 
 interface Props {
+  id?: string | number;
   nom: string;
   ville: string;
   region: string;
@@ -13,6 +15,8 @@ interface Props {
   prize: number;
   statut: TournamentStatus;
   delay?: number;
+  isOwner?: boolean;
+  onDelete?: () => void;
 }
 
 const statusClass: Record<TournamentStatus, string> = {
@@ -22,7 +26,7 @@ const statusClass: Record<TournamentStatus, string> = {
   closed: "bg-[rgba(248,113,113,0.1)] text-[#f87171]",
 };
 
-export default function TournamentCard({ nom, ville, region, date_tournoi, format, nb_joueurs, players, prize, statut, delay = 0 }: Props) {
+export default function TournamentCard({ id, nom, ville, region, date_tournoi, format, nb_joueurs, players, prize, statut, delay = 0, isOwner, onDelete }: Props) {
   const pct = Math.round((players / nb_joueurs) * 100);
 
   return (
@@ -75,6 +79,25 @@ export default function TournamentCard({ nom, ville, region, date_tournoi, forma
             {statut === "full" ? "Voir →" : "S'inscrire →"}
           </span>
         </div>
+
+        {/* Owner actions */}
+        {isOwner && id && (
+          <div className="flex gap-2 mt-3 pt-3 border-t border-[rgba(255,255,255,0.08)]">
+            <Link
+              href={`/tournois/${id}/modifier`}
+              onClick={(e) => e.stopPropagation()}
+              className="flex-1 text-center text-[0.78rem] font-bold py-[6px] rounded-lg bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] text-[#ccc] no-underline transition-all hover:bg-[rgba(255,255,255,0.1)] hover:text-white"
+            >
+              Modifier ✏️
+            </Link>
+            <button
+              onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
+              className="flex-1 text-[0.78rem] font-bold py-[6px] rounded-lg bg-[rgba(248,113,113,0.08)] border border-[rgba(248,113,113,0.2)] text-[#f87171] cursor-pointer transition-all hover:bg-[rgba(248,113,113,0.15)]"
+            >
+              Supprimer 🗑️
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -34,9 +34,11 @@ export default function TournoisPage() {
 function TournoisContent() {
   const searchParams = useSearchParams();
   const initialQ = searchParams.get("q") || "";
+  const supabase = createClient();
 
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [search, setSearch] = useState(initialQ);
   const [region, setRegion] = useState("");
   const [dateFilter, setDateFilter] = useState("");
@@ -44,14 +46,18 @@ function TournoisContent() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [page, setPage] = useState(1);
 
+  // Delete confirmation
+  const [deleteTarget, setDeleteTarget] = useState<Tournament | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   useEffect(() => {
-    async function fetchTournaments() {
+    async function init() {
       try {
-        const supabase = createClient();
-        const { data } = await supabase
-          .from("tournois")
-          .select("*")
-          .order("date_tournoi", { ascending: true });
+        const [{ data: { session } }, { data }] = await Promise.all([
+          supabase.auth.getSession(),
+          supabase.from("tournois").select("*").order("date_tournoi", { ascending: true }),
+        ]);
+        if (session) setCurrentUserId(session.user.id);
         if (data) setTournaments(data);
       } catch {
         // Supabase unavailable — show empty state
@@ -59,11 +65,24 @@ function TournoisContent() {
         setLoading(false);
       }
     }
-    fetchTournaments();
-  }, []);
+    init();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Reset page on filter change
   useEffect(() => setPage(1), [search, region, dateFilter, sort]);
+
+  async function handleDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    const { error } = await supabase.from("tournois").delete().eq("id", deleteTarget.id);
+    setDeleting(false);
+    if (error) {
+      alert("Erreur lors de la suppression : " + error.message);
+    } else {
+      setTournaments((prev) => prev.filter((t) => t.id !== deleteTarget.id));
+    }
+    setDeleteTarget(null);
+  }
 
   const filtered = useMemo(() => {
     let data = [...tournaments];
@@ -101,6 +120,37 @@ function TournoisContent() {
 
   return (
     <div className="animate-page-in">
+      {/* Delete confirmation modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(0,0,0,0.7)] backdrop-blur-sm">
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-8 max-w-[440px] w-full mx-4 animate-fade-up">
+            <div className="text-center mb-6">
+              <div className="text-[3rem] mb-3">⚠️</div>
+              <div className="font-barlow-condensed font-black text-[1.4rem] uppercase mb-2">Supprimer ce tournoi ?</div>
+              <div className="text-[0.88rem] text-[#777]">
+                Tu es sur le point de supprimer <strong className="text-white">&quot;{deleteTarget.nom}&quot;</strong>. Cette action est irréversible.
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleting}
+                className="flex-1 py-3 rounded-[10px] font-barlow-condensed font-bold text-[0.95rem] cursor-pointer bg-transparent text-white border border-[rgba(255,255,255,0.08)] hover:bg-[rgba(255,255,255,0.05)] disabled:opacity-60"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex-1 py-3 rounded-[10px] font-barlow-condensed font-bold text-[0.95rem] cursor-pointer border-none bg-[#dc2626] text-white hover:bg-[#b91c1c] disabled:opacity-60 flex items-center justify-center gap-2"
+              >
+                {deleting ? <div className="spinner" /> : "Supprimer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Page header */}
       <div className="pt-[88px] px-10 bg-gradient-to-b from-[rgba(232,34,10,0.04)] to-transparent border-b border-[rgba(255,255,255,0.08)]">
         <div className="max-w-[1200px] mx-auto pb-6">
@@ -194,7 +244,22 @@ function TournoisContent() {
             {view === "grid" && filtered.length > 0 && (
               <div className="grid grid-cols-3 gap-4">
                 {paged.map((t, i) => (
-                  <TournamentCard key={t.id} nom={t.nom} ville={t.ville} region={t.region} date_tournoi={t.date_tournoi} format={t.format} nb_joueurs={t.nb_joueurs} players={t.players ?? 0} prize={t.prize ?? 0} statut={t.statut} delay={i} />
+                  <TournamentCard
+                    key={t.id}
+                    id={t.id}
+                    nom={t.nom}
+                    ville={t.ville}
+                    region={t.region}
+                    date_tournoi={t.date_tournoi}
+                    format={t.format}
+                    nb_joueurs={t.nb_joueurs}
+                    players={t.players ?? 0}
+                    prize={t.prize ?? 0}
+                    statut={t.statut}
+                    delay={i}
+                    isOwner={!!currentUserId && t.user_id === currentUserId}
+                    onDelete={() => setDeleteTarget(t)}
+                  />
                 ))}
               </div>
             )}
@@ -206,7 +271,22 @@ function TournoisContent() {
                   <div>Tournoi</div><div>Date</div><div>Région</div><div>Dotation</div><div>Joueurs</div><div></div>
                 </div>
                 {paged.map((t, i) => (
-                  <TournamentRow key={t.id} nom={t.nom} ville={t.ville} region={t.region} date_tournoi={t.date_tournoi} format={t.format} nb_joueurs={t.nb_joueurs} players={t.players ?? 0} prize={t.prize ?? 0} statut={t.statut} delay={i} />
+                  <TournamentRow
+                    key={t.id}
+                    id={t.id}
+                    nom={t.nom}
+                    ville={t.ville}
+                    region={t.region}
+                    date_tournoi={t.date_tournoi}
+                    format={t.format}
+                    nb_joueurs={t.nb_joueurs}
+                    players={t.players ?? 0}
+                    prize={t.prize ?? 0}
+                    statut={t.statut}
+                    delay={i}
+                    isOwner={!!currentUserId && t.user_id === currentUserId}
+                    onDelete={() => setDeleteTarget(t)}
+                  />
                 ))}
               </div>
             )}
