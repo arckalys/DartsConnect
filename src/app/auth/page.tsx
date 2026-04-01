@@ -102,7 +102,10 @@ export default function AuthPage() {
     const { data, error: err } = await supabase.auth.signUp({
       email: rEmail,
       password: rPwd,
-      options: { data: { prenom: rPrenom, nom: rNom, pseudo: rPseudo, niveau: rNiveau, region: rRegion } },
+      options: {
+        data: { prenom: rPrenom, nom: rNom, pseudo: rPseudo, niveau: rNiveau, region: rRegion },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
     });
     setLoading(false);
     if (err) return showError(err.message);
@@ -116,7 +119,9 @@ export default function AuthPage() {
   async function doForgot() {
     if (!fEmail) return showError("Entre ton email.");
     setLoading(true);
-    const { error: err } = await supabase.auth.resetPasswordForEmail(fEmail);
+    const { error: err } = await supabase.auth.resetPasswordForEmail(fEmail, {
+      redirectTo: `${window.location.origin}/auth/callback`,
+    });
     setLoading(false);
     if (err) return showError(err.message);
     showSuccess("Email envoyé ! Vérifie ta boite mail.");

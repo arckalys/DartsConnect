@@ -71,32 +71,47 @@ export default function CreerTournoiPage() {
     if (!contactEmail.trim()) return showError("L'email de contact est obligatoire.");
 
     setLoading(true);
-    const { data: { session } } = await supabase.auth.getSession();
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
 
-    const tournoi = {
-      nom: nom.trim(),
-      description: description.trim(),
-      nb_joueurs: parseInt(nbJoueurs),
-      format,
-      ville: ville.trim(),
-      region,
-      adresse: adresse.trim(),
-      date_tournoi: dateTournoi,
-      heure,
-      contact_nom: contactNom.trim(),
-      contact_email: contactEmail.trim(),
-      contact_tel: contactTel.trim(),
-      infos_pratiques: infosPratiques.trim(),
-      statut: "open",
-      user_id: session?.user?.id || null,
-    };
+      if (!session) {
+        setLoading(false);
+        return showError("Tu dois être connecté pour créer un tournoi. Rendez-vous sur la page Connexion.");
+      }
 
-    const { error: dbError } = await supabase.from("tournois").insert([tournoi]);
-    setLoading(false);
+      const tournoi = {
+        nom: nom.trim(),
+        description: description.trim(),
+        nb_joueurs: parseInt(nbJoueurs),
+        format,
+        ville: ville.trim(),
+        region,
+        adresse: adresse.trim(),
+        date_tournoi: dateTournoi,
+        heure,
+        contact_nom: contactNom.trim(),
+        contact_email: contactEmail.trim(),
+        contact_tel: contactTel.trim(),
+        infos_pratiques: infosPratiques.trim(),
+        statut: "open",
+        user_id: session.user.id,
+      };
 
-    if (dbError) return showError("Erreur : " + dbError.message);
-    setSuccess(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+      const { error: dbError } = await supabase.from("tournois").insert([tournoi]);
+
+      if (dbError) {
+        setLoading(false);
+        return showError("Erreur Supabase : " + dbError.message + (dbError.details ? " — " + dbError.details : "") + (dbError.hint ? " (Hint: " + dbError.hint + ")" : ""));
+      }
+
+      setSuccess(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erreur réseau inconnue";
+      showError("Erreur réseau : " + message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   function resetForm() {
