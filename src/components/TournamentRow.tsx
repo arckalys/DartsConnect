@@ -38,8 +38,8 @@ export default function TournamentRow({ id, nom, region, date_tournoi, format, n
       className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-xl px-[1.4rem] py-[1.1rem] grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr_auto] items-center gap-4 text-white transition-all duration-200 animate-fade-up hover:border-[rgba(232,34,10,0.35)] hover:bg-[rgba(232,34,10,0.02)]"
       style={{ animationDelay: `${delay * 0.04}s` }}
     >
-      <div>
-        <div className="font-barlow-condensed font-extrabold text-[1rem]">{nom}</div>
+      <Link href={id ? `/tournois/${id}` : "#"} className="no-underline text-white">
+        <div className="font-barlow-condensed font-extrabold text-[1rem] hover:text-[#e8220a] transition-colors">{nom}</div>
         <div className="text-[0.78rem] text-[#777] mt-[2px] flex items-center gap-[5px]">
           <span className={`inline-block text-[0.6rem] font-bold uppercase tracking-[1px] px-[7px] py-[2px] rounded-full ${statusClass[statut]}`}>
             {STATUS_LABELS[statut]}
@@ -51,7 +51,7 @@ export default function TournamentRow({ id, nom, region, date_tournoi, format, n
             </span>
           )}
         </div>
-      </div>
+      </Link>
       <div className="text-[0.85rem] text-[#ccc]">{fmtShort(date_tournoi)}</div>
       <div className="text-[0.82rem] text-[#777]">{region.split("-")[0].trim()}</div>
       <div className="font-barlow-condensed font-extrabold text-[1.1rem] text-[#e8220a]">{prize}€</div>

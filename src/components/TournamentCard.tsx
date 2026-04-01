@@ -39,30 +39,30 @@ export default function TournamentCard({ id, nom, ville, region, date_tournoi, f
       className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] overflow-hidden text-white transition-all duration-200 flex flex-col animate-fade-up hover:border-[rgba(232,34,10,0.4)] hover:-translate-y-[3px]"
       style={{ animationDelay: `${delay * 0.05}s` }}
     >
-      {/* Top */}
-      <div className="px-[1.4rem] pt-[1.2rem] pb-[0.8rem] border-b border-[rgba(255,255,255,0.08)]">
-        <div className="flex gap-[6px] mb-2 flex-wrap">
-          <span className={`inline-block text-[0.65rem] font-bold uppercase tracking-[1px] px-[9px] py-[3px] rounded-full ${statusClass[statut]}`}>
-            {STATUS_LABELS[statut]}
-          </span>
-          <span className="inline-block text-[0.65rem] font-bold uppercase tracking-[1px] px-[9px] py-[3px] rounded-full bg-[rgba(255,255,255,0.06)] text-[#aaa]">
-            {format}
-          </span>
-          {isRegistered && (
-            <span className="inline-block text-[0.65rem] font-bold uppercase tracking-[1px] px-[9px] py-[3px] rounded-full bg-[rgba(34,197,94,0.15)] text-[#22c55e]">
-              Inscrit ✓
+      {/* Top - clickable link to detail */}
+      <Link href={id ? `/tournois/${id}` : "#"} className="no-underline text-white">
+        <div className="px-[1.4rem] pt-[1.2rem] pb-[0.8rem] border-b border-[rgba(255,255,255,0.08)]">
+          <div className="flex gap-[6px] mb-2 flex-wrap">
+            <span className={`inline-block text-[0.65rem] font-bold uppercase tracking-[1px] px-[9px] py-[3px] rounded-full ${statusClass[statut]}`}>
+              {STATUS_LABELS[statut]}
             </span>
-          )}
+            <span className="inline-block text-[0.65rem] font-bold uppercase tracking-[1px] px-[9px] py-[3px] rounded-full bg-[rgba(255,255,255,0.06)] text-[#aaa]">
+              {format}
+            </span>
+            {isRegistered && (
+              <span className="inline-block text-[0.65rem] font-bold uppercase tracking-[1px] px-[9px] py-[3px] rounded-full bg-[rgba(34,197,94,0.15)] text-[#22c55e]">
+                Inscrit ✓
+              </span>
+            )}
+          </div>
+          <div className="flex justify-between items-start gap-2">
+            <div className="font-barlow-condensed font-extrabold text-[1.05rem] leading-[1.25]">{nom}</div>
+            <div className="font-barlow-condensed font-extrabold text-[1.1rem] text-[#e8220a] whitespace-nowrap">{prize}€</div>
+          </div>
         </div>
-        <div className="flex justify-between items-start gap-2">
-          <div className="font-barlow-condensed font-extrabold text-[1.05rem] leading-[1.25]">{nom}</div>
-          <div className="font-barlow-condensed font-extrabold text-[1.1rem] text-[#e8220a] whitespace-nowrap">{prize}€</div>
-        </div>
-      </div>
 
-      {/* Body */}
-      <div className="px-[1.4rem] py-[1rem] pb-[1.2rem] flex-1 flex flex-col justify-between">
-        <div className="flex flex-col gap-[5px] mb-4">
+        {/* Body - info */}
+        <div className="px-[1.4rem] py-[1rem] flex flex-col gap-[5px]">
           <div className="flex items-center gap-[7px] text-[0.8rem] text-[#777]">
             <svg className="w-[13px] h-[13px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
@@ -76,6 +76,10 @@ export default function TournamentCard({ id, nom, ville, region, date_tournoi, f
             {ville}, {region}
           </div>
         </div>
+      </Link>
+
+      {/* Actions area - outside the link */}
+      <div className="px-[1.4rem] pb-[1.2rem] flex-1 flex flex-col justify-end">
         <div>
           <div className="flex items-end justify-between gap-2 mb-3">
             <div className="flex-1">
