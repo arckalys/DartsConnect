@@ -169,6 +169,7 @@ export default function HomePage() {
               {upcoming.map((t, i) => (
                 <TournamentCard
                   key={t.id}
+                  id={t.id}
                   nom={t.nom}
                   ville={t.ville}
                   region={t.region}

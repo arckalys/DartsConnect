@@ -37,11 +37,12 @@ export default function TournoiDetailPage() {
       // Fetch tournament
       const { data, error } = await supabase
         .from("tournois")
-        .select("id, nom, description, ville, region, adresse, date_tournoi, heure, format, nb_joueurs, statut, infos_pratiques, prize, created_at")
+        .select("*")
         .eq("id", tournoiId)
         .single();
 
       if (error || !data) {
+        console.error("Tournoi fetch error:", error?.message, error?.details, error?.hint);
         setNotFound(true);
         setLoading(false);
         return;
