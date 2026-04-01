@@ -9,7 +9,7 @@ export default function Navbar() {
   const links = [
     { href: "/", label: "Accueil", id: "home" },
     { href: "/tournois", label: "Tournois", id: "tournois" },
-    { href: "/auth", label: "Mes inscriptions", id: "inscriptions" },
+    { href: "/inscriptions", label: "Mes inscriptions", id: "inscriptions" },
   ];
 
   return (

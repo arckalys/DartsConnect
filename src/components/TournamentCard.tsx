@@ -17,6 +17,10 @@ interface Props {
   delay?: number;
   isOwner?: boolean;
   onDelete?: () => void;
+  isRegistered?: boolean;
+  onToggleRegister?: () => void;
+  registerLoading?: boolean;
+  currentUserId?: string | null;
 }
 
 const statusClass: Record<TournamentStatus, string> = {
@@ -26,12 +30,13 @@ const statusClass: Record<TournamentStatus, string> = {
   closed: "bg-[rgba(248,113,113,0.1)] text-[#f87171]",
 };
 
-export default function TournamentCard({ id, nom, ville, region, date_tournoi, format, nb_joueurs, players, prize, statut, delay = 0, isOwner, onDelete }: Props) {
-  const pct = Math.round((players / nb_joueurs) * 100);
+export default function TournamentCard({ id, nom, ville, region, date_tournoi, format, nb_joueurs, players, prize, statut, delay = 0, isOwner, onDelete, isRegistered, onToggleRegister, registerLoading, currentUserId }: Props) {
+  const pct = nb_joueurs > 0 ? Math.round((players / nb_joueurs) * 100) : 0;
+  const isFull = players >= nb_joueurs && !isRegistered;
 
   return (
     <div
-      className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] overflow-hidden cursor-pointer text-white transition-all duration-200 flex flex-col animate-fade-up hover:border-[rgba(232,34,10,0.4)] hover:-translate-y-[3px]"
+      className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] overflow-hidden text-white transition-all duration-200 flex flex-col animate-fade-up hover:border-[rgba(232,34,10,0.4)] hover:-translate-y-[3px]"
       style={{ animationDelay: `${delay * 0.05}s` }}
     >
       {/* Top */}
@@ -43,6 +48,11 @@ export default function TournamentCard({ id, nom, ville, region, date_tournoi, f
           <span className="inline-block text-[0.65rem] font-bold uppercase tracking-[1px] px-[9px] py-[3px] rounded-full bg-[rgba(255,255,255,0.06)] text-[#aaa]">
             {format}
           </span>
+          {isRegistered && (
+            <span className="inline-block text-[0.65rem] font-bold uppercase tracking-[1px] px-[9px] py-[3px] rounded-full bg-[rgba(34,197,94,0.15)] text-[#22c55e]">
+              Inscrit ✓
+            </span>
+          )}
         </div>
         <div className="flex justify-between items-start gap-2">
           <div className="font-barlow-condensed font-extrabold text-[1.05rem] leading-[1.25]">{nom}</div>
@@ -66,18 +76,50 @@ export default function TournamentCard({ id, nom, ville, region, date_tournoi, f
             {ville}, {region}
           </div>
         </div>
-        <div className="flex items-end justify-between gap-2">
-          <div className="flex-1">
-            <div className="text-[0.75rem] text-[#777] mb-1">
-              <strong className="text-white">{players}</strong>/{nb_joueurs} joueurs
-            </div>
-            <div className="h-[3px] bg-[rgba(255,255,255,0.06)] rounded-sm">
-              <div className="h-full rounded-sm bg-[#e8220a] transition-all duration-400" style={{ width: `${pct}%` }} />
+        <div>
+          <div className="flex items-end justify-between gap-2 mb-3">
+            <div className="flex-1">
+              <div className="text-[0.75rem] text-[#777] mb-1">
+                <strong className="text-white">{players}</strong>/{nb_joueurs} joueurs
+              </div>
+              <div className="h-[3px] bg-[rgba(255,255,255,0.06)] rounded-sm">
+                <div className="h-full rounded-sm bg-[#e8220a] transition-all duration-400" style={{ width: `${Math.min(pct, 100)}%` }} />
+              </div>
             </div>
           </div>
-          <span className="text-[0.78rem] font-bold text-[#e8220a] whitespace-nowrap flex items-center gap-[3px] hover:gap-[6px] transition-all duration-200">
-            {statut === "full" ? "Voir →" : "S'inscrire →"}
-          </span>
+
+          {/* Register button */}
+          {onToggleRegister && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggleRegister(); }}
+              disabled={registerLoading || (isFull && !isRegistered) || statut === "closed"}
+              className={`w-full text-[0.82rem] font-bold py-[8px] rounded-lg cursor-pointer transition-all border flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed ${
+                isRegistered
+                  ? "bg-[rgba(248,113,113,0.08)] border-[rgba(248,113,113,0.2)] text-[#f87171] hover:bg-[rgba(248,113,113,0.15)]"
+                  : "bg-[rgba(232,34,10,0.1)] border-[rgba(232,34,10,0.25)] text-[#e8220a] hover:bg-[rgba(232,34,10,0.2)]"
+              }`}
+            >
+              {registerLoading ? (
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              ) : isRegistered ? (
+                "Se désinscrire"
+              ) : isFull ? (
+                "Complet"
+              ) : (
+                "S'inscrire →"
+              )}
+            </button>
+          )}
+
+          {/* No toggle = not logged in, show link */}
+          {!onToggleRegister && currentUserId === null && statut !== "closed" && (
+            <Link
+              href="/auth"
+              className="w-full text-[0.82rem] font-bold py-[8px] rounded-lg transition-all border flex items-center justify-center gap-1 no-underline bg-[rgba(232,34,10,0.1)] border-[rgba(232,34,10,0.25)] text-[#e8220a] hover:bg-[rgba(232,34,10,0.2)]"
+            >
+              S&apos;inscrire →
+            </Link>
+          )}
         </div>
 
         {/* Owner actions */}

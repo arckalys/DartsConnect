@@ -17,6 +17,10 @@ interface Props {
   delay?: number;
   isOwner?: boolean;
   onDelete?: () => void;
+  isRegistered?: boolean;
+  onToggleRegister?: () => void;
+  registerLoading?: boolean;
+  currentUserId?: string | null;
 }
 
 const statusClass: Record<TournamentStatus, string> = {
@@ -26,10 +30,12 @@ const statusClass: Record<TournamentStatus, string> = {
   closed: "bg-[rgba(248,113,113,0.1)] text-[#f87171]",
 };
 
-export default function TournamentRow({ id, nom, region, date_tournoi, format, nb_joueurs, players, prize, statut, delay = 0, isOwner, onDelete }: Props) {
+export default function TournamentRow({ id, nom, region, date_tournoi, format, nb_joueurs, players, prize, statut, delay = 0, isOwner, onDelete, isRegistered, onToggleRegister, registerLoading, currentUserId }: Props) {
+  const isFull = players >= nb_joueurs && !isRegistered;
+
   return (
     <div
-      className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-xl px-[1.4rem] py-[1.1rem] grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr_auto] items-center gap-4 cursor-pointer text-white transition-all duration-200 animate-fade-up hover:border-[rgba(232,34,10,0.35)] hover:bg-[rgba(232,34,10,0.02)]"
+      className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-xl px-[1.4rem] py-[1.1rem] grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr_auto] items-center gap-4 text-white transition-all duration-200 animate-fade-up hover:border-[rgba(232,34,10,0.35)] hover:bg-[rgba(232,34,10,0.02)]"
       style={{ animationDelay: `${delay * 0.04}s` }}
     >
       <div>
@@ -39,6 +45,11 @@ export default function TournamentRow({ id, nom, region, date_tournoi, format, n
             {STATUS_LABELS[statut]}
           </span>
           <span>{format}</span>
+          {isRegistered && (
+            <span className="inline-block text-[0.6rem] font-bold uppercase tracking-[1px] px-[7px] py-[2px] rounded-full bg-[rgba(34,197,94,0.15)] text-[#22c55e]">
+              Inscrit ✓
+            </span>
+          )}
         </div>
       </div>
       <div className="text-[0.85rem] text-[#ccc]">{fmtShort(date_tournoi)}</div>
@@ -65,9 +76,26 @@ export default function TournamentRow({ id, nom, region, date_tournoi, format, n
             </button>
           </>
         )}
-        <div className="bg-[rgba(232,34,10,0.1)] border border-[rgba(232,34,10,0.25)] text-[#e8220a] text-[0.78rem] font-bold px-[14px] py-[6px] rounded-lg whitespace-nowrap transition-all duration-200 hover:bg-[rgba(232,34,10,0.2)]">
-          {statut === "full" ? "Voir" : "S'inscrire"}
-        </div>
+        {onToggleRegister ? (
+          <button
+            onClick={(e) => { e.stopPropagation(); onToggleRegister(); }}
+            disabled={registerLoading || (isFull && !isRegistered) || statut === "closed"}
+            className={`text-[0.78rem] font-bold px-[14px] py-[6px] rounded-lg whitespace-nowrap transition-all duration-200 cursor-pointer border disabled:opacity-50 disabled:cursor-not-allowed ${
+              isRegistered
+                ? "bg-[rgba(248,113,113,0.08)] border-[rgba(248,113,113,0.2)] text-[#f87171] hover:bg-[rgba(248,113,113,0.15)]"
+                : "bg-[rgba(232,34,10,0.1)] border-[rgba(232,34,10,0.25)] text-[#e8220a] hover:bg-[rgba(232,34,10,0.2)]"
+            }`}
+          >
+            {registerLoading ? "..." : isRegistered ? "Se désinscrire" : isFull ? "Complet" : "S'inscrire"}
+          </button>
+        ) : (
+          <Link
+            href={currentUserId === null ? "/auth" : "#"}
+            className="bg-[rgba(232,34,10,0.1)] border border-[rgba(232,34,10,0.25)] text-[#e8220a] text-[0.78rem] font-bold px-[14px] py-[6px] rounded-lg whitespace-nowrap transition-all duration-200 hover:bg-[rgba(232,34,10,0.2)] no-underline"
+          >
+            S&apos;inscrire
+          </Link>
+        )}
       </div>
     </div>
   );

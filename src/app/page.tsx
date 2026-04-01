@@ -133,7 +133,7 @@ export default function HomePage() {
             </div>
             <span className="ml-auto text-[#777] text-[1.1rem] transition-all group-hover:translate-x-1 group-hover:text-[#e8220a]">→</span>
           </Link>
-          <Link href="/auth" className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] px-6 py-5 flex items-center gap-4 no-underline text-white transition-all hover:border-[rgba(232,34,10,0.35)] hover:bg-[rgba(232,34,10,0.05)] hover:-translate-y-[2px] group">
+          <Link href="/inscriptions" className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] px-6 py-5 flex items-center gap-4 no-underline text-white transition-all hover:border-[rgba(232,34,10,0.35)] hover:bg-[rgba(232,34,10,0.05)] hover:-translate-y-[2px] group">
             <div className="w-11 h-11 rounded-[10px] flex items-center justify-center text-[1.3rem] shrink-0 bg-[rgba(34,197,94,0.12)]">🏆</div>
             <div>
               <h3 className="font-barlow-condensed font-bold text-[1.05rem] mb-[2px]">Mes inscriptions</h3>

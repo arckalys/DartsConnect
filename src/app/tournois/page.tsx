@@ -50,6 +50,11 @@ function TournoisContent() {
   const [deleteTarget, setDeleteTarget] = useState<Tournament | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  // Inscriptions
+  const [inscriptionCounts, setInscriptionCounts] = useState<Record<string, number>>({});
+  const [myInscriptions, setMyInscriptions] = useState<Set<string>>(new Set());
+  const [registerLoadingId, setRegisterLoadingId] = useState<string | null>(null);
+
   useEffect(() => {
     async function init() {
       try {
@@ -57,8 +62,32 @@ function TournoisContent() {
           supabase.auth.getSession(),
           supabase.from("tournois").select("*").order("date_tournoi", { ascending: true }),
         ]);
-        if (session) setCurrentUserId(session.user.id);
+        const userId = session?.user?.id || null;
+        if (userId) setCurrentUserId(userId);
         if (data) setTournaments(data);
+
+        // Fetch inscription counts per tournament
+        const { data: counts } = await supabase
+          .from("inscriptions")
+          .select("tournoi_id");
+        if (counts) {
+          const map: Record<string, number> = {};
+          counts.forEach((row: { tournoi_id: string }) => {
+            map[row.tournoi_id] = (map[row.tournoi_id] || 0) + 1;
+          });
+          setInscriptionCounts(map);
+        }
+
+        // Fetch current user's inscriptions
+        if (userId) {
+          const { data: myRegs } = await supabase
+            .from("inscriptions")
+            .select("tournoi_id")
+            .eq("user_id", userId);
+          if (myRegs) {
+            setMyInscriptions(new Set(myRegs.map((r: { tournoi_id: string }) => r.tournoi_id)));
+          }
+        }
       } catch {
         // Supabase unavailable — show empty state
       } finally {
@@ -82,6 +111,33 @@ function TournoisContent() {
       setTournaments((prev) => prev.filter((t) => t.id !== deleteTarget.id));
     }
     setDeleteTarget(null);
+  }
+
+  async function handleToggleRegister(tournoiId: string) {
+    if (!currentUserId) return;
+    setRegisterLoadingId(tournoiId);
+    const isRegistered = myInscriptions.has(tournoiId);
+
+    if (isRegistered) {
+      const { error } = await supabase
+        .from("inscriptions")
+        .delete()
+        .eq("user_id", currentUserId)
+        .eq("tournoi_id", tournoiId);
+      if (!error) {
+        setMyInscriptions((prev) => { const s = new Set(prev); s.delete(tournoiId); return s; });
+        setInscriptionCounts((prev) => ({ ...prev, [tournoiId]: Math.max((prev[tournoiId] || 1) - 1, 0) }));
+      }
+    } else {
+      const { error } = await supabase
+        .from("inscriptions")
+        .insert([{ user_id: currentUserId, tournoi_id: tournoiId }]);
+      if (!error) {
+        setMyInscriptions((prev) => new Set(prev).add(tournoiId));
+        setInscriptionCounts((prev) => ({ ...prev, [tournoiId]: (prev[tournoiId] || 0) + 1 }));
+      }
+    }
+    setRegisterLoadingId(null);
   }
 
   const filtered = useMemo(() => {
@@ -243,24 +299,31 @@ function TournoisContent() {
             {/* Grid view */}
             {view === "grid" && filtered.length > 0 && (
               <div className="grid grid-cols-3 gap-4">
-                {paged.map((t, i) => (
-                  <TournamentCard
-                    key={t.id}
-                    id={t.id}
-                    nom={t.nom}
-                    ville={t.ville}
-                    region={t.region}
-                    date_tournoi={t.date_tournoi}
-                    format={t.format}
-                    nb_joueurs={t.nb_joueurs}
-                    players={t.players ?? 0}
-                    prize={t.prize ?? 0}
-                    statut={t.statut}
-                    delay={i}
-                    isOwner={!!currentUserId && t.user_id === currentUserId}
-                    onDelete={() => setDeleteTarget(t)}
-                  />
-                ))}
+                {paged.map((t, i) => {
+                  const tid = String(t.id);
+                  return (
+                    <TournamentCard
+                      key={t.id}
+                      id={t.id}
+                      nom={t.nom}
+                      ville={t.ville}
+                      region={t.region}
+                      date_tournoi={t.date_tournoi}
+                      format={t.format}
+                      nb_joueurs={t.nb_joueurs}
+                      players={inscriptionCounts[tid] ?? t.players ?? 0}
+                      prize={t.prize ?? 0}
+                      statut={t.statut}
+                      delay={i}
+                      isOwner={!!currentUserId && t.user_id === currentUserId}
+                      onDelete={() => setDeleteTarget(t)}
+                      isRegistered={myInscriptions.has(tid)}
+                      onToggleRegister={currentUserId ? () => handleToggleRegister(tid) : undefined}
+                      registerLoading={registerLoadingId === tid}
+                      currentUserId={currentUserId}
+                    />
+                  );
+                })}
               </div>
             )}
 
@@ -270,24 +333,31 @@ function TournoisContent() {
                 <div className="grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr_auto] gap-4 px-[1.4rem] text-[0.72rem] font-bold uppercase tracking-[1px] text-[#777]">
                   <div>Tournoi</div><div>Date</div><div>Région</div><div>Dotation</div><div>Joueurs</div><div></div>
                 </div>
-                {paged.map((t, i) => (
-                  <TournamentRow
-                    key={t.id}
-                    id={t.id}
-                    nom={t.nom}
-                    ville={t.ville}
-                    region={t.region}
-                    date_tournoi={t.date_tournoi}
-                    format={t.format}
-                    nb_joueurs={t.nb_joueurs}
-                    players={t.players ?? 0}
-                    prize={t.prize ?? 0}
-                    statut={t.statut}
-                    delay={i}
-                    isOwner={!!currentUserId && t.user_id === currentUserId}
-                    onDelete={() => setDeleteTarget(t)}
-                  />
-                ))}
+                {paged.map((t, i) => {
+                  const tid = String(t.id);
+                  return (
+                    <TournamentRow
+                      key={t.id}
+                      id={t.id}
+                      nom={t.nom}
+                      ville={t.ville}
+                      region={t.region}
+                      date_tournoi={t.date_tournoi}
+                      format={t.format}
+                      nb_joueurs={t.nb_joueurs}
+                      players={inscriptionCounts[tid] ?? t.players ?? 0}
+                      prize={t.prize ?? 0}
+                      statut={t.statut}
+                      delay={i}
+                      isOwner={!!currentUserId && t.user_id === currentUserId}
+                      onDelete={() => setDeleteTarget(t)}
+                      isRegistered={myInscriptions.has(tid)}
+                      onToggleRegister={currentUserId ? () => handleToggleRegister(tid) : undefined}
+                      registerLoading={registerLoadingId === tid}
+                      currentUserId={currentUserId}
+                    />
+                  );
+                })}
               </div>
             )}
 
