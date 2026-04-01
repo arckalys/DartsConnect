@@ -15,9 +15,9 @@ export default function TournoisPage() {
   return (
     <Suspense fallback={
       <div className="animate-page-in">
-        <div className="pt-[88px] px-10 bg-gradient-to-b from-[rgba(232,34,10,0.04)] to-transparent border-b border-[rgba(255,255,255,0.08)]">
+        <div className="pt-[88px] px-4 sm:px-6 lg:px-10 bg-gradient-to-b from-[rgba(232,34,10,0.04)] to-transparent border-b border-[rgba(255,255,255,0.08)]">
           <div className="max-w-[1200px] mx-auto pb-6">
-            <div className="font-barlow-condensed font-black text-[2.4rem] uppercase tracking-[0.5px]">Tous les tournois</div>
+            <div className="font-barlow-condensed font-black text-[1.8rem] sm:text-[2.4rem] uppercase tracking-[0.5px]">Tous les tournois</div>
             <div className="text-[0.88rem] text-[#555] mt-1">Chargement...</div>
           </div>
         </div>
@@ -178,8 +178,8 @@ function TournoisContent() {
     <div className="animate-page-in">
       {/* Delete confirmation modal */}
       {deleteTarget && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(0,0,0,0.7)] backdrop-blur-sm">
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-8 max-w-[440px] w-full mx-4 animate-fade-up">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(0,0,0,0.7)] backdrop-blur-sm px-4">
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-6 sm:p-8 max-w-[440px] w-full animate-fade-up">
             <div className="text-center mb-6">
               <div className="text-[3rem] mb-3">⚠️</div>
               <div className="font-barlow-condensed font-black text-[1.4rem] uppercase mb-2">Supprimer ce tournoi ?</div>
@@ -208,9 +208,9 @@ function TournoisContent() {
       )}
 
       {/* Page header */}
-      <div className="pt-[88px] px-10 bg-gradient-to-b from-[rgba(232,34,10,0.04)] to-transparent border-b border-[rgba(255,255,255,0.08)]">
+      <div className="pt-[88px] px-4 sm:px-6 lg:px-10 bg-gradient-to-b from-[rgba(232,34,10,0.04)] to-transparent border-b border-[rgba(255,255,255,0.08)]">
         <div className="max-w-[1200px] mx-auto pb-6">
-          <div className="font-barlow-condensed font-black text-[2.4rem] uppercase tracking-[0.5px]">Tous les tournois</div>
+          <div className="font-barlow-condensed font-black text-[1.8rem] sm:text-[2.4rem] uppercase tracking-[0.5px]">Tous les tournois</div>
           <div className="text-[0.88rem] text-[#777] mt-1">
             {loading ? (
               <span className="text-[#555]">Chargement...</span>
@@ -222,10 +222,10 @@ function TournoisContent() {
       </div>
 
       {/* Filters bar */}
-      <div className="px-10 py-[1.2rem] border-b border-[rgba(255,255,255,0.08)] bg-[#111] sticky top-[60px] z-50">
-        <div className="max-w-[1200px] mx-auto flex gap-[10px] items-center flex-wrap">
+      <div className="px-4 sm:px-6 lg:px-10 py-3 sm:py-[1.2rem] border-b border-[rgba(255,255,255,0.08)] bg-[#111] sticky top-[60px] z-50">
+        <div className="max-w-[1200px] mx-auto flex flex-col sm:flex-row gap-2 sm:gap-[10px] sm:items-center sm:flex-wrap">
           {/* Search */}
-          <div className="relative flex-1 min-w-[220px]">
+          <div className="relative flex-1 min-w-0 sm:min-w-[220px]">
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#777]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
             </svg>
@@ -238,29 +238,30 @@ function TournoisContent() {
             />
           </div>
 
-          {/* Region filter */}
-          <select value={region} onChange={(e) => setRegion(e.target.value)} className="!bg-[#181818] !rounded-[10px] !px-[14px] !py-[10px] !text-[0.88rem] !w-auto">
-            <option value="">Toutes les régions</option>
-            {REGIONS.map((r) => <option key={r}>{r}</option>)}
-          </select>
+          {/* Region + Date filters */}
+          <div className="flex gap-2 sm:gap-[10px]">
+            <select value={region} onChange={(e) => setRegion(e.target.value)} className="flex-1 sm:flex-none !bg-[#181818] !rounded-[10px] !px-3 sm:!px-[14px] !py-[10px] !text-[0.85rem] sm:!text-[0.88rem] !w-auto">
+              <option value="">Toutes les régions</option>
+              {REGIONS.map((r) => <option key={r}>{r}</option>)}
+            </select>
 
-          {/* Date filter */}
-          <select value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} className="!bg-[#181818] !rounded-[10px] !px-[14px] !py-[10px] !text-[0.88rem] !w-auto">
-            <option value="">Toutes les dates</option>
-            <option value="week">Cette semaine</option>
-            <option value="month">Ce mois-ci</option>
-            <option value="next">3 prochains mois</option>
-          </select>
+            <select value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} className="flex-1 sm:flex-none !bg-[#181818] !rounded-[10px] !px-3 sm:!px-[14px] !py-[10px] !text-[0.85rem] sm:!text-[0.88rem] !w-auto">
+              <option value="">Toutes les dates</option>
+              <option value="week">Cette semaine</option>
+              <option value="month">Ce mois-ci</option>
+              <option value="next">3 prochains mois</option>
+            </select>
+          </div>
 
           {/* Right side */}
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-2 sm:ml-auto">
             {hasFilters && (
               <button onClick={resetFilters} className="bg-transparent border-none text-[#777] text-[0.8rem] cursor-pointer">
                 ✕ Réinitialiser
               </button>
             )}
-            {/* View switch */}
-            <div className="flex bg-[#0a0a0a] border border-[rgba(255,255,255,0.08)] rounded-lg overflow-hidden">
+            {/* View switch - hidden on mobile (always grid) */}
+            <div className="hidden sm:flex bg-[#0a0a0a] border border-[rgba(255,255,255,0.08)] rounded-lg overflow-hidden ml-auto sm:ml-0">
               <button
                 onClick={() => setView("grid")}
                 className={`w-9 h-9 border-none cursor-pointer flex items-center justify-center transition-all ${view === "grid" ? "bg-[#e8220a] text-white" : "bg-transparent text-[#777]"}`}
@@ -279,7 +280,7 @@ function TournoisContent() {
       </div>
 
       {/* Content */}
-      <div className="max-w-[1200px] mx-auto px-10 py-8">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
@@ -296,69 +297,102 @@ function TournoisContent() {
               </select>
             </div>
 
-            {/* Grid view */}
-            {view === "grid" && filtered.length > 0 && (
-              <div className="grid grid-cols-3 gap-4">
-                {paged.map((t, i) => {
-                  const tid = String(t.id);
-                  return (
-                    <TournamentCard
-                      key={t.id}
-                      id={t.id}
-                      nom={t.nom}
-                      ville={t.ville}
-                      region={t.region}
-                      date_tournoi={t.date_tournoi}
-                      format={t.format}
-                      nb_joueurs={t.nb_joueurs}
-                      players={inscriptionCounts[tid] ?? t.players ?? 0}
-                      prize={t.prize ?? 0}
-                      statut={t.statut}
-                      delay={i}
-                      isOwner={!!currentUserId && t.user_id === currentUserId}
-                      onDelete={() => setDeleteTarget(t)}
-                      isRegistered={myInscriptions.has(tid)}
-                      onToggleRegister={currentUserId ? () => handleToggleRegister(tid) : undefined}
-                      registerLoading={registerLoadingId === tid}
-                      currentUserId={currentUserId}
-                    />
-                  );
-                })}
+            {/* Grid view (always on mobile, toggle on desktop) */}
+            {(view === "grid" || typeof window !== "undefined") && filtered.length > 0 && (
+              <div className={`${view === "list" ? "hidden sm:hidden lg:hidden" : ""}`}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {paged.map((t, i) => {
+                    const tid = String(t.id);
+                    return (
+                      <TournamentCard
+                        key={t.id}
+                        id={t.id}
+                        nom={t.nom}
+                        ville={t.ville}
+                        region={t.region}
+                        date_tournoi={t.date_tournoi}
+                        format={t.format}
+                        nb_joueurs={t.nb_joueurs}
+                        players={inscriptionCounts[tid] ?? t.players ?? 0}
+                        prize={t.prize ?? 0}
+                        statut={t.statut}
+                        delay={i}
+                        isOwner={!!currentUserId && t.user_id === currentUserId}
+                        onDelete={() => setDeleteTarget(t)}
+                        isRegistered={myInscriptions.has(tid)}
+                        onToggleRegister={currentUserId ? () => handleToggleRegister(tid) : undefined}
+                        registerLoading={registerLoadingId === tid}
+                        currentUserId={currentUserId}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             )}
 
-            {/* List view */}
+            {/* Mobile cards fallback when list view is selected */}
             {view === "list" && filtered.length > 0 && (
-              <div className="flex flex-col gap-[10px]">
-                <div className="grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr_auto] gap-4 px-[1.4rem] text-[0.72rem] font-bold uppercase tracking-[1px] text-[#777]">
-                  <div>Tournoi</div><div>Date</div><div>Région</div><div>Dotation</div><div>Joueurs</div><div></div>
+              <>
+                {/* Cards for mobile */}
+                <div className="sm:hidden grid grid-cols-1 gap-4">
+                  {paged.map((t, i) => {
+                    const tid = String(t.id);
+                    return (
+                      <TournamentCard
+                        key={t.id}
+                        id={t.id}
+                        nom={t.nom}
+                        ville={t.ville}
+                        region={t.region}
+                        date_tournoi={t.date_tournoi}
+                        format={t.format}
+                        nb_joueurs={t.nb_joueurs}
+                        players={inscriptionCounts[tid] ?? t.players ?? 0}
+                        prize={t.prize ?? 0}
+                        statut={t.statut}
+                        delay={i}
+                        isOwner={!!currentUserId && t.user_id === currentUserId}
+                        onDelete={() => setDeleteTarget(t)}
+                        isRegistered={myInscriptions.has(tid)}
+                        onToggleRegister={currentUserId ? () => handleToggleRegister(tid) : undefined}
+                        registerLoading={registerLoadingId === tid}
+                        currentUserId={currentUserId}
+                      />
+                    );
+                  })}
                 </div>
-                {paged.map((t, i) => {
-                  const tid = String(t.id);
-                  return (
-                    <TournamentRow
-                      key={t.id}
-                      id={t.id}
-                      nom={t.nom}
-                      ville={t.ville}
-                      region={t.region}
-                      date_tournoi={t.date_tournoi}
-                      format={t.format}
-                      nb_joueurs={t.nb_joueurs}
-                      players={inscriptionCounts[tid] ?? t.players ?? 0}
-                      prize={t.prize ?? 0}
-                      statut={t.statut}
-                      delay={i}
-                      isOwner={!!currentUserId && t.user_id === currentUserId}
-                      onDelete={() => setDeleteTarget(t)}
-                      isRegistered={myInscriptions.has(tid)}
-                      onToggleRegister={currentUserId ? () => handleToggleRegister(tid) : undefined}
-                      registerLoading={registerLoadingId === tid}
-                      currentUserId={currentUserId}
-                    />
-                  );
-                })}
-              </div>
+                {/* List rows for tablet+ */}
+                <div className="hidden sm:flex flex-col gap-[10px]">
+                  <div className="grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr_auto] gap-4 px-[1.4rem] text-[0.72rem] font-bold uppercase tracking-[1px] text-[#777]">
+                    <div>Tournoi</div><div>Date</div><div>Région</div><div>Dotation</div><div>Joueurs</div><div></div>
+                  </div>
+                  {paged.map((t, i) => {
+                    const tid = String(t.id);
+                    return (
+                      <TournamentRow
+                        key={t.id}
+                        id={t.id}
+                        nom={t.nom}
+                        ville={t.ville}
+                        region={t.region}
+                        date_tournoi={t.date_tournoi}
+                        format={t.format}
+                        nb_joueurs={t.nb_joueurs}
+                        players={inscriptionCounts[tid] ?? t.players ?? 0}
+                        prize={t.prize ?? 0}
+                        statut={t.statut}
+                        delay={i}
+                        isOwner={!!currentUserId && t.user_id === currentUserId}
+                        onDelete={() => setDeleteTarget(t)}
+                        isRegistered={myInscriptions.has(tid)}
+                        onToggleRegister={currentUserId ? () => handleToggleRegister(tid) : undefined}
+                        registerLoading={registerLoadingId === tid}
+                        currentUserId={currentUserId}
+                      />
+                    );
+                  })}
+                </div>
+              </>
             )}
 
             {/* Empty state */}

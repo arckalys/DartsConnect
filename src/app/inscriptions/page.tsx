@@ -121,16 +121,16 @@ export default function InscriptionsPage() {
       )}
 
       {/* Page header */}
-      <div className="pt-[88px] px-10 bg-gradient-to-b from-[rgba(232,34,10,0.04)] to-transparent border-b border-[rgba(255,255,255,0.08)]">
+      <div className="pt-[88px] px-4 sm:px-6 lg:px-10 bg-gradient-to-b from-[rgba(232,34,10,0.04)] to-transparent border-b border-[rgba(255,255,255,0.08)]">
         <div className="max-w-[1200px] mx-auto pb-6">
-          <div className="font-barlow-condensed font-black text-[2.4rem] uppercase tracking-[0.5px]">Mes inscriptions</div>
+          <div className="font-barlow-condensed font-black text-[1.8rem] sm:text-[2.4rem] uppercase tracking-[0.5px]">Mes inscriptions</div>
           <div className="text-[0.88rem] text-[#777] mt-1">
             <span className="text-[#e8220a] font-bold">{inscriptions.length}</span> tournoi{inscriptions.length > 1 ? "s" : ""}
           </div>
         </div>
       </div>
 
-      <div className="max-w-[1200px] mx-auto px-10 py-8">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
         {inscriptions.length === 0 ? (
           <div className="text-center py-16 text-[#777]">
             <div className="text-[3rem] mb-4 opacity-40">🏆</div>
@@ -151,7 +151,7 @@ export default function InscriptionsPage() {
               return (
                 <div
                   key={insc.id}
-                  className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-xl px-[1.4rem] py-[1.1rem] flex items-center gap-6 text-white transition-all duration-200 animate-fade-up hover:border-[rgba(232,34,10,0.35)]"
+                  className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-xl px-4 sm:px-[1.4rem] py-4 sm:py-[1.1rem] flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-white transition-all duration-200 animate-fade-up hover:border-[rgba(232,34,10,0.35)]"
                   style={{ animationDelay: `${i * 0.04}s` }}
                 >
                   {/* Tournament info */}
@@ -174,18 +174,18 @@ export default function InscriptionsPage() {
                     </div>
                   </div>
 
-                  {/* Status badge */}
-                  <div className="inline-flex items-center gap-[6px] bg-[rgba(34,197,94,0.12)] border border-[rgba(34,197,94,0.25)] rounded-full px-3 py-1 text-[0.75rem] font-bold text-[#22c55e] whitespace-nowrap">
-                    ✓ Inscrit
+                  {/* Actions row */}
+                  <div className="flex items-center gap-3 sm:gap-3 sm:shrink-0">
+                    <div className="inline-flex items-center gap-[6px] bg-[rgba(34,197,94,0.12)] border border-[rgba(34,197,94,0.25)] rounded-full px-3 py-1 text-[0.75rem] font-bold text-[#22c55e] whitespace-nowrap">
+                      ✓ Inscrit
+                    </div>
+                    <button
+                      onClick={() => setConfirmTarget(insc)}
+                      className="text-[0.78rem] font-bold px-[14px] py-[6px] rounded-lg bg-[rgba(248,113,113,0.08)] border border-[rgba(248,113,113,0.2)] text-[#f87171] cursor-pointer transition-all hover:bg-[rgba(248,113,113,0.15)] whitespace-nowrap"
+                    >
+                      Se désinscrire
+                    </button>
                   </div>
-
-                  {/* Unregister */}
-                  <button
-                    onClick={() => setConfirmTarget(insc)}
-                    className="text-[0.78rem] font-bold px-[14px] py-[6px] rounded-lg bg-[rgba(248,113,113,0.08)] border border-[rgba(248,113,113,0.2)] text-[#f87171] cursor-pointer transition-all hover:bg-[rgba(248,113,113,0.15)] whitespace-nowrap"
-                  >
-                    Se désinscrire
-                  </button>
                 </div>
               );
             })}

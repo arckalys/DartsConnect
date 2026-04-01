@@ -175,7 +175,7 @@ export default function ModifierTournoiPage() {
 
   if (fetching) {
     return (
-      <div className="animate-page-in min-h-screen pt-[80px] px-6 pb-12 max-w-[780px] mx-auto flex items-center justify-center">
+      <div className="animate-page-in min-h-screen pt-[80px] px-4 sm:px-6 pb-12 max-w-[780px] mx-auto flex items-center justify-center">
         <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
       </div>
     );
@@ -183,7 +183,7 @@ export default function ModifierTournoiPage() {
 
   if (notFound) {
     return (
-      <div className="animate-page-in min-h-screen pt-[80px] px-6 pb-12 max-w-[780px] mx-auto flex flex-col items-center justify-center text-center">
+      <div className="animate-page-in min-h-screen pt-[80px] px-4 sm:px-6 pb-12 max-w-[780px] mx-auto flex flex-col items-center justify-center text-center">
         <div className="text-[3rem] mb-4 opacity-40">🚫</div>
         <div className="font-barlow-condensed font-black text-[1.6rem] uppercase mb-2">Tournoi introuvable</div>
         <div className="text-[0.88rem] text-[#777] mb-6">Ce tournoi n&apos;existe pas ou tu n&apos;as pas la permission de le modifier.</div>
@@ -195,10 +195,10 @@ export default function ModifierTournoiPage() {
   }
 
   return (
-    <div className="animate-page-in min-h-screen pt-[80px] px-6 pb-12 max-w-[780px] mx-auto">
+    <div className="animate-page-in min-h-screen pt-[80px] px-4 sm:px-6 pb-12 max-w-[780px] mx-auto">
       {/* Header */}
-      <div className="mb-10">
-        <div className="font-barlow-condensed font-black text-[2.6rem] uppercase tracking-[0.5px]">
+      <div className="mb-8 sm:mb-10">
+        <div className="font-barlow-condensed font-black text-[1.8rem] sm:text-[2.6rem] uppercase tracking-[0.5px]">
           Modifier le <span className="text-[#e8220a]">tournoi</span>
         </div>
         <div className="text-[0.9rem] text-[#777] mt-[6px]">
@@ -218,8 +218,8 @@ export default function ModifierTournoiPage() {
 
       {/* Success screen */}
       {success && (
-        <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-8">
-          <div className="text-center py-12 px-8">
+        <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8">
+          <div className="text-center py-8 sm:py-12 px-2 sm:px-8">
             <div className="text-[4rem] mb-5 animate-pop">✅</div>
             <div className="font-barlow-condensed font-black text-[2rem] uppercase mb-2">Tournoi mis à jour !</div>
             <div className="text-[0.92rem] text-[#777] mb-8">Les modifications ont été enregistrées.</div>
@@ -235,7 +235,7 @@ export default function ModifierTournoiPage() {
       {/* Step 1: Infos générales */}
       {!success && step === 1 && (
         <>
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-8 mb-6 animate-fade-up">
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8 mb-6 animate-fade-up">
             <div className="flex items-center gap-3 mb-7">
               <div className="w-10 h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center text-[1.2rem]">🎯</div>
               <h2 className="font-barlow-condensed font-extrabold text-[1.3rem] uppercase">Informations générales</h2>
@@ -279,12 +279,12 @@ export default function ModifierTournoiPage() {
       {/* Step 2: Lieu et date */}
       {!success && step === 2 && (
         <>
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-8 mb-6 animate-fade-up">
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8 mb-6 animate-fade-up">
             <div className="flex items-center gap-3 mb-7">
               <div className="w-10 h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center text-[1.2rem]">📍</div>
               <h2 className="font-barlow-condensed font-extrabold text-[1.3rem] uppercase">Lieu et date</h2>
             </div>
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
               <div>
                 <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Ville *</label>
                 <input type="text" value={ville} onChange={(e) => setVille(e.target.value)} placeholder="Paris" />
@@ -301,7 +301,7 @@ export default function ModifierTournoiPage() {
               <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Adresse complète</label>
               <input type="text" value={adresse} onChange={(e) => setAdresse(e.target.value)} placeholder="Ex : Salle des sports, 12 rue de la Paix" />
             </div>
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
               <div>
                 <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Date du tournoi *</label>
                 <input type="date" value={dateTournoi} onChange={(e) => setDateTournoi(e.target.value)} />
@@ -326,12 +326,12 @@ export default function ModifierTournoiPage() {
       {/* Step 3: Contact + Recap */}
       {!success && step === 3 && (
         <>
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-8 mb-6 animate-fade-up">
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8 mb-6 animate-fade-up">
             <div className="flex items-center gap-3 mb-7">
               <div className="w-10 h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center text-[1.2rem]">📞</div>
               <h2 className="font-barlow-condensed font-extrabold text-[1.3rem] uppercase">Contact et infos pratiques</h2>
             </div>
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
               <div>
                 <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Nom du contact *</label>
                 <input type="text" value={contactNom} onChange={(e) => setContactNom(e.target.value)} placeholder="Jean Dupont" />
@@ -352,12 +352,12 @@ export default function ModifierTournoiPage() {
           </div>
 
           {/* Recap */}
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-8 mb-6 animate-fade-up">
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8 mb-6 animate-fade-up">
             <div className="flex items-center gap-3 mb-7">
               <div className="w-10 h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center text-[1.2rem]">📋</div>
               <h2 className="font-barlow-condensed font-extrabold text-[1.3rem] uppercase">Récapitulatif</h2>
             </div>
-            <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
               {recapFields.map((f) => (
                 <div key={f.label} className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] p-3">
                   <div className="text-[0.72rem] font-bold uppercase tracking-[1px] text-[#777] mb-1">{f.label}</div>

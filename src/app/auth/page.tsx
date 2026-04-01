@@ -149,11 +149,11 @@ export default function AuthPage() {
   const displayName = (meta.prenom || "") + (meta.nom ? " " + meta.nom : "") || user?.email || "—";
 
   return (
-    <div className="animate-page-in min-h-screen flex items-center justify-center px-6 pt-[80px] pb-8">
+    <div className="animate-page-in min-h-screen flex items-center justify-center px-4 sm:px-6 pt-[80px] pb-8">
 
       {/* ── LOGIN / REGISTER ── */}
       {view === "main" && (
-        <div className="w-full max-w-[440px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-10 animate-fade-up">
+        <div className="w-full max-w-[440px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-6 sm:p-10 animate-fade-up">
           {/* Header */}
           <div className="mb-8 text-center">
             <div className="w-[52px] h-[52px] bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.3)] rounded-[14px] flex items-center justify-center text-[1.5rem] mx-auto mb-4">🎯</div>
@@ -264,7 +264,7 @@ export default function AuthPage() {
 
       {/* ── FORGOT PASSWORD ── */}
       {view === "forgot" && (
-        <div className="w-full max-w-[440px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-10 animate-fade-up">
+        <div className="w-full max-w-[440px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-6 sm:p-10 animate-fade-up">
           <div className="mb-8 text-center">
             <div className="w-[52px] h-[52px] bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.3)] rounded-[14px] flex items-center justify-center text-[1.5rem] mx-auto mb-4">🔑</div>
             <div className="font-barlow-condensed font-black text-[1.8rem] uppercase">Mot de passe oublié</div>
@@ -287,7 +287,7 @@ export default function AuthPage() {
 
       {/* ── PROFILE ── */}
       {view === "profile" && (
-        <div className="w-full max-w-[520px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-10 animate-fade-up">
+        <div className="w-full max-w-[520px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-6 sm:p-10 animate-fade-up">
           {/* Avatar */}
           <div className="flex flex-col items-center gap-3 mb-6">
             <div className="w-[72px] h-[72px] rounded-full bg-[#111] border-2 border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[1.8rem]">👤</div>
