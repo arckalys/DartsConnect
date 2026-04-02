@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { Target, MapPin, Phone, ClipboardList, Check, AlertTriangle, Ban } from "lucide-react";
 import StepForm from "@/components/StepForm";
 import { createClient } from "@/lib/supabase";
 import { REGIONS } from "@/lib/types";
@@ -184,7 +185,7 @@ export default function ModifierTournoiPage() {
   if (notFound) {
     return (
       <div className="animate-page-in min-h-screen pt-[80px] px-4 sm:px-6 pb-12 max-w-[780px] mx-auto flex flex-col items-center justify-center text-center">
-        <div className="text-[3rem] mb-4 opacity-40">🚫</div>
+        <Ban className="w-12 h-12 text-[#777] mx-auto mb-4 opacity-40" />
         <div className="font-barlow-condensed font-black text-[1.6rem] uppercase mb-2">Tournoi introuvable</div>
         <div className="text-[0.88rem] text-[#777] mb-6">Ce tournoi n&apos;existe pas ou tu n&apos;as pas la permission de le modifier.</div>
         <button onClick={() => router.push("/tournois")} className="bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08]">
@@ -195,10 +196,10 @@ export default function ModifierTournoiPage() {
   }
 
   return (
-    <div className="animate-page-in min-h-screen pt-[80px] px-4 sm:px-6 pb-12 max-w-[780px] mx-auto">
+    <div className="animate-page-in min-h-screen pt-[72px] xs:pt-[80px] px-3 xs:px-4 sm:px-6 pb-10 sm:pb-12 max-w-[780px] xl:max-w-[860px] mx-auto">
       {/* Header */}
-      <div className="mb-8 sm:mb-10">
-        <div className="font-barlow-condensed font-black text-[1.8rem] sm:text-[2.6rem] uppercase tracking-[0.5px]">
+      <div className="mb-6 xs:mb-8 sm:mb-10">
+        <div className="font-barlow-condensed font-black text-[1.5rem] xs:text-[1.8rem] sm:text-[2.6rem] uppercase tracking-[0.5px]">
           Modifier le <span className="text-[#e8220a]">tournoi</span>
         </div>
         <div className="text-[0.9rem] text-[#777] mt-[6px]">
@@ -212,7 +213,7 @@ export default function ModifierTournoiPage() {
       {/* Error message */}
       {error && (
         <div className="msg msg-error show">
-          <span>⚠️</span><span>{error}</span>
+          <AlertTriangle className="w-4 h-4 shrink-0" /><span>{error}</span>
         </div>
       )}
 
@@ -220,7 +221,7 @@ export default function ModifierTournoiPage() {
       {success && (
         <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8">
           <div className="text-center py-8 sm:py-12 px-2 sm:px-8">
-            <div className="text-[4rem] mb-5 animate-pop">✅</div>
+            <Check className="w-16 h-16 text-[#22c55e] mx-auto mb-5 animate-pop" />
             <div className="font-barlow-condensed font-black text-[2rem] uppercase mb-2">Tournoi mis à jour !</div>
             <div className="text-[0.92rem] text-[#777] mb-8">Les modifications ont été enregistrées.</div>
             <div className="flex gap-3 justify-center flex-wrap">
@@ -235,10 +236,10 @@ export default function ModifierTournoiPage() {
       {/* Step 1: Infos générales */}
       {!success && step === 1 && (
         <>
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8 mb-6 animate-fade-up">
-            <div className="flex items-center gap-3 mb-7">
-              <div className="w-10 h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center text-[1.2rem]">🎯</div>
-              <h2 className="font-barlow-condensed font-extrabold text-[1.3rem] uppercase">Informations générales</h2>
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-5 sm:p-6 md:p-8 mb-5 sm:mb-6 animate-fade-up">
+            <div className="flex items-center gap-3 mb-5 sm:mb-7">
+              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><Target className="w-5 h-5 text-[#e8220a]" /></div>
+              <h2 className="font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] sm:text-[1.3rem] uppercase">Informations générales</h2>
             </div>
             <div className="mb-4">
               <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Nom du tournoi *</label>
@@ -279,10 +280,10 @@ export default function ModifierTournoiPage() {
       {/* Step 2: Lieu et date */}
       {!success && step === 2 && (
         <>
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8 mb-6 animate-fade-up">
-            <div className="flex items-center gap-3 mb-7">
-              <div className="w-10 h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center text-[1.2rem]">📍</div>
-              <h2 className="font-barlow-condensed font-extrabold text-[1.3rem] uppercase">Lieu et date</h2>
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-5 sm:p-6 md:p-8 mb-5 sm:mb-6 animate-fade-up">
+            <div className="flex items-center gap-3 mb-5 sm:mb-7">
+              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><MapPin className="w-5 h-5 text-[#e8220a]" /></div>
+              <h2 className="font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] sm:text-[1.3rem] uppercase">Lieu et date</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
               <div>
@@ -326,10 +327,10 @@ export default function ModifierTournoiPage() {
       {/* Step 3: Contact + Recap */}
       {!success && step === 3 && (
         <>
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8 mb-6 animate-fade-up">
-            <div className="flex items-center gap-3 mb-7">
-              <div className="w-10 h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center text-[1.2rem]">📞</div>
-              <h2 className="font-barlow-condensed font-extrabold text-[1.3rem] uppercase">Contact et infos pratiques</h2>
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-5 sm:p-6 md:p-8 mb-5 sm:mb-6 animate-fade-up">
+            <div className="flex items-center gap-3 mb-5 sm:mb-7">
+              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><Phone className="w-5 h-5 text-[#e8220a]" /></div>
+              <h2 className="font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] sm:text-[1.3rem] uppercase">Contact et infos pratiques</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
               <div>
@@ -352,10 +353,10 @@ export default function ModifierTournoiPage() {
           </div>
 
           {/* Recap */}
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8 mb-6 animate-fade-up">
-            <div className="flex items-center gap-3 mb-7">
-              <div className="w-10 h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center text-[1.2rem]">📋</div>
-              <h2 className="font-barlow-condensed font-extrabold text-[1.3rem] uppercase">Récapitulatif</h2>
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-5 sm:p-6 md:p-8 mb-5 sm:mb-6 animate-fade-up">
+            <div className="flex items-center gap-3 mb-5 sm:mb-7">
+              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><ClipboardList className="w-5 h-5 text-[#e8220a]" /></div>
+              <h2 className="font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] sm:text-[1.3rem] uppercase">Récapitulatif</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
               {recapFields.map((f) => (
@@ -372,7 +373,7 @@ export default function ModifierTournoiPage() {
               ← Retour
             </button>
             <button onClick={sauvegarder} disabled={loading} className="bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08] flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
-              {loading ? <div className="spinner" /> : "✅ Sauvegarder les modifications"}
+              {loading ? <div className="spinner" /> : <><Check className="w-4 h-4" /> Sauvegarder les modifications</>}
             </button>
           </div>
         </>

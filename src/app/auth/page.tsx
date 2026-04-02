@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { Target, AlertTriangle, Check, KeyRound, User as UserIcon, Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase";
-import { REGIONS, NIVEAU_LABELS } from "@/lib/types";
+import { REGIONS } from "@/lib/types";
 import type { User } from "@supabase/supabase-js";
 
 export const runtime = "edge";
@@ -37,7 +38,7 @@ export default function AuthPage() {
   const [rEmail, setREmail] = useState("");
   const [rPwd, setRPwd] = useState("");
   const [rPwdVisible, setRPwdVisible] = useState(false);
-  const [rNiveau, setRNiveau] = useState("");
+  const [rMoyenne, setRMoyenne] = useState("");
   const [rRegion, setRRegion] = useState("");
 
   // Forgot field
@@ -47,7 +48,7 @@ export default function AuthPage() {
   const [ePrenom, setEPrenom] = useState("");
   const [eNom, setENom] = useState("");
   const [ePseudo, setEPseudo] = useState("");
-  const [eNiveau, setENiveau] = useState("debutant");
+  const [eMoyenne, setEMoyenne] = useState("");
   const [eRegion, setERegion] = useState("");
   const [eBio, setEBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -76,7 +77,7 @@ export default function AuthPage() {
     setEPrenom(m.prenom || "");
     setENom(m.nom || "");
     setEPseudo(m.pseudo || "");
-    setENiveau(m.niveau || "debutant");
+    setEMoyenne(m.moyenne || "");
     setERegion(m.region || "");
     setEBio(m.bio || "");
     setAvatarUrl(m.avatar_url || "");
@@ -164,7 +165,7 @@ export default function AuthPage() {
       email: rEmail,
       password: rPwd,
       options: {
-        data: { prenom: rPrenom, nom: rNom, pseudo: rPseudo, niveau: rNiveau, region: rRegion },
+        data: { prenom: rPrenom, nom: rNom, pseudo: rPseudo, moyenne: rMoyenne, region: rRegion },
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
@@ -191,7 +192,7 @@ export default function AuthPage() {
   async function doSave() {
     setLoading(true);
     const { data, error: err } = await supabase.auth.updateUser({
-      data: { prenom: ePrenom, nom: eNom, pseudo: ePseudo, niveau: eNiveau, region: eRegion, bio: eBio },
+      data: { prenom: ePrenom, nom: eNom, pseudo: ePseudo, moyenne: eMoyenne, region: eRegion, bio: eBio },
     });
     setLoading(false);
     if (err) return showError(err.message);
@@ -210,15 +211,15 @@ export default function AuthPage() {
   const displayName = (meta.prenom || "") + (meta.nom ? " " + meta.nom : "") || user?.email || "—";
 
   return (
-    <div className="animate-page-in min-h-screen flex items-center justify-center px-4 sm:px-6 pt-[80px] pb-8">
+    <div className="animate-page-in min-h-screen flex items-center justify-center px-3 xs:px-4 sm:px-6 pt-[72px] xs:pt-[80px] pb-6 xs:pb-8">
 
       {/* ── LOGIN / REGISTER ── */}
       {view === "main" && (
-        <div className="w-full max-w-[440px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-6 sm:p-10 animate-fade-up">
+        <div className="w-full max-w-[440px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-6 sm:p-10 animate-fade-up">
           {/* Header */}
-          <div className="mb-8 text-center">
-            <div className="w-[52px] h-[52px] bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.3)] rounded-[14px] flex items-center justify-center text-[1.5rem] mx-auto mb-4">🎯</div>
-            <div className="font-barlow-condensed font-black text-[1.8rem] uppercase">DartsConnect.FR</div>
+          <div className="mb-6 xs:mb-8 text-center">
+            <div className="w-[44px] h-[44px] xs:w-[52px] xs:h-[52px] bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.3)] rounded-[12px] xs:rounded-[14px] flex items-center justify-center mx-auto mb-3 xs:mb-4"><Target className="w-5 h-5 xs:w-6 xs:h-6 text-[#e8220a]" /></div>
+            <div className="font-barlow-condensed font-black text-[1.5rem] xs:text-[1.8rem] uppercase">DartsConnect.FR</div>
             <div className="text-[0.88rem] text-[#777] mt-[6px]">Rejoins la communauté des fléchettes</div>
           </div>
 
@@ -233,8 +234,8 @@ export default function AuthPage() {
           </div>
 
           {/* Messages */}
-          {error && <div className="msg msg-error show"><span>⚠️</span><span>{error}</span></div>}
-          {success && <div className="msg msg-success show"><span>✅</span><span>{success}</span></div>}
+          {error && <div className="msg msg-error show"><AlertTriangle className="w-4 h-4 shrink-0" /><span>{error}</span></div>}
+          {success && <div className="msg msg-success show"><Check className="w-4 h-4 shrink-0" /><span>{success}</span></div>}
 
           {/* LOGIN TAB */}
           {tab === "login" && (
@@ -247,7 +248,7 @@ export default function AuthPage() {
                 <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Mot de passe</label>
                 <div className="relative">
                   <input type={lPwdVisible ? "text" : "password"} value={lPwd} onChange={(e) => setLPwd(e.target.value)} placeholder="••••••••" className="!pr-[42px]" />
-                  <button onClick={() => setLPwdVisible(!lPwdVisible)} className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-[#777] cursor-pointer text-[1rem] p-1">{lPwdVisible ? "🙈" : "👁"}</button>
+                  <button onClick={() => setLPwdVisible(!lPwdVisible)} className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-[#777] cursor-pointer text-[1rem] p-1">{lPwdVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}</button>
                 </div>
               </div>
               <div className="text-right mb-5">
@@ -265,7 +266,7 @@ export default function AuthPage() {
           {/* REGISTER TAB */}
           {tab === "register" && (
             <div>
-              <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 mb-4">
                 <div>
                   <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Prénom *</label>
                   <input type="text" value={rPrenom} onChange={(e) => setRPrenom(e.target.value)} placeholder="Jean" />
@@ -287,7 +288,7 @@ export default function AuthPage() {
                 <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Mot de passe *</label>
                 <div className="relative">
                   <input type={rPwdVisible ? "text" : "password"} value={rPwd} onChange={(e) => setRPwd(e.target.value)} placeholder="Min. 8 caractères" className="!pr-[42px]" />
-                  <button onClick={() => setRPwdVisible(!rPwdVisible)} className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-[#777] cursor-pointer text-[1rem] p-1">{rPwdVisible ? "🙈" : "👁"}</button>
+                  <button onClick={() => setRPwdVisible(!rPwdVisible)} className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-[#777] cursor-pointer text-[1rem] p-1">{rPwdVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}</button>
                 </div>
                 <div className="mt-[6px] flex flex-col gap-[3px]">
                   <div className={`pw-rule text-[0.76rem] text-[#777] flex items-center gap-[6px] ${pwRuleLen ? "ok" : ""}`}>Au moins 8 caractères</div>
@@ -296,14 +297,8 @@ export default function AuthPage() {
                 </div>
               </div>
               <div className="mb-4">
-                <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Niveau</label>
-                <select value={rNiveau} onChange={(e) => setRNiveau(e.target.value)}>
-                  <option value="">Sélectionne ton niveau</option>
-                  <option value="debutant">Débutant</option>
-                  <option value="intermediaire">Intermédiaire</option>
-                  <option value="confirme">Confirmé</option>
-                  <option value="expert">Expert</option>
-                </select>
+                <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Moyenne (ex : 45.2)</label>
+                <input type="number" value={rMoyenne} onChange={(e) => setRMoyenne(e.target.value)} placeholder="Ta moyenne aux fléchettes" step="0.1" min="0" max="180" />
               </div>
               <div className="mb-4">
                 <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Région</label>
@@ -325,14 +320,14 @@ export default function AuthPage() {
 
       {/* ── FORGOT PASSWORD ── */}
       {view === "forgot" && (
-        <div className="w-full max-w-[440px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-6 sm:p-10 animate-fade-up">
-          <div className="mb-8 text-center">
-            <div className="w-[52px] h-[52px] bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.3)] rounded-[14px] flex items-center justify-center text-[1.5rem] mx-auto mb-4">🔑</div>
-            <div className="font-barlow-condensed font-black text-[1.8rem] uppercase">Mot de passe oublié</div>
+        <div className="w-full max-w-[440px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-6 sm:p-10 animate-fade-up">
+          <div className="mb-6 xs:mb-8 text-center">
+            <div className="w-[44px] h-[44px] xs:w-[52px] xs:h-[52px] bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.3)] rounded-[12px] xs:rounded-[14px] flex items-center justify-center mx-auto mb-3 xs:mb-4"><KeyRound className="w-5 h-5 xs:w-6 xs:h-6 text-[#e8220a]" /></div>
+            <div className="font-barlow-condensed font-black text-[1.5rem] xs:text-[1.8rem] uppercase">Mot de passe oublié</div>
             <div className="text-[0.88rem] text-[#777] mt-[6px]">On t&apos;envoie un lien de réinitialisation</div>
           </div>
-          {error && <div className="msg msg-error show"><span>⚠️</span><span>{error}</span></div>}
-          {success && <div className="msg msg-success show"><span>✅</span><span>{success}</span></div>}
+          {error && <div className="msg msg-error show"><AlertTriangle className="w-4 h-4 shrink-0" /><span>{error}</span></div>}
+          {success && <div className="msg msg-success show"><Check className="w-4 h-4 shrink-0" /><span>{success}</span></div>}
           <div className="mb-4">
             <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Email</label>
             <input type="email" value={fEmail} onChange={(e) => setFEmail(e.target.value)} placeholder="ton@email.fr" />
@@ -348,7 +343,7 @@ export default function AuthPage() {
 
       {/* ── PROFILE ── */}
       {view === "profile" && (
-        <div className="w-full max-w-[520px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-6 sm:p-10 animate-fade-up">
+        <div className="w-full max-w-[520px] xl:max-w-[600px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-6 sm:p-8 md:p-10 animate-fade-up">
           {/* Avatar */}
           <div className="flex flex-col items-center gap-3 mb-6">
             <input
@@ -372,7 +367,7 @@ export default function AuthPage() {
                   unoptimized
                 />
               ) : (
-                <span>👤</span>
+                <UserIcon className="w-8 h-8 text-[#777]" />
               )}
               {/* Overlay on hover */}
               <div className="absolute inset-0 bg-[rgba(0,0,0,0.5)] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -390,34 +385,34 @@ export default function AuthPage() {
               <div className="font-barlow-condensed font-extrabold text-[1.4rem] text-center">{displayName}</div>
               <div className="text-[0.84rem] text-[#777] text-center">{user?.email}</div>
               <div className="inline-flex items-center gap-[6px] bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.3)] rounded-full px-3 py-1 text-[0.78rem] font-bold text-[#e8220a] mt-1">
-                {NIVEAU_LABELS[meta.niveau] || "🎯 Niveau non défini"}
+                Moyenne : {meta.moyenne || "—"}
               </div>
             </div>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-[10px] mb-6">
-            <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] p-3 text-center">
-              <div className="font-barlow-condensed text-[1.6rem] font-black text-[#e8220a]">0</div>
-              <div className="text-[0.72rem] text-[#777] mt-[2px]">Tournois</div>
+          <div className="grid grid-cols-3 gap-2 xs:gap-[10px] mb-6">
+            <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] p-2 xs:p-3 text-center">
+              <div className="font-barlow-condensed text-[1.3rem] xs:text-[1.6rem] font-black text-[#e8220a]">0</div>
+              <div className="text-[0.68rem] xs:text-[0.72rem] text-[#777] mt-[2px]">Tournois</div>
             </div>
-            <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] p-3 text-center">
-              <div className="font-barlow-condensed text-[1.6rem] font-black text-[#e8220a]">0</div>
-              <div className="text-[0.72rem] text-[#777] mt-[2px]">Victoires</div>
+            <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] p-2 xs:p-3 text-center">
+              <div className="font-barlow-condensed text-[1.3rem] xs:text-[1.6rem] font-black text-[#e8220a]">0</div>
+              <div className="text-[0.68rem] xs:text-[0.72rem] text-[#777] mt-[2px]">Victoires</div>
             </div>
-            <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] p-3 text-center">
-              <div className="font-barlow-condensed text-[1.6rem] font-black text-[#e8220a]">{(meta.region || "—").substring(0, 8)}</div>
-              <div className="text-[0.72rem] text-[#777] mt-[2px]">Région</div>
+            <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] p-2 xs:p-3 text-center">
+              <div className="font-barlow-condensed text-[1.3rem] xs:text-[1.6rem] font-black text-[#e8220a]">{(meta.region || "—").substring(0, 8)}</div>
+              <div className="text-[0.68rem] xs:text-[0.72rem] text-[#777] mt-[2px]">Région</div>
             </div>
           </div>
 
           {/* Messages */}
-          {error && <div className="msg msg-error show"><span>⚠️</span><span>{error}</span></div>}
-          {success && <div className="msg msg-success show"><span>✅</span><span>{success}</span></div>}
+          {error && <div className="msg msg-error show"><AlertTriangle className="w-4 h-4 shrink-0" /><span>{error}</span></div>}
+          {success && <div className="msg msg-success show"><Check className="w-4 h-4 shrink-0" /><span>{success}</span></div>}
 
           {/* Edit profile */}
           <div className="font-barlow-condensed text-[1.1rem] font-extrabold uppercase tracking-[0.5px] mb-4">Modifier mon profil</div>
-          <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 mb-4">
             <div>
               <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Prénom</label>
               <input type="text" value={ePrenom} onChange={(e) => setEPrenom(e.target.value)} />
@@ -432,13 +427,8 @@ export default function AuthPage() {
             <input type="text" value={ePseudo} onChange={(e) => setEPseudo(e.target.value)} />
           </div>
           <div className="mb-4">
-            <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Niveau</label>
-            <select value={eNiveau} onChange={(e) => setENiveau(e.target.value)}>
-              <option value="debutant">Débutant</option>
-              <option value="intermediaire">Intermédiaire</option>
-              <option value="confirme">Confirmé</option>
-              <option value="expert">Expert</option>
-            </select>
+            <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Moyenne (ex : 45.2)</label>
+            <input type="number" value={eMoyenne} onChange={(e) => setEMoyenne(e.target.value)} placeholder="Ta moyenne aux fléchettes" step="0.1" min="0" max="180" />
           </div>
           <div className="mb-4">
             <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Région</label>
@@ -454,11 +444,11 @@ export default function AuthPage() {
           <button onClick={doSave} disabled={loading} className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] tracking-[0.5px] cursor-pointer border-none bg-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
             {loading ? <div className="spinner" /> : "Sauvegarder"}
           </button>
-          <div className="flex items-center gap-[10px] mt-[10px]">
-            <button onClick={() => router.push("/")} className="flex-1 py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[0.9rem] cursor-pointer bg-transparent text-white border border-[rgba(255,255,255,0.08)] hover:bg-[rgba(255,255,255,0.05)]">
+          <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2 xs:gap-[10px] mt-[10px]">
+            <button onClick={() => router.push("/")} className="flex-1 py-[11px] xs:py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[0.88rem] xs:text-[0.9rem] cursor-pointer bg-transparent text-white border border-[rgba(255,255,255,0.08)] hover:bg-[rgba(255,255,255,0.05)]">
               ← Accueil
             </button>
-            <button onClick={doLogout} className="flex-1 py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[0.88rem] cursor-pointer bg-[rgba(248,113,113,0.1)] border border-[rgba(248,113,113,0.25)] text-[#f87171]">
+            <button onClick={doLogout} className="flex-1 py-[11px] xs:py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[0.85rem] xs:text-[0.88rem] cursor-pointer bg-[rgba(248,113,113,0.1)] border border-[rgba(248,113,113,0.25)] text-[#f87171]">
               Se déconnecter
             </button>
           </div>

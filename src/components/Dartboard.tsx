@@ -86,7 +86,7 @@ export default function Dartboard() {
   return (
     <svg
       ref={svgRef}
-      className="absolute right-[-130px] top-1/2 -translate-y-[52%] -rotate-[18deg] w-[820px] h-[820px] opacity-75 z-0 drop-shadow-[0_0_80px_rgba(232,34,10,0.25)] drop-shadow-[0_30px_80px_rgba(0,0,0,0.9)]"
+      className="absolute right-[-100px] xs:right-[-110px] sm:right-[-120px] md:right-[-130px] top-1/2 -translate-y-[52%] -rotate-[18deg] w-[400px] xs:w-[500px] sm:w-[600px] md:w-[700px] lg:w-[820px] h-[400px] xs:h-[500px] sm:h-[600px] md:h-[700px] lg:h-[820px] opacity-40 xs:opacity-50 sm:opacity-60 md:opacity-65 lg:opacity-75 z-0 drop-shadow-[0_0_80px_rgba(232,34,10,0.25)] drop-shadow-[0_30px_80px_rgba(0,0,0,0.9)]"
       viewBox="0 0 500 500"
       xmlns="http://www.w3.org/2000/svg"
     >

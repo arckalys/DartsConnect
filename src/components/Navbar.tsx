@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { Target, User, Menu, X } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 
 export default function Navbar() {
@@ -28,17 +29,17 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] bg-[rgba(10,10,10,0.95)] backdrop-blur-[12px] border-b border-[rgba(255,255,255,0.08)]">
-      <div className="flex items-center justify-between px-4 sm:px-6 lg:px-10 h-[60px]">
+      <div className="flex items-center justify-between px-3 xs:px-4 sm:px-6 lg:px-10 h-[56px] xs:h-[60px]">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-[10px] font-barlow-condensed font-extrabold text-[1.2rem] text-white no-underline">
-          <div className="w-8 h-8 bg-[#e8220a] rounded-lg flex items-center justify-center text-[1rem] shadow-[0_0_12px_rgba(232,34,10,0.3)]">
-            🎯
+        <Link href="/" className="flex items-center gap-2 xs:gap-[10px] font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] text-white no-underline">
+          <div className="w-7 h-7 xs:w-8 xs:h-8 bg-[#e8220a] rounded-lg flex items-center justify-center shadow-[0_0_12px_rgba(232,34,10,0.3)]">
+            <Target className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-white" />
           </div>
-          <span className="hidden sm:inline">DartsConnect.FR</span>
+          <span className="hidden xs:inline">DartsConnect.FR</span>
         </Link>
 
         {/* Desktop navigation links */}
-        <ul className="hidden lg:flex gap-1 list-none">
+        <ul className="hidden md:flex gap-1 xl:gap-2 list-none">
           {links.map((link) => {
             const isActive =
               link.href === "/"
@@ -48,7 +49,7 @@ export default function Navbar() {
               <li key={link.id}>
                 <Link
                   href={link.href}
-                  className={`no-underline text-[0.88rem] font-medium px-[14px] py-[6px] rounded-md transition-all duration-200 ${
+                  className={`no-underline text-[0.85rem] xl:text-[0.92rem] font-medium px-3 xl:px-[14px] py-[6px] rounded-md transition-all duration-200 ${
                     isActive
                       ? "text-white border border-[rgba(232,34,10,0.4)] bg-[rgba(232,34,10,0.08)]"
                       : "text-[#777] hover:text-white hover:bg-[rgba(255,255,255,0.06)]"
@@ -71,7 +72,7 @@ export default function Navbar() {
           </Link>
           <Link
             href="/auth"
-            className="relative w-[34px] h-[34px] rounded-full bg-[#181818] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[1rem] transition-colors duration-200 hover:border-[#e8220a] no-underline overflow-hidden"
+            className="relative w-[30px] h-[30px] xs:w-[34px] xs:h-[34px] rounded-full bg-[#181818] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[1rem] transition-colors duration-200 hover:border-[#e8220a] no-underline overflow-hidden"
           >
             {avatarUrl ? (
               <Image
@@ -82,26 +83,20 @@ export default function Navbar() {
                 unoptimized
               />
             ) : (
-              "👤"
+              <User className="w-4 h-4 text-[#777]" />
             )}
           </Link>
 
           {/* Hamburger button - mobile/tablet */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="lg:hidden w-[34px] h-[34px] rounded-lg bg-[#181818] border border-[rgba(255,255,255,0.08)] flex items-center justify-center cursor-pointer transition-colors hover:border-[#e8220a]"
+            className="md:hidden w-[30px] h-[30px] xs:w-[34px] xs:h-[34px] rounded-lg bg-[#181818] border border-[rgba(255,255,255,0.08)] flex items-center justify-center cursor-pointer transition-colors hover:border-[#e8220a]"
             aria-label="Menu"
           >
             {menuOpen ? (
-              <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
+              <X className="w-5 h-5 text-white" />
             ) : (
-              <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
+              <Menu className="w-5 h-5 text-white" />
             )}
           </button>
         </div>
@@ -109,7 +104,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="lg:hidden border-t border-[rgba(255,255,255,0.08)] bg-[rgba(10,10,10,0.98)] backdrop-blur-[12px] px-4 py-3 flex flex-col gap-1">
+        <div className="md:hidden border-t border-[rgba(255,255,255,0.08)] bg-[rgba(10,10,10,0.98)] backdrop-blur-[12px] px-3 xs:px-4 py-3 flex flex-col gap-1">
           {links.map((link) => {
             const isActive =
               link.href === "/"

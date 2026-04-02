@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Check, Pencil, Trash2 } from "lucide-react";
 import { STATUS_LABELS } from "@/lib/types";
 import type { TournamentStatus } from "@/lib/types";
 import { fmtShort } from "@/lib/data";
@@ -35,7 +36,7 @@ export default function TournamentRow({ id, nom, region, date_tournoi, format, n
 
   return (
     <div
-      className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-xl px-[1.4rem] py-[1.1rem] grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr_auto] items-center gap-4 text-white transition-all duration-200 animate-fade-up hover:border-[rgba(232,34,10,0.35)] hover:bg-[rgba(232,34,10,0.02)]"
+      className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-xl px-3 lg:px-[1.4rem] py-[1rem] lg:py-[1.1rem] grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr_auto] items-center gap-3 lg:gap-4 text-white transition-all duration-200 animate-fade-up hover:border-[rgba(232,34,10,0.35)] hover:bg-[rgba(232,34,10,0.02)]"
       style={{ animationDelay: `${delay * 0.04}s` }}
     >
       <Link href={id ? `/tournois/${id}` : "#"} className="no-underline text-white">
@@ -47,7 +48,7 @@ export default function TournamentRow({ id, nom, region, date_tournoi, format, n
           <span>{format}</span>
           {isRegistered && (
             <span className="inline-block text-[0.6rem] font-bold uppercase tracking-[1px] px-[7px] py-[2px] rounded-full bg-[rgba(34,197,94,0.15)] text-[#22c55e]">
-              Inscrit ✓
+              <Check className="w-3 h-3 inline" /> Inscrit
             </span>
           )}
         </div>
@@ -66,13 +67,13 @@ export default function TournamentRow({ id, nom, region, date_tournoi, format, n
               onClick={(e) => e.stopPropagation()}
               className="text-[0.75rem] font-bold px-[10px] py-[5px] rounded-lg bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] text-[#ccc] no-underline transition-all hover:bg-[rgba(255,255,255,0.1)] hover:text-white"
             >
-              ✏️
+              <Pencil className="w-3 h-3" />
             </Link>
             <button
               onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
               className="text-[0.75rem] font-bold px-[10px] py-[5px] rounded-lg bg-[rgba(248,113,113,0.08)] border border-[rgba(248,113,113,0.2)] text-[#f87171] cursor-pointer transition-all hover:bg-[rgba(248,113,113,0.15)]"
             >
-              🗑️
+              <Trash2 className="w-3 h-3" />
             </button>
           </>
         )}

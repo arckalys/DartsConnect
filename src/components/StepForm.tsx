@@ -1,5 +1,7 @@
 "use client";
 
+import { Check } from "lucide-react";
+
 interface Step {
   label: string;
   name: string;
@@ -23,7 +25,7 @@ export default function StepForm({ steps, currentStep }: Props) {
             <div className="flex items-center gap-2 sm:gap-[10px] flex-1 last:flex-none">
               {/* Step number */}
               <div
-                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-barlow-condensed font-extrabold text-[0.85rem] sm:text-[0.95rem] shrink-0 border-2 transition-all duration-300 ${
+                className={`w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-barlow-condensed font-extrabold text-[0.8rem] xs:text-[0.85rem] sm:text-[0.95rem] shrink-0 border-2 transition-all duration-300 ${
                   isDone
                     ? "bg-[rgba(34,197,94,0.15)] border-[#22c55e] text-[#22c55e]"
                     : isActive
@@ -31,7 +33,7 @@ export default function StepForm({ steps, currentStep }: Props) {
                     : "bg-[#111] border-[rgba(255,255,255,0.08)] text-[#777]"
                 }`}
               >
-                {isDone ? "✓" : stepNum}
+                {isDone ? <Check className="w-4 h-4" /> : stepNum}
               </div>
               {/* Step info - hidden on very small screens */}
               <div className="hidden sm:flex flex-col">
@@ -43,7 +45,7 @@ export default function StepForm({ steps, currentStep }: Props) {
             </div>
             {/* Line between steps */}
             {i < steps.length - 1 && (
-              <div className={`flex-1 h-px mx-2 sm:mx-3 transition-colors duration-300 ${isDone ? "bg-[#22c55e]" : "bg-[rgba(255,255,255,0.08)]"}`} />
+              <div className={`flex-1 h-px mx-1 xs:mx-2 sm:mx-3 transition-colors duration-300 ${isDone ? "bg-[#22c55e]" : "bg-[rgba(255,255,255,0.08)]"}`} />
             )}
           </div>
         );

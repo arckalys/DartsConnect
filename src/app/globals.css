@@ -45,12 +45,42 @@ textarea {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 11px 14px;
+  padding: 9px 10px;
   color: var(--text);
   font-family: "Barlow", sans-serif;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   outline: none;
   transition: border-color 0.2s;
+}
+
+@media (min-width: 375px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  input[type="tel"],
+  select,
+  textarea {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 640px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  input[type="tel"],
+  select,
+  textarea {
+    padding: 11px 14px;
+    font-size: 0.92rem;
+  }
 }
 
 input:focus,
@@ -70,7 +100,13 @@ select option {
 
 textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 60px;
+}
+
+@media (min-width: 640px) {
+  textarea {
+    min-height: 80px;
+  }
 }
 
 /* ── Animations ── */
@@ -158,13 +194,21 @@ textarea {
 
 /* ── Message alerts ── */
 .msg {
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-radius: 10px;
-  font-size: 0.85rem;
-  margin-bottom: 1.2rem;
+  font-size: 0.82rem;
+  margin-bottom: 1rem;
   display: none;
   align-items: flex-start;
   gap: 8px;
+}
+
+@media (min-width: 640px) {
+  .msg {
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    margin-bottom: 1.2rem;
+  }
 }
 .msg.show {
   display: flex;

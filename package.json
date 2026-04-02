@@ -11,8 +11,9 @@
     "preview": "npm run pages:build && npx wrangler pages dev .vercel/output/static"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.0",
     "@supabase/ssr": "^0.5.0",
+    "@supabase/supabase-js": "^2.49.0",
+    "lucide-react": "^1.7.0",
     "next": "15.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

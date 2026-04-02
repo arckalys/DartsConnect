@@ -27,7 +27,7 @@ export interface UserProfile {
   prenom?: string;
   nom?: string;
   pseudo?: string;
-  niveau?: string;
+  moyenne?: string;
   region?: string;
   bio?: string;
 }
@@ -55,9 +55,3 @@ export const STATUS_LABELS: Record<TournamentStatus, string> = {
   closed: "Terminé",
 };
 
-export const NIVEAU_LABELS: Record<string, string> = {
-  debutant: "🟢 Débutant",
-  intermediaire: "🟡 Intermédiaire",
-  confirme: "🔴 Confirmé",
-  expert: "⭐ Expert",
-};

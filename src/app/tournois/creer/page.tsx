@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { Target, MapPin, Phone, ClipboardList, Rocket, AlertTriangle } from "lucide-react";
 import StepForm from "@/components/StepForm";
 import { createClient } from "@/lib/supabase";
 import { REGIONS } from "@/lib/types";
@@ -133,10 +134,10 @@ export default function CreerTournoiPage() {
   ];
 
   return (
-    <div className="animate-page-in min-h-screen pt-[80px] px-4 sm:px-6 pb-12 max-w-[780px] mx-auto">
+    <div className="animate-page-in min-h-screen pt-[72px] xs:pt-[80px] px-3 xs:px-4 sm:px-6 pb-10 sm:pb-12 max-w-[780px] xl:max-w-[860px] mx-auto">
       {/* Header */}
-      <div className="mb-8 sm:mb-10">
-        <div className="font-barlow-condensed font-black text-[1.8rem] sm:text-[2.6rem] uppercase tracking-[0.5px]">
+      <div className="mb-6 xs:mb-8 sm:mb-10">
+        <div className="font-barlow-condensed font-black text-[1.5rem] xs:text-[1.8rem] sm:text-[2.6rem] uppercase tracking-[0.5px]">
           Créer un <span className="text-[#e8220a]">tournoi</span>
         </div>
         <div className="text-[0.9rem] text-[#777] mt-[6px]">
@@ -150,7 +151,7 @@ export default function CreerTournoiPage() {
       {/* Error message */}
       {error && (
         <div className="msg msg-error show">
-          <span>⚠️</span><span>{error}</span>
+          <AlertTriangle className="w-4 h-4 shrink-0" /><span>{error}</span>
         </div>
       )}
 
@@ -158,7 +159,7 @@ export default function CreerTournoiPage() {
       {success && (
         <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8">
           <div className="text-center py-8 sm:py-12 px-2 sm:px-8">
-            <div className="text-[4rem] mb-5 animate-pop">🎯</div>
+            <Target className="w-16 h-16 text-[#e8220a] mx-auto mb-5 animate-pop" />
             <div className="font-barlow-condensed font-black text-[2rem] uppercase mb-2">Tournoi publié !</div>
             <div className="text-[0.92rem] text-[#777] mb-8">Votre tournoi est maintenant en ligne et visible par tous les joueurs.</div>
             <div className="flex gap-3 justify-center flex-wrap">
@@ -176,10 +177,10 @@ export default function CreerTournoiPage() {
       {/* Step 1: Infos générales */}
       {!success && step === 1 && (
         <>
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8 mb-6 animate-fade-up">
-            <div className="flex items-center gap-3 mb-7">
-              <div className="w-10 h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center text-[1.2rem]">🎯</div>
-              <h2 className="font-barlow-condensed font-extrabold text-[1.3rem] uppercase">Informations générales</h2>
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-5 sm:p-6 md:p-8 mb-5 sm:mb-6 animate-fade-up">
+            <div className="flex items-center gap-3 mb-5 sm:mb-7">
+              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><Target className="w-5 h-5 text-[#e8220a]" /></div>
+              <h2 className="font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] sm:text-[1.3rem] uppercase">Informations générales</h2>
             </div>
             <div className="mb-4">
               <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Nom du tournoi *</label>
@@ -206,11 +207,11 @@ export default function CreerTournoiPage() {
               </select>
             </div>
           </div>
-          <div className="flex items-center justify-between gap-3">
-            <button onClick={() => router.push("/")} className="bg-transparent text-[#777] border border-[rgba(255,255,255,0.08)] font-barlow-condensed font-bold text-[1rem] px-6 py-3 rounded-[10px] cursor-pointer transition-all hover:text-white hover:border-[rgba(255,255,255,0.2)]">
+          <div className="flex items-center justify-between gap-2 xs:gap-3 flex-wrap">
+            <button onClick={() => router.push("/")} className="bg-transparent text-[#777] border border-[rgba(255,255,255,0.08)] font-barlow-condensed font-bold text-[0.9rem] xs:text-[1rem] px-4 xs:px-6 py-[10px] xs:py-3 rounded-[10px] cursor-pointer transition-all hover:text-white hover:border-[rgba(255,255,255,0.2)]">
               ← Annuler
             </button>
-            <button onClick={() => nextStep(1)} className="bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08] flex items-center gap-2">
+            <button onClick={() => nextStep(1)} className="bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[0.9rem] xs:text-[1rem] px-5 xs:px-8 py-[10px] xs:py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08] flex items-center gap-2">
               Étape suivante →
             </button>
           </div>
@@ -220,10 +221,10 @@ export default function CreerTournoiPage() {
       {/* Step 2: Lieu et date */}
       {!success && step === 2 && (
         <>
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8 mb-6 animate-fade-up">
-            <div className="flex items-center gap-3 mb-7">
-              <div className="w-10 h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center text-[1.2rem]">📍</div>
-              <h2 className="font-barlow-condensed font-extrabold text-[1.3rem] uppercase">Lieu et date</h2>
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-5 sm:p-6 md:p-8 mb-5 sm:mb-6 animate-fade-up">
+            <div className="flex items-center gap-3 mb-5 sm:mb-7">
+              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><MapPin className="w-5 h-5 text-[#e8220a]" /></div>
+              <h2 className="font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] sm:text-[1.3rem] uppercase">Lieu et date</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
               <div>
@@ -267,10 +268,10 @@ export default function CreerTournoiPage() {
       {/* Step 3: Contact + Recap */}
       {!success && step === 3 && (
         <>
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8 mb-6 animate-fade-up">
-            <div className="flex items-center gap-3 mb-7">
-              <div className="w-10 h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center text-[1.2rem]">📞</div>
-              <h2 className="font-barlow-condensed font-extrabold text-[1.3rem] uppercase">Contact et infos pratiques</h2>
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-5 sm:p-6 md:p-8 mb-5 sm:mb-6 animate-fade-up">
+            <div className="flex items-center gap-3 mb-5 sm:mb-7">
+              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><Phone className="w-5 h-5 text-[#e8220a]" /></div>
+              <h2 className="font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] sm:text-[1.3rem] uppercase">Contact et infos pratiques</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
               <div>
@@ -293,10 +294,10 @@ export default function CreerTournoiPage() {
           </div>
 
           {/* Recap */}
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8 mb-6 animate-fade-up">
-            <div className="flex items-center gap-3 mb-7">
-              <div className="w-10 h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center text-[1.2rem]">📋</div>
-              <h2 className="font-barlow-condensed font-extrabold text-[1.3rem] uppercase">Récapitulatif</h2>
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-5 sm:p-6 md:p-8 mb-5 sm:mb-6 animate-fade-up">
+            <div className="flex items-center gap-3 mb-5 sm:mb-7">
+              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><ClipboardList className="w-5 h-5 text-[#e8220a]" /></div>
+              <h2 className="font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] sm:text-[1.3rem] uppercase">Récapitulatif</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
               {recapFields.map((f) => (
@@ -313,7 +314,7 @@ export default function CreerTournoiPage() {
               ← Retour
             </button>
             <button onClick={publier} disabled={loading} className="bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08] flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
-              {loading ? <div className="spinner" /> : "🚀 Publier le tournoi"}
+              {loading ? <div className="spinner" /> : <><Rocket className="w-4 h-4" /> Publier le tournoi</>}
             </button>
           </div>
         </>

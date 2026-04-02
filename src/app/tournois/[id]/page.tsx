@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { Target, Check, Calendar, MapPin, FileText, Info } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { Tournament, STATUS_LABELS } from "@/lib/types";
 import type { TournamentStatus } from "@/lib/types";
@@ -111,7 +112,7 @@ export default function TournoiDetailPage() {
   if (notFound || !tournoi) {
     return (
       <div className="animate-page-in min-h-screen pt-[80px] px-4 sm:px-6 pb-12 flex flex-col items-center justify-center text-center">
-        <div className="text-[3rem] mb-4 opacity-40">🎯</div>
+        <Target className="w-12 h-12 text-[#777] mx-auto mb-4 opacity-40" />
         <div className="font-barlow-condensed font-black text-[1.6rem] uppercase mb-2">Tournoi introuvable</div>
         <div className="text-[0.88rem] text-[#777] mb-6">Ce tournoi n&apos;existe pas ou a été supprimé.</div>
         <button onClick={() => router.push("/tournois")} className="bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08]">
@@ -125,8 +126,8 @@ export default function TournoiDetailPage() {
   const isFull = inscriptionCount >= tournoi.nb_joueurs && !isRegistered;
 
   return (
-    <div className="animate-page-in min-h-screen pt-[80px] px-4 sm:px-6 pb-12">
-      <div className="max-w-[820px] mx-auto">
+    <div className="animate-page-in min-h-screen pt-[72px] xs:pt-[80px] px-3 xs:px-4 sm:px-6 pb-10 sm:pb-12">
+      <div className="max-w-[820px] xl:max-w-[960px] mx-auto">
 
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-[0.82rem] text-[#777] mb-6 sm:mb-8">
@@ -146,18 +147,18 @@ export default function TournoiDetailPage() {
             </span>
             {isRegistered && (
               <span className="inline-flex items-center text-[0.7rem] sm:text-[0.75rem] font-bold uppercase tracking-[1px] px-2 sm:px-3 py-[4px] sm:py-[5px] rounded-full bg-[rgba(34,197,94,0.15)] border border-[rgba(34,197,94,0.25)] text-[#22c55e]">
-                ✓ Inscrit
+                <Check className="w-3.5 h-3.5 inline -mt-[1px]" /> Inscrit
               </span>
             )}
           </div>
-          <h1 className="font-barlow-condensed font-black text-[1.8rem] sm:text-[2.4rem] uppercase leading-[1.1] mb-2">
+          <h1 className="font-barlow-condensed font-black text-[1.4rem] xs:text-[1.8rem] sm:text-[2.4rem] xl:text-[2.8rem] uppercase leading-[1.1] mb-2">
             {tournoi.nom}
           </h1>
         </div>
 
         {/* Registration card - shown first on mobile */}
-        <div className="lg:hidden mb-6">
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
+        <div className="md:hidden mb-6">
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-4 xs:p-5 sm:p-6">
             <div className="font-barlow-condensed font-extrabold text-[1.1rem] uppercase mb-4">Inscription</div>
 
             {/* Player count */}
@@ -221,7 +222,7 @@ export default function TournoiDetailPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] lg:grid-cols-[1fr_320px] gap-5 sm:gap-6">
           {/* Left column - Info */}
           <div className="flex flex-col gap-5 sm:gap-6">
 
@@ -229,7 +230,7 @@ export default function TournoiDetailPage() {
             <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
               <div className="flex flex-col gap-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center text-[1rem] shrink-0">📅</div>
+                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0"><Calendar className="w-[18px] h-[18px] text-[#e8220a]" /></div>
                   <div>
                     <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777] mb-1">Date et heure</div>
                     <div className="text-[0.95rem] text-white font-medium">{fmtDate(tournoi.date_tournoi)}</div>
@@ -240,7 +241,7 @@ export default function TournoiDetailPage() {
                 <div className="h-px bg-[rgba(255,255,255,0.06)]" />
 
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center text-[1rem] shrink-0">📍</div>
+                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0"><MapPin className="w-[18px] h-[18px] text-[#e8220a]" /></div>
                   <div>
                     <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777] mb-1">Lieu</div>
                     <div className="text-[0.95rem] text-white font-medium">{tournoi.ville}, {tournoi.region}</div>
@@ -254,7 +255,7 @@ export default function TournoiDetailPage() {
             {tournoi.description && (
               <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center text-[1rem] shrink-0">📝</div>
+                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0"><FileText className="w-[18px] h-[18px] text-[#e8220a]" /></div>
                   <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777]">Description</div>
                 </div>
                 <div className="text-[0.9rem] text-[#ccc] leading-[1.7] whitespace-pre-line">{tournoi.description}</div>
@@ -265,7 +266,7 @@ export default function TournoiDetailPage() {
             {tournoi.infos_pratiques && (
               <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center text-[1rem] shrink-0">ℹ️</div>
+                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0"><Info className="w-[18px] h-[18px] text-[#e8220a]" /></div>
                   <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777]">Informations pratiques</div>
                 </div>
                 <div className="text-[0.9rem] text-[#ccc] leading-[1.7] whitespace-pre-line">{tournoi.infos_pratiques}</div>
@@ -274,7 +275,7 @@ export default function TournoiDetailPage() {
           </div>
 
           {/* Right column - Registration card (desktop only) */}
-          <div className="hidden lg:block">
+          <div className="hidden md:block">
             <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-6 sticky top-[80px]">
               <div className="font-barlow-condensed font-extrabold text-[1.1rem] uppercase mb-5">Inscription</div>
 

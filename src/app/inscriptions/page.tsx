@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Lock, AlertTriangle, Trophy, Check } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { Tournament } from "@/lib/types";
 import { fmtDate } from "@/lib/data";
@@ -74,7 +75,7 @@ export default function InscriptionsPage() {
   if (!authenticated) {
     return (
       <div className="animate-page-in min-h-screen pt-[80px] px-6 pb-12 flex flex-col items-center justify-center text-center">
-        <div className="text-[3rem] mb-4 opacity-40">🔒</div>
+        <Lock className="w-12 h-12 text-[#777] mx-auto mb-4 opacity-40" />
         <div className="font-barlow-condensed font-black text-[1.6rem] uppercase mb-2">Connexion requise</div>
         <div className="text-[0.88rem] text-[#777] mb-6">Connecte-toi pour voir tes inscriptions aux tournois.</div>
         <button
@@ -92,9 +93,9 @@ export default function InscriptionsPage() {
       {/* Confirm unregister modal */}
       {confirmTarget && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(0,0,0,0.7)] backdrop-blur-sm">
-          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-8 max-w-[440px] w-full mx-4 animate-fade-up">
+          <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-5 xs:p-6 sm:p-8 max-w-[440px] w-full mx-3 xs:mx-4 animate-fade-up">
             <div className="text-center mb-6">
-              <div className="text-[3rem] mb-3">⚠️</div>
+              <AlertTriangle className="w-12 h-12 text-[#f59e0b] mx-auto mb-3" />
               <div className="font-barlow-condensed font-black text-[1.4rem] uppercase mb-2">Se désinscrire ?</div>
               <div className="text-[0.88rem] text-[#777]">
                 Tu es sur le point de te désinscrire de <strong className="text-white">&quot;{confirmTarget.tournois.nom}&quot;</strong>.
@@ -121,19 +122,19 @@ export default function InscriptionsPage() {
       )}
 
       {/* Page header */}
-      <div className="pt-[88px] px-4 sm:px-6 lg:px-10 bg-gradient-to-b from-[rgba(232,34,10,0.04)] to-transparent border-b border-[rgba(255,255,255,0.08)]">
-        <div className="max-w-[1200px] mx-auto pb-6">
-          <div className="font-barlow-condensed font-black text-[1.8rem] sm:text-[2.4rem] uppercase tracking-[0.5px]">Mes inscriptions</div>
+      <div className="pt-[80px] xs:pt-[88px] px-3 xs:px-4 sm:px-6 lg:px-10 bg-gradient-to-b from-[rgba(232,34,10,0.04)] to-transparent border-b border-[rgba(255,255,255,0.08)]">
+        <div className="max-w-[1200px] xl:max-w-[1400px] mx-auto pb-6">
+          <div className="font-barlow-condensed font-black text-[1.5rem] xs:text-[1.8rem] sm:text-[2.4rem] uppercase tracking-[0.5px]">Mes inscriptions</div>
           <div className="text-[0.88rem] text-[#777] mt-1">
             <span className="text-[#e8220a] font-bold">{inscriptions.length}</span> tournoi{inscriptions.length > 1 ? "s" : ""}
           </div>
         </div>
       </div>
 
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
+      <div className="max-w-[1200px] xl:max-w-[1400px] mx-auto px-3 xs:px-4 sm:px-6 lg:px-10 py-5 sm:py-8">
         {inscriptions.length === 0 ? (
           <div className="text-center py-16 text-[#777]">
-            <div className="text-[3rem] mb-4 opacity-40">🏆</div>
+            <Trophy className="w-12 h-12 text-[#777] mx-auto mb-4 opacity-40" />
             <div className="font-barlow-condensed font-extrabold text-[1.4rem] text-[#666] mb-2">Aucune inscription</div>
             <div className="text-[0.88rem] mb-6">Tu n&apos;es inscrit à aucun tournoi pour le moment.</div>
             <Link
@@ -151,7 +152,7 @@ export default function InscriptionsPage() {
               return (
                 <div
                   key={insc.id}
-                  className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-xl px-4 sm:px-[1.4rem] py-4 sm:py-[1.1rem] flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-white transition-all duration-200 animate-fade-up hover:border-[rgba(232,34,10,0.35)]"
+                  className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-xl px-3 xs:px-4 sm:px-[1.4rem] py-3 xs:py-4 sm:py-[1.1rem] flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-white transition-all duration-200 animate-fade-up hover:border-[rgba(232,34,10,0.35)]"
                   style={{ animationDelay: `${i * 0.04}s` }}
                 >
                   {/* Tournament info */}
@@ -177,7 +178,7 @@ export default function InscriptionsPage() {
                   {/* Actions row */}
                   <div className="flex items-center gap-3 sm:gap-3 sm:shrink-0">
                     <div className="inline-flex items-center gap-[6px] bg-[rgba(34,197,94,0.12)] border border-[rgba(34,197,94,0.25)] rounded-full px-3 py-1 text-[0.75rem] font-bold text-[#22c55e] whitespace-nowrap">
-                      ✓ Inscrit
+                      <Check className="w-3.5 h-3.5 inline -mt-[1px]" /> Inscrit
                     </div>
                     <button
                       onClick={() => setConfirmTarget(insc)}
