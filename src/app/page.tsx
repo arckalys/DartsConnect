@@ -62,16 +62,6 @@ export default function HomePage() {
     <div className="animate-page-in">
       {/* ── HERO ── */}
       <section className="relative min-h-[70vh] xs:min-h-[75vh] sm:min-h-[80vh] lg:min-h-screen flex items-center px-3 xs:px-4 sm:px-6 lg:px-10 overflow-hidden bg-[#080808]">
-        {/* Subtle diagonal lines */}
-        <svg className="absolute inset-0 w-full h-full z-0" preserveAspectRatio="none">
-          <defs>
-            <pattern id="diag" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
-              <line x1="0" y1="0" x2="0" y2="40" stroke="white" strokeWidth="0.5" opacity="0.05" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#diag)" />
-        </svg>
-
         {/* Radial red glow - right side */}
         <div className="absolute inset-0 z-0" style={{ background: "radial-gradient(ellipse 60% 70% at 80% 50%, rgba(232,34,10,0.06), transparent)" }} />
 
