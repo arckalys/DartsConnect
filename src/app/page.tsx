@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Target, Calendar, Trophy, Plus, ArrowRight } from "lucide-react";
-import Dartboard from "@/components/Dartboard";
 import TournamentCard from "@/components/TournamentCard";
 import Footer from "@/components/Footer";
 import { createClient } from "@/lib/supabase";
@@ -62,13 +61,22 @@ export default function HomePage() {
   return (
     <div className="animate-page-in">
       {/* ── HERO ── */}
-      <section className="relative min-h-[70vh] xs:min-h-[75vh] sm:min-h-[80vh] lg:min-h-screen flex items-center px-3 xs:px-4 sm:px-6 lg:px-10 overflow-hidden">
-        {/* Background overlay */}
-        <div className="absolute inset-0 z-[1] bg-gradient-to-r from-[rgba(10,10,10,1)] via-[rgba(10,10,10,0.7)] to-[rgba(10,10,10,0.15)]" />
-        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[rgba(10,10,10,0.5)] via-transparent to-[rgba(10,10,10,0.5)]" />
+      <section className="relative min-h-[70vh] xs:min-h-[75vh] sm:min-h-[80vh] lg:min-h-screen flex items-center px-3 xs:px-4 sm:px-6 lg:px-10 overflow-hidden bg-[#080808]">
+        {/* Subtle diagonal lines */}
+        <svg className="absolute inset-0 w-full h-full z-0" preserveAspectRatio="none">
+          <defs>
+            <pattern id="diag" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+              <line x1="0" y1="0" x2="0" y2="40" stroke="white" strokeWidth="0.5" opacity="0.05" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#diag)" />
+        </svg>
 
-        {/* Dartboard - smaller on mobile */}
-        <Dartboard />
+        {/* Radial red glow - right side */}
+        <div className="absolute inset-0 z-0" style={{ background: "radial-gradient(ellipse 60% 70% at 80% 50%, rgba(232,34,10,0.06), transparent)" }} />
+
+        {/* Horizontal red accent line at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-px z-[2] bg-[rgba(232,34,10,0.15)]" />
 
         {/* Content */}
         <div className="relative z-[1] max-w-[620px] animate-fade-up pt-[80px] xs:pt-[70px] sm:pt-0">
