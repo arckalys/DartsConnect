@@ -145,6 +145,15 @@ export default function TournoiDetailPage() {
             <span className="inline-flex items-center text-[0.7rem] sm:text-[0.75rem] font-bold uppercase tracking-[1px] px-2 sm:px-3 py-[4px] sm:py-[5px] rounded-full bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] text-[#aaa]">
               {tournoi.format}
             </span>
+            {tournoi.type_jeu && (
+              <span className={`inline-flex items-center text-[0.7rem] sm:text-[0.75rem] font-bold uppercase tracking-[1px] px-2 sm:px-3 py-[4px] sm:py-[5px] rounded-full border ${
+                tournoi.type_jeu === "electronique"
+                  ? "bg-[rgba(59,130,246,0.12)] border-[rgba(59,130,246,0.25)] text-[#3b82f6]"
+                  : "bg-[rgba(168,85,247,0.12)] border-[rgba(168,85,247,0.25)] text-[#a855f7]"
+              }`}>
+                {tournoi.type_jeu === "electronique" ? "Électronique" : "Traditionnel"}
+              </span>
+            )}
             {isRegistered && (
               <span className="inline-flex items-center text-[0.7rem] sm:text-[0.75rem] font-bold uppercase tracking-[1px] px-2 sm:px-3 py-[4px] sm:py-[5px] rounded-full bg-[rgba(34,197,94,0.15)] border border-[rgba(34,197,94,0.25)] text-[#22c55e]">
                 <Check className="w-3.5 h-3.5 inline -mt-[1px]" /> Inscrit

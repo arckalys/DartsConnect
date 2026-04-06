@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { Target, MapPin, Phone, ClipboardList, Check, AlertTriangle, Ban } from "lucide-react";
+import { Target, MapPin, Phone, ClipboardList, Check, AlertTriangle, Ban, Zap } from "lucide-react";
 import StepForm from "@/components/StepForm";
 import { createClient } from "@/lib/supabase";
 import { REGIONS } from "@/lib/types";
+import type { TournamentType } from "@/lib/types";
 
 export const runtime = "edge";
 
@@ -29,6 +30,7 @@ export default function ModifierTournoiPage() {
   const [notFound, setNotFound] = useState(false);
 
   // Form fields
+  const [typeJeu, setTypeJeu] = useState<TournamentType>("traditionnel");
   const [nom, setNom] = useState("");
   const [description, setDescription] = useState("");
   const [nbJoueurs, setNbJoueurs] = useState("");
@@ -71,6 +73,7 @@ export default function ModifierTournoiPage() {
         return;
       }
 
+      setTypeJeu(data.type_jeu || "traditionnel");
       setNom(data.nom || "");
       setDescription(data.description || "");
       setNbJoueurs(String(data.nb_joueurs || ""));
@@ -133,6 +136,7 @@ export default function ModifierTournoiPage() {
         description: description.trim(),
         nb_joueurs: parseInt(nbJoueurs),
         format,
+        type_jeu: typeJeu,
         ville: ville.trim(),
         region,
         adresse: adresse.trim(),
@@ -166,6 +170,7 @@ export default function ModifierTournoiPage() {
 
   const recapFields = [
     { label: "Tournoi", value: nom },
+    { label: "Type", value: typeJeu === "electronique" ? "Électronique" : "Traditionnel" },
     { label: "Format", value: format },
     { label: "Joueurs max", value: nbJoueurs },
     { label: "Ville", value: ville },
@@ -240,6 +245,37 @@ export default function ModifierTournoiPage() {
             <div className="flex items-center gap-3 mb-5 sm:mb-7">
               <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><Target className="w-5 h-5 text-[#e8220a]" /></div>
               <h2 className="font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] sm:text-[1.3rem] uppercase">Informations générales</h2>
+            </div>
+            <div className="mb-5">
+              <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[10px]">Type de jeu *</label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setTypeJeu("traditionnel")}
+                  className={`flex flex-col items-center gap-2 p-4 xs:p-5 rounded-[12px] cursor-pointer border-2 transition-all text-center ${
+                    typeJeu === "traditionnel"
+                      ? "bg-[rgba(232,34,10,0.08)] border-[#e8220a] shadow-red-glow"
+                      : "bg-[#111] border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.2)]"
+                  }`}
+                >
+                  <Target className={`w-7 h-7 xs:w-8 xs:h-8 ${typeJeu === "traditionnel" ? "text-[#e8220a]" : "text-[#555]"}`} />
+                  <div className={`font-barlow-condensed font-bold text-[0.95rem] xs:text-[1.05rem] ${typeJeu === "traditionnel" ? "text-white" : "text-[#999]"}`}>Traditionnel</div>
+                  <div className={`text-[0.72rem] xs:text-[0.75rem] leading-[1.4] ${typeJeu === "traditionnel" ? "text-[#aaa]" : "text-[#555]"}`}>Fléchettes acier, cible sisal</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTypeJeu("electronique")}
+                  className={`flex flex-col items-center gap-2 p-4 xs:p-5 rounded-[12px] cursor-pointer border-2 transition-all text-center ${
+                    typeJeu === "electronique"
+                      ? "bg-[rgba(232,34,10,0.08)] border-[#e8220a] shadow-red-glow"
+                      : "bg-[#111] border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.2)]"
+                  }`}
+                >
+                  <Zap className={`w-7 h-7 xs:w-8 xs:h-8 ${typeJeu === "electronique" ? "text-[#e8220a]" : "text-[#555]"}`} />
+                  <div className={`font-barlow-condensed font-bold text-[0.95rem] xs:text-[1.05rem] ${typeJeu === "electronique" ? "text-white" : "text-[#999]"}`}>Électronique</div>
+                  <div className={`text-[0.72rem] xs:text-[0.75rem] leading-[1.4] ${typeJeu === "electronique" ? "text-[#aaa]" : "text-[#555]"}`}>Fléchettes plastique, cible électronique</div>
+                </button>
+              </div>
             </div>
             <div className="mb-4">
               <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Nom du tournoi *</label>

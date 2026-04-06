@@ -41,6 +41,7 @@ function TournoisContent() {
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [search, setSearch] = useState(initialQ);
+  const [typeFilter, setTypeFilter] = useState("");
   const [region, setRegion] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [sort, setSort] = useState("date");
@@ -99,7 +100,7 @@ function TournoisContent() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Reset page on filter change
-  useEffect(() => setPage(1), [search, region, dateFilter, sort]);
+  useEffect(() => setPage(1), [search, typeFilter, region, dateFilter, sort]);
 
   async function handleDelete() {
     if (!deleteTarget) return;
@@ -147,6 +148,7 @@ function TournoisContent() {
     const now = new Date();
 
     if (q) data = data.filter((t) => t.nom.toLowerCase().includes(q) || t.ville.toLowerCase().includes(q) || t.region.toLowerCase().includes(q));
+    if (typeFilter) data = data.filter((t) => t.type_jeu === typeFilter);
     if (region) data = data.filter((t) => t.region === region);
     if (dateFilter === "week") {
       const end = new Date(now); end.setDate(end.getDate() + 7);
@@ -163,14 +165,15 @@ function TournoisContent() {
     else if (sort === "places") data.sort((a, b) => (a.nb_joueurs - (a.players ?? 0)) - (b.nb_joueurs - (b.players ?? 0)));
 
     return data;
-  }, [tournaments, search, region, dateFilter, sort]);
+  }, [tournaments, search, typeFilter, region, dateFilter, sort]);
 
   const paged = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
-  const hasFilters = search || region || dateFilter;
+  const hasFilters = search || typeFilter || region || dateFilter;
 
   function resetFilters() {
     setSearch("");
+    setTypeFilter("");
     setRegion("");
     setDateFilter("");
   }
@@ -239,8 +242,14 @@ function TournoisContent() {
             />
           </div>
 
-          {/* Region + Date filters */}
-          <div className="flex flex-col xs:flex-row gap-2 sm:gap-[10px]">
+          {/* Type + Region + Date filters */}
+          <div className="flex flex-col xs:flex-row gap-2 sm:gap-[10px] flex-wrap">
+            <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="flex-1 sm:flex-none !bg-[#181818] !rounded-[10px] !px-3 sm:!px-[14px] !py-[10px] !text-[0.82rem] xs:!text-[0.85rem] sm:!text-[0.88rem] !w-auto">
+              <option value="">Tous les types</option>
+              <option value="traditionnel">Traditionnel</option>
+              <option value="electronique">Électronique</option>
+            </select>
+
             <select value={region} onChange={(e) => setRegion(e.target.value)} className="flex-1 sm:flex-none !bg-[#181818] !rounded-[10px] !px-3 sm:!px-[14px] !py-[10px] !text-[0.82rem] xs:!text-[0.85rem] sm:!text-[0.88rem] !w-auto">
               <option value="">Toutes les régions</option>
               {REGIONS.map((r) => <option key={r}>{r}</option>)}
@@ -313,6 +322,7 @@ function TournoisContent() {
                         region={t.region}
                         date_tournoi={t.date_tournoi}
                         format={t.format}
+                        type_jeu={t.type_jeu}
                         nb_joueurs={t.nb_joueurs}
                         players={inscriptionCounts[tid] ?? t.players ?? 0}
                         prize={t.prize ?? 0}
@@ -347,6 +357,7 @@ function TournoisContent() {
                         region={t.region}
                         date_tournoi={t.date_tournoi}
                         format={t.format}
+                        type_jeu={t.type_jeu}
                         nb_joueurs={t.nb_joueurs}
                         players={inscriptionCounts[tid] ?? t.players ?? 0}
                         prize={t.prize ?? 0}
@@ -378,6 +389,7 @@ function TournoisContent() {
                         region={t.region}
                         date_tournoi={t.date_tournoi}
                         format={t.format}
+                        type_jeu={t.type_jeu}
                         nb_joueurs={t.nb_joueurs}
                         players={inscriptionCounts[tid] ?? t.players ?? 0}
                         prize={t.prize ?? 0}

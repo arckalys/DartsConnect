@@ -172,6 +172,7 @@ export default function HomePage() {
                   region={t.region}
                   date_tournoi={t.date_tournoi}
                   format={t.format}
+                  type_jeu={t.type_jeu}
                   nb_joueurs={t.nb_joueurs}
                   players={t.players ?? 0}
                   prize={t.prize ?? 0}

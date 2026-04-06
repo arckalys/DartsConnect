@@ -11,6 +11,7 @@ interface Props {
   region: string;
   date_tournoi: string;
   format: string;
+  type_jeu?: string;
   nb_joueurs: number;
   players: number;
   prize: number;
@@ -31,7 +32,7 @@ const statusClass: Record<TournamentStatus, string> = {
   closed: "bg-[rgba(248,113,113,0.1)] text-[#f87171]",
 };
 
-export default function TournamentRow({ id, nom, region, date_tournoi, format, nb_joueurs, players, prize, statut, delay = 0, isOwner, onDelete, isRegistered, onToggleRegister, registerLoading, currentUserId }: Props) {
+export default function TournamentRow({ id, nom, region, date_tournoi, format, type_jeu, nb_joueurs, players, prize, statut, delay = 0, isOwner, onDelete, isRegistered, onToggleRegister, registerLoading, currentUserId }: Props) {
   const isFull = players >= nb_joueurs && !isRegistered;
 
   return (
@@ -46,6 +47,15 @@ export default function TournamentRow({ id, nom, region, date_tournoi, format, n
             {STATUS_LABELS[statut]}
           </span>
           <span>{format}</span>
+          {type_jeu && (
+            <span className={`inline-block text-[0.6rem] font-bold uppercase tracking-[1px] px-[7px] py-[2px] rounded-full ${
+              type_jeu === "electronique"
+                ? "bg-[rgba(59,130,246,0.12)] text-[#3b82f6]"
+                : "bg-[rgba(168,85,247,0.12)] text-[#a855f7]"
+            }`}>
+              {type_jeu === "electronique" ? "Élec." : "Trad."}
+            </span>
+          )}
           {isRegistered && (
             <span className="inline-block text-[0.6rem] font-bold uppercase tracking-[1px] px-[7px] py-[2px] rounded-full bg-[rgba(34,197,94,0.15)] text-[#22c55e]">
               <Check className="w-3 h-3 inline" /> Inscrit

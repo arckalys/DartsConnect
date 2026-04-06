@@ -1,6 +1,13 @@
 export type TournamentStatus = "open" | "soon" | "full" | "closed";
 export type TournamentFormat = "Simple" | "Doublette" | "Équipe" | "Mixte";
 
+export type TournamentType = "traditionnel" | "electronique";
+
+export const TYPE_LABELS: Record<TournamentType, string> = {
+  traditionnel: "Traditionnel",
+  electronique: "Électronique",
+};
+
 export interface Tournament {
   id: string | number;
   nom: string;
@@ -11,9 +18,10 @@ export interface Tournament {
   date_tournoi: string;
   heure?: string;
   format: string;
+  type_jeu?: TournamentType;
   nb_joueurs: number;
-  players?: number; // inscrits actuels (mock)
-  prize?: number; // dotation (mock)
+  players?: number;
+  prize?: number;
   contact_nom?: string;
   contact_email?: string;
   contact_tel?: string;
