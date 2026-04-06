@@ -219,7 +219,7 @@ export default function AuthPage() {
           {/* Header */}
           <div className="mb-6 xs:mb-8 text-center">
             <div className="w-[44px] h-[44px] xs:w-[52px] xs:h-[52px] bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.3)] rounded-[12px] xs:rounded-[14px] flex items-center justify-center mx-auto mb-3 xs:mb-4"><Target className="w-5 h-5 xs:w-6 xs:h-6 text-[#e8220a]" /></div>
-            <div className="font-barlow-condensed font-black text-[1.5rem] xs:text-[1.8rem] uppercase">DartsConnect.FR</div>
+            <div className="font-barlow-condensed font-black text-[1.5rem] xs:text-[1.8rem] uppercase">DartsTournois</div>
             <div className="text-[0.88rem] text-[#777] mt-[6px]">Rejoins la communauté des fléchettes</div>
           </div>
 

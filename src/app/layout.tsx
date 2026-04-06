@@ -5,8 +5,8 @@ import Navbar from "@/components/Navbar";
 export const runtime = "edge";
 
 export const metadata: Metadata = {
-  title: "DartsConnect.FR — Tournois de fléchettes en France",
-  description: "Tous les tournois de fléchettes en France réunis sur une seule plateforme.",
+  title: "DartsTournois — Tournois de fléchettes en France",
+  description: "Trouvez, créez et inscrivez-vous aux tournois de fléchettes partout en France.",
 };
 
 export default function RootLayout({

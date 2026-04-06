@@ -35,7 +35,7 @@ export default function Navbar() {
           <div className="w-7 h-7 xs:w-8 xs:h-8 bg-[#e8220a] rounded-lg flex items-center justify-center shadow-[0_0_12px_rgba(232,34,10,0.3)]">
             <Target className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-white" />
           </div>
-          <span className="hidden xs:inline">DartsConnect.FR</span>
+          <span className="hidden xs:inline">DartsTournois</span>
         </Link>
 
         {/* Desktop navigation links */}
