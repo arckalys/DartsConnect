@@ -129,29 +129,39 @@ export default function TournoiDetailPage() {
       const { error } = await supabase
         .from("inscriptions")
         .insert([{ user_id: currentUserId, tournoi_id: tournoiId }]);
+      console.log("[inscription] insert result, error:", error);
       if (!error) {
         setIsRegistered(true);
         const newCount = inscriptionCount + 1;
         setInscriptionCount(newCount);
 
-        // Send confirmation emails (fire and forget)
+        // Get session email for player confirmation
         const { data: { session } } = await supabase.auth.getSession();
         const userEmail = session?.user?.email;
+        console.log("[inscription] userEmail:", userEmail, "contact_email:", tournoi.contact_email);
 
-        // Get user profile for organizer notification
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("pseudo, prenom, nom")
-          .eq("id", currentUserId)
-          .maybeSingle();
+        // Get user profile for organizer notification (non-blocking)
+        let profile = null;
+        try {
+          const { data: p } = await supabase
+            .from("profiles")
+            .select("pseudo, prenom, nom")
+            .eq("id", currentUserId)
+            .maybeSingle();
+          profile = p;
+        } catch (e) {
+          console.log("[inscription] profiles fetch failed, continuing:", e);
+        }
 
         // Email 1: confirmation to player
-        if (userEmail) {
+        console.log("[inscription] sending confirmation email...");
+        const emailTo = userEmail || session?.user?.user_metadata?.email;
+        if (emailTo) {
           fetch("/api/emails/inscription", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              to: userEmail,
+              to: emailTo,
               tournoi: {
                 id: tournoiId,
                 nom: tournoi.nom,
@@ -164,13 +174,14 @@ export default function TournoiDetailPage() {
             }),
           })
             .then((r) => r.json())
-            .then((d) => console.log("[inscription email]", d))
+            .then((d) => console.log("[inscription email] response:", d))
             .catch((e) => console.error("[inscription email] fetch error:", e));
         } else {
-          console.log("[inscription email] skipped: no userEmail");
+          console.log("[inscription email] skipped: no email found in session");
         }
 
         // Email 2: notification to organizer
+        console.log("[nouveau-inscrit] sending organizer email...");
         if (tournoi.contact_email) {
           fetch("/api/emails/nouveau-inscrit", {
             method: "POST",
@@ -184,11 +195,13 @@ export default function TournoiDetailPage() {
             }),
           })
             .then((r) => r.json())
-            .then((d) => console.log("[nouveau-inscrit email]", d))
+            .then((d) => console.log("[nouveau-inscrit email] response:", d))
             .catch((e) => console.error("[nouveau-inscrit email] fetch error:", e));
         } else {
-          console.log("[nouveau-inscrit email] skipped: no contact_email");
+          console.log("[nouveau-inscrit email] skipped: no contact_email on tournoi");
         }
+      } else {
+        console.error("[inscription] insert FAILED:", error.message, error.details, error.hint);
       }
     }
     setRegisterLoading(false);
