@@ -131,7 +131,54 @@ export default function TournoiDetailPage() {
         .insert([{ user_id: currentUserId, tournoi_id: tournoiId }]);
       if (!error) {
         setIsRegistered(true);
-        setInscriptionCount((c) => c + 1);
+        const newCount = inscriptionCount + 1;
+        setInscriptionCount(newCount);
+
+        // Send confirmation emails (fire and forget)
+        const { data: { session } } = await supabase.auth.getSession();
+        const userEmail = session?.user?.email;
+
+        // Get user profile for organizer notification
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("pseudo, prenom, nom")
+          .eq("id", currentUserId)
+          .maybeSingle();
+
+        // Email 1: confirmation to player
+        if (userEmail) {
+          fetch("/api/emails/inscription", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              to: userEmail,
+              tournoi: {
+                id: tournoiId,
+                nom: tournoi.nom,
+                date_tournoi: tournoi.date_tournoi,
+                heure: tournoi.heure,
+                ville: tournoi.ville,
+                adresse: tournoi.adresse,
+                format: tournoi.format,
+              },
+            }),
+          }).catch(() => {});
+        }
+
+        // Email 2: notification to organizer
+        if (tournoi.contact_email) {
+          fetch("/api/emails/nouveau-inscrit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              to: tournoi.contact_email,
+              tournoi: { id: tournoiId, nom: tournoi.nom },
+              joueur: profile || {},
+              inscrits: newCount,
+              max: tournoi.nb_joueurs,
+            }),
+          }).catch(() => {});
+        }
       }
     }
     setRegisterLoading(false);
