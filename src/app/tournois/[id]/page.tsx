@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { Target, Check, Calendar, MapPin, FileText, Info } from "lucide-react";
+import { Target, Check, Calendar, MapPin, FileText, Info, LayoutDashboard, Star } from "lucide-react";
+import StarRating from "@/components/StarRating";
 import { createClient } from "@/lib/supabase";
 import { Tournament, STATUS_LABELS } from "@/lib/types";
 import type { TournamentStatus } from "@/lib/types";
@@ -29,9 +30,17 @@ export default function TournoiDetailPage() {
   const [notFound, setNotFound] = useState(false);
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [inscriptionCount, setInscriptionCount] = useState(0);
   const [registerLoading, setRegisterLoading] = useState(false);
+
+  // Rating state
+  const [avgRating, setAvgRating] = useState(0);
+  const [ratingCount, setRatingCount] = useState(0);
+  const [myRating, setMyRating] = useState(0);
+  const [ratingLoading, setRatingLoading] = useState(false);
+  const [canRate, setCanRate] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -57,17 +66,44 @@ export default function TournoiDetailPage() {
         .eq("tournoi_id", tournoiId);
       if (countData) setInscriptionCount(countData.length);
 
+      // Fetch ratings
+      const { data: avisData } = await supabase
+        .from("avis")
+        .select("note")
+        .eq("tournoi_id", tournoiId);
+      if (avisData && avisData.length > 0) {
+        const avg = avisData.reduce((s: number, a: { note: number }) => s + a.note, 0) / avisData.length;
+        setAvgRating(Math.round(avg * 10) / 10);
+        setRatingCount(avisData.length);
+      }
+
       // Check current user
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        setCurrentUserId(session.user.id);
+        const uid = session.user.id;
+        setCurrentUserId(uid);
+        if (data.user_id === uid) setIsOwner(true);
+
         const { data: myReg } = await supabase
           .from("inscriptions")
           .select("id")
-          .eq("user_id", session.user.id)
+          .eq("user_id", uid)
           .eq("tournoi_id", tournoiId)
           .maybeSingle();
         if (myReg) setIsRegistered(true);
+
+        // Check if user can rate (inscribed + tournament date is past)
+        const isPast = new Date(data.date_tournoi) < new Date();
+        if (myReg && isPast) {
+          setCanRate(true);
+          const { data: myAvis } = await supabase
+            .from("avis")
+            .select("note")
+            .eq("user_id", uid)
+            .eq("tournoi_id", tournoiId)
+            .maybeSingle();
+          if (myAvis) setMyRating(myAvis.note);
+        }
       }
 
       setLoading(false);
@@ -99,6 +135,38 @@ export default function TournoiDetailPage() {
       }
     }
     setRegisterLoading(false);
+  }
+
+  async function handleRate(note: number) {
+    if (!currentUserId) return;
+    setRatingLoading(true);
+    const prev = myRating;
+
+    if (prev > 0) {
+      await supabase
+        .from("avis")
+        .update({ note })
+        .eq("user_id", currentUserId)
+        .eq("tournoi_id", tournoiId);
+    } else {
+      await supabase
+        .from("avis")
+        .insert([{ user_id: currentUserId, tournoi_id: tournoiId, note }]);
+    }
+
+    setMyRating(note);
+
+    // Recalculate average
+    const { data: avisData } = await supabase
+      .from("avis")
+      .select("note")
+      .eq("tournoi_id", tournoiId);
+    if (avisData && avisData.length > 0) {
+      const avg = avisData.reduce((s: number, a: { note: number }) => s + a.note, 0) / avisData.length;
+      setAvgRating(Math.round(avg * 10) / 10);
+      setRatingCount(avisData.length);
+    }
+    setRatingLoading(false);
   }
 
   if (loading) {
@@ -160,9 +228,31 @@ export default function TournoiDetailPage() {
               </span>
             )}
           </div>
-          <h1 className="font-barlow-condensed font-black text-[1.4rem] xs:text-[1.8rem] sm:text-[2.4rem] xl:text-[2.8rem] uppercase leading-[1.1] mb-2">
+          <h1 className="font-barlow-condensed font-black text-[1.4rem] xs:text-[1.8rem] sm:text-[2.4rem] xl:text-[2.8rem] uppercase leading-[1.1] mb-3">
             {tournoi.nom}
           </h1>
+
+          <div className="flex items-center gap-4 flex-wrap">
+            {/* Rating display */}
+            {ratingCount > 0 && (
+              <div className="flex items-center gap-2">
+                <Star className="w-4 h-4 fill-[#f59e0b] text-[#f59e0b]" />
+                <span className="text-[0.92rem] font-bold text-white">{avgRating}</span>
+                <span className="text-[0.82rem] text-[#777]">/5 ({ratingCount} avis)</span>
+              </div>
+            )}
+
+            {/* Dashboard button - owner only */}
+            {isOwner && (
+              <Link
+                href={`/tournois/${tournoiId}/dashboard`}
+                className="inline-flex items-center gap-2 bg-[rgba(232,34,10,0.1)] border border-[rgba(232,34,10,0.25)] text-[#e8220a] text-[0.82rem] font-bold px-3 py-[6px] rounded-lg no-underline transition-all hover:bg-[rgba(232,34,10,0.2)]"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                Tableau de bord
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* Registration card - shown first on mobile */}
@@ -279,6 +369,42 @@ export default function TournoiDetailPage() {
                   <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777]">Informations pratiques</div>
                 </div>
                 <div className="text-[0.9rem] text-[#ccc] leading-[1.7] whitespace-pre-line">{tournoi.infos_pratiques}</div>
+              </div>
+            )}
+
+            {/* Rating section */}
+            {(canRate || ratingCount > 0) && (
+              <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-9 h-9 bg-[rgba(249,115,22,0.12)] border border-[rgba(249,115,22,0.25)] rounded-[8px] flex items-center justify-center shrink-0">
+                    <Star className="w-[18px] h-[18px] text-[#f59e0b]" />
+                  </div>
+                  <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777]">Évaluation</div>
+                </div>
+
+                {ratingCount > 0 && (
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="font-barlow-condensed text-[2.2rem] font-black text-[#f59e0b] leading-none">{avgRating}</div>
+                    <div>
+                      <StarRating value={Math.round(avgRating)} readonly size={18} />
+                      <div className="text-[0.78rem] text-[#777] mt-1">{ratingCount} avis</div>
+                    </div>
+                  </div>
+                )}
+
+                {canRate && (
+                  <div className={`${ratingCount > 0 ? "pt-4 border-t border-[rgba(255,255,255,0.06)]" : ""}`}>
+                    <div className="text-[0.82rem] text-[#ccc] mb-2">
+                      {myRating > 0 ? "Ta note :" : "Note ce tournoi :"}
+                    </div>
+                    <div className={`flex items-center gap-3 ${ratingLoading ? "opacity-50 pointer-events-none" : ""}`}>
+                      <StarRating value={myRating} onChange={handleRate} size={28} />
+                      {myRating > 0 && (
+                        <span className="text-[0.82rem] text-[#777]">{myRating}/5</span>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
