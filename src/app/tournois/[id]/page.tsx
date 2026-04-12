@@ -162,7 +162,12 @@ export default function TournoiDetailPage() {
                 format: tournoi.format,
               },
             }),
-          }).catch(() => {});
+          })
+            .then((r) => r.json())
+            .then((d) => console.log("[inscription email]", d))
+            .catch((e) => console.error("[inscription email] fetch error:", e));
+        } else {
+          console.log("[inscription email] skipped: no userEmail");
         }
 
         // Email 2: notification to organizer
@@ -177,7 +182,12 @@ export default function TournoiDetailPage() {
               inscrits: newCount,
               max: tournoi.nb_joueurs,
             }),
-          }).catch(() => {});
+          })
+            .then((r) => r.json())
+            .then((d) => console.log("[nouveau-inscrit email]", d))
+            .catch((e) => console.error("[nouveau-inscrit email] fetch error:", e));
+        } else {
+          console.log("[nouveau-inscrit email] skipped: no contact_email");
         }
       }
     }

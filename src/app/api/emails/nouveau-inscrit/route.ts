@@ -3,12 +3,17 @@ import { emailLayout, emailButton, SITE_URL } from "@/lib/email-template";
 
 export const runtime = "edge";
 
+const FROM = process.env.RESEND_FROM || "DartsTournois <onboarding@resend.dev>";
+
 export async function POST(req: Request) {
   try {
+    console.log("[email/nouveau-inscrit] Route called");
     const resend = new Resend(process.env.RESEND_API_KEY);
     const { to, tournoi, joueur, inscrits, max } = await req.json();
+    console.log("[email/nouveau-inscrit] to:", to, "tournoi:", tournoi?.nom);
 
     if (!to || !tournoi?.id || !tournoi?.nom) {
+      console.log("[email/nouveau-inscrit] Missing fields", { to, tournoiId: tournoi?.id });
       return Response.json({ error: "Missing fields" }, { status: 400 });
     }
 
@@ -28,17 +33,22 @@ export async function POST(req: Request) {
       ${emailButton("Voir le tableau de bord", `${SITE_URL}/tournois/${tournoi.id}/dashboard`)}
     `);
 
-    const { error } = await resend.emails.send({
-      from: "DartsTournois <noreply@dartstournois.fr>",
+    const { data, error } = await resend.emails.send({
+      from: FROM,
       to,
       subject: `Nouvelle inscription — ${tournoi.nom}`,
       html,
     });
 
-    if (error) return Response.json({ error: error.message }, { status: 500 });
-    return Response.json({ ok: true });
+    if (error) {
+      console.error("[email/nouveau-inscrit] Resend error:", error);
+      return Response.json({ error: error.message }, { status: 500 });
+    }
+    console.log("[email/nouveau-inscrit] Sent OK, id:", data?.id);
+    return Response.json({ ok: true, id: data?.id });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Unknown error";
+    console.error("[email/nouveau-inscrit] Exception:", msg);
     return Response.json({ error: msg }, { status: 500 });
   }
 }

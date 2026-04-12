@@ -4,6 +4,8 @@ import { emailLayout, emailButton, SITE_URL } from "@/lib/email-template";
 
 export const runtime = "edge";
 
+const FROM = process.env.RESEND_FROM || "DartsTournois <onboarding@resend.dev>";
+
 export async function POST(req: Request) {
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
@@ -79,7 +81,7 @@ export async function POST(req: Request) {
         `);
 
         await resend.emails.send({
-          from: "DartsTournois <noreply@dartstournois.fr>",
+          from: FROM,
           to: profile.email,
           subject: `Votre avis — ${tournoi.nom}`,
           html,

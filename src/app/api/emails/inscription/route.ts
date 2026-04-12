@@ -3,12 +3,18 @@ import { emailLayout, emailButton, tournoiInfoTable, SITE_URL } from "@/lib/emai
 
 export const runtime = "edge";
 
+const FROM = process.env.RESEND_FROM || "DartsTournois <onboarding@resend.dev>";
+
 export async function POST(req: Request) {
   try {
+    console.log("[email/inscription] Route called");
     const resend = new Resend(process.env.RESEND_API_KEY);
-    const { to, tournoi } = await req.json();
+    const body = await req.json();
+    const { to, tournoi } = body;
+    console.log("[email/inscription] to:", to, "tournoi:", tournoi?.nom);
 
     if (!to || !tournoi?.id || !tournoi?.nom) {
+      console.log("[email/inscription] Missing fields", { to, tournoiId: tournoi?.id });
       return Response.json({ error: "Missing fields" }, { status: 400 });
     }
 
@@ -21,17 +27,22 @@ export async function POST(req: Request) {
       ${emailButton("Voir le tournoi", `${SITE_URL}/tournois/${tournoi.id}`)}
     `);
 
-    const { error } = await resend.emails.send({
-      from: "DartsTournois <noreply@dartstournois.fr>",
+    const { data, error } = await resend.emails.send({
+      from: FROM,
       to,
       subject: `Inscription confirmée — ${tournoi.nom}`,
       html,
     });
 
-    if (error) return Response.json({ error: error.message }, { status: 500 });
-    return Response.json({ ok: true });
+    if (error) {
+      console.error("[email/inscription] Resend error:", error);
+      return Response.json({ error: error.message }, { status: 500 });
+    }
+    console.log("[email/inscription] Sent OK, id:", data?.id);
+    return Response.json({ ok: true, id: data?.id });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Unknown error";
+    console.error("[email/inscription] Exception:", msg);
     return Response.json({ error: msg }, { status: 500 });
   }
 }
