@@ -4,7 +4,7 @@ import { emailLayout, emailButton, SITE_URL } from "@/lib/email-template";
 
 export const runtime = "edge";
 
-const FROM = process.env.RESEND_FROM || "DartsTournois <onboarding@resend.dev>";
+const FROM = "DartsTournois <noreply@dartstournois.fr>";
 
 export async function POST(req: Request) {
   try {
