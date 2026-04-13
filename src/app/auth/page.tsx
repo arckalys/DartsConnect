@@ -309,7 +309,7 @@ export default function AuthPage() {
                 </div>
               </div>
               <div className="mb-4">
-                <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Moyenne (ex : 45.2)</label>
+                <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Moyenne (ex : 25)</label>
                 <input type="number" value={rMoyenne} onChange={(e) => setRMoyenne(e.target.value)} placeholder="Ta moyenne aux fléchettes" step="0.1" min="0" max="180" />
               </div>
               <div className="mb-4">
@@ -439,7 +439,7 @@ export default function AuthPage() {
             <input type="text" value={ePseudo} onChange={(e) => setEPseudo(e.target.value)} />
           </div>
           <div className="mb-4">
-            <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Moyenne (ex : 45.2)</label>
+            <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Moyenne (ex : 25)</label>
             <input type="number" value={eMoyenne} onChange={(e) => setEMoyenne(e.target.value)} placeholder="Ta moyenne aux fléchettes" step="0.1" min="0" max="180" />
           </div>
           <div className="mb-4">
