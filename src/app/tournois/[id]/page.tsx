@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Target, Check, Calendar, MapPin, FileText, Info, LayoutDashboard, Star } from "lucide-react";
 import StarRating from "@/components/StarRating";
@@ -22,8 +22,10 @@ const statusClass: Record<TournamentStatus, string> = {
 export default function TournoiDetailPage() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const tournoiId = params.id as string;
   const supabase = createClient();
+  const [successMsg, setSuccessMsg] = useState("");
 
   const [tournoi, setTournoi] = useState<Tournament | null>(null);
   const [loading, setLoading] = useState(true);
@@ -111,9 +113,43 @@ export default function TournoiDetailPage() {
     load();
   }, [tournoiId]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Handle success/forfait query params
+  useEffect(() => {
+    if (searchParams.get("success") === "true") {
+      setSuccessMsg("Inscription confirmée ! Votre paiement a bien été reçu.");
+      setIsRegistered(true);
+      setTimeout(() => setSuccessMsg(""), 8000);
+    } else if (searchParams.get("forfait") === "true") {
+      setSuccessMsg("Paiement du forfait confirmé ! Votre tournoi est en ligne.");
+      setTimeout(() => setSuccessMsg(""), 8000);
+    }
+  }, [searchParams]);
+
   async function handleToggleRegister() {
     if (!currentUserId || !tournoi) return;
     setRegisterLoading(true);
+
+    // Official tournament with online payment: redirect to Stripe Checkout
+    if (!isRegistered && tournoi.type_paiement === "en_ligne" && tournoi.prix_inscription) {
+      try {
+        const res = await fetch("/api/stripe/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tournoi_id: tournoiId, user_id: currentUserId }),
+        });
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+          return;
+        } else {
+          console.error("[stripe checkout]", data.error);
+        }
+      } catch (e) {
+        console.error("[stripe checkout] fetch error:", e);
+      }
+      setRegisterLoading(false);
+      return;
+    }
 
     if (isRegistered) {
       const { error } = await supabase
@@ -267,6 +303,14 @@ export default function TournoiDetailPage() {
     <div className="animate-page-in min-h-screen pt-[72px] xs:pt-[80px] px-3 xs:px-4 sm:px-6 pb-10 sm:pb-12">
       <div className="max-w-[820px] xl:max-w-[960px] mx-auto">
 
+        {/* Success banner */}
+        {successMsg && (
+          <div className="mb-4 p-4 bg-[rgba(34,197,94,0.12)] border border-[rgba(34,197,94,0.25)] rounded-[12px] flex items-center gap-3">
+            <Check className="w-5 h-5 text-[#22c55e] shrink-0" />
+            <span className="text-[0.9rem] text-[#22c55e] font-medium">{successMsg}</span>
+          </div>
+        )}
+
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-[0.82rem] text-[#777] mb-6 sm:mb-8">
           <Link href="/tournois" className="text-[#777] no-underline hover:text-white transition-colors">Tournois</Link>
@@ -377,7 +421,9 @@ export default function TournoiDetailPage() {
                 ) : isFull ? (
                   "Complet"
                 ) : (
-                  "S'inscrire au tournoi"
+                  tournoi.type_paiement === "en_ligne" && tournoi.prix_inscription
+                    ? `S'inscrire — ${tournoi.prix_inscription}€`
+                    : "S'inscrire au tournoi"
                 )}
               </button>
             ) : (
@@ -531,7 +577,9 @@ export default function TournoiDetailPage() {
                   ) : isFull ? (
                     "Complet"
                   ) : (
-                    "S'inscrire au tournoi"
+                    tournoi.type_paiement === "en_ligne" && tournoi.prix_inscription
+                    ? `S'inscrire — ${tournoi.prix_inscription}€`
+                    : "S'inscrire au tournoi"
                   )}
                 </button>
               ) : (

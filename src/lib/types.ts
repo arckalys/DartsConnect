@@ -8,6 +8,8 @@ export const TYPE_LABELS: Record<TournamentType, string> = {
   electronique: "Électronique",
 };
 
+export type PaymentType = "especes" | "en_ligne";
+
 export interface Tournament {
   id: string | number;
   nom: string;
@@ -29,6 +31,10 @@ export interface Tournament {
   statut: TournamentStatus;
   user_id?: string;
   created_at?: string;
+  type_paiement?: PaymentType;
+  prix_inscription?: number;
+  stripe_account_id?: string;
+  forfait_paye?: boolean;
 }
 
 export interface UserProfile {

@@ -11,13 +11,15 @@
     "preview": "npm run pages:build && npx wrangler pages dev .vercel/output/static"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^9.1.0",
     "@supabase/ssr": "^0.5.0",
     "@supabase/supabase-js": "^2.49.0",
     "lucide-react": "^1.7.0",
     "next": "15.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "resend": "^6.10.0"
+    "resend": "^6.10.0",
+    "stripe": "^22.0.1"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.0",
