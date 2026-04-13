@@ -171,6 +171,18 @@ export default function AuthPage() {
     });
     setLoading(false);
     if (err) return showError(err.message);
+    if (data.user) {
+      // Send welcome email
+      console.log("[register] sending welcome email to", rEmail);
+      fetch("/api/emails/bienvenue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: rEmail, prenom: rPrenom, pseudo: rPseudo }),
+      })
+        .then((r) => r.json())
+        .then((d) => console.log("[bienvenue email]", d))
+        .catch((e) => console.error("[bienvenue email] error:", e));
+    }
     if (data.user && !data.session) {
       showSuccess("Compte créé ! Vérifie ta boite mail.");
     } else if (data.session) {
