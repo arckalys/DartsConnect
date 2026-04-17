@@ -9,7 +9,8 @@ export default function Footer() {
       <ul className="flex gap-3 xs:gap-4 sm:gap-6 list-none flex-wrap justify-center">
         <li><Link href="/a-propos" className="text-[0.78rem] xs:text-[0.8rem] sm:text-[0.82rem] text-[#777] no-underline hover:text-white transition-colors">À propos</Link></li>
         <li><Link href="/contact" className="text-[0.78rem] xs:text-[0.8rem] sm:text-[0.82rem] text-[#777] no-underline hover:text-white transition-colors">Contact</Link></li>
-        <li><a href="#" className="text-[0.78rem] xs:text-[0.8rem] sm:text-[0.82rem] text-[#777] no-underline hover:text-white transition-colors">Mentions légales</a></li>
+        <li><Link href="/mentions-legales" className="text-[0.78rem] xs:text-[0.8rem] sm:text-[0.82rem] text-[#777] no-underline hover:text-white transition-colors">Mentions légales</Link></li>
+        <li><Link href="/confidentialite" className="text-[0.78rem] xs:text-[0.8rem] sm:text-[0.82rem] text-[#777] no-underline hover:text-white transition-colors">Confidentialité</Link></li>
       </ul>
       <div className="text-[0.75rem] xs:text-[0.78rem] text-[#444]">© 2026 DartsTournois</div>
     </footer>
