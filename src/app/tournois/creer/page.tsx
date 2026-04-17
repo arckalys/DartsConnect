@@ -2,11 +2,11 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Target, MapPin, Phone, ClipboardList, Rocket, AlertTriangle, Zap, CreditCard, Banknote } from "lucide-react";
+import { Target, MapPin, Phone, ClipboardList, Rocket, AlertTriangle, Zap } from "lucide-react";
 import StepForm from "@/components/StepForm";
 import { createClient } from "@/lib/supabase";
 import { REGIONS } from "@/lib/types";
-import type { TournamentType, PaymentType } from "@/lib/types";
+import type { TournamentType } from "@/lib/types";
 
 export const runtime = "edge";
 
@@ -40,8 +40,6 @@ export default function CreerTournoiPage() {
   const [contactEmail, setContactEmail] = useState("");
   const [contactTel, setContactTel] = useState("");
   const [infosPratiques, setInfosPratiques] = useState("");
-  const [typePaiement, setTypePaiement] = useState<PaymentType>("especes");
-  const [prixInscription, setPrixInscription] = useState("");
 
   function showError(msg: string) {
     setError(msg);
@@ -54,7 +52,6 @@ export default function CreerTournoiPage() {
       if (!description.trim()) return showError("La description est obligatoire.");
       if (!nbJoueurs || parseInt(nbJoueurs) < 2) return showError("Le nombre de joueurs doit être au moins 2.");
       if (!format) return showError("Sélectionne un format de jeu.");
-      if (typePaiement === "en_ligne" && (!prixInscription || parseFloat(prixInscription) < 1)) return showError("Le prix d'inscription doit être d'au moins 1€.");
     }
     if (current === 2) {
       if (!ville.trim()) return showError("La ville est obligatoire.");
@@ -102,35 +99,13 @@ export default function CreerTournoiPage() {
         infos_pratiques: infosPratiques.trim(),
         statut: "open",
         user_id: session.user.id,
-        type_paiement: typePaiement,
-        prix_inscription: typePaiement === "en_ligne" ? parseFloat(prixInscription) : 0,
-        forfait_paye: typePaiement === "en_ligne", // Official tournaments don't need forfait
       };
 
-      const { data: inserted, error: dbError } = await supabase.from("tournois").insert([tournoi]).select("id").single();
+      const { error: dbError } = await supabase.from("tournois").insert([tournoi]);
 
       if (dbError) {
         setLoading(false);
         return showError("Erreur Supabase : " + dbError.message + (dbError.details ? " — " + dbError.details : "") + (dbError.hint ? " (Hint: " + dbError.hint + ")" : ""));
-      }
-
-      // Non-official tournament: redirect to Stripe forfait payment
-      if (typePaiement === "especes" && inserted?.id) {
-        try {
-          const res = await fetch("/api/stripe/forfait", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ tournoi_id: inserted.id, tournoi_nom: nom.trim() }),
-          });
-          const data = await res.json();
-          if (data.url) {
-            window.location.href = data.url;
-            return;
-          }
-        } catch {
-          // If Stripe fails, still show success (forfait can be paid later)
-          console.error("[creer] Stripe forfait redirect failed");
-        }
       }
 
       setSuccess(true);
@@ -147,7 +122,7 @@ export default function CreerTournoiPage() {
     setTypeJeu("traditionnel"); setNom(""); setDescription(""); setNbJoueurs(""); setFormat("");
     setVille(""); setRegion(""); setAdresse(""); setDateTournoi("");
     setHeure("10:00"); setContactNom(""); setContactEmail("");
-    setContactTel(""); setInfosPratiques(""); setTypePaiement("especes"); setPrixInscription("");
+    setContactTel(""); setInfosPratiques("");
     setStep(1); setSuccess(false);
   }
 
@@ -160,7 +135,6 @@ export default function CreerTournoiPage() {
     { label: "Région", value: region },
     { label: "Date", value: dateTournoi ? new Date(dateTournoi).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "—" },
     { label: "Heure", value: heure || "—" },
-    { label: "Paiement", value: typePaiement === "en_ligne" ? `En ligne — ${prixInscription}€` : "Sur place (espèces)" },
   ];
 
   return (
@@ -268,47 +242,6 @@ export default function CreerTournoiPage() {
               </select>
             </div>
 
-            {/* Payment type */}
-            <div className="mb-5">
-              <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[10px]">Type de tournoi *</label>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => { setTypePaiement("en_ligne"); }}
-                  className={`flex flex-col items-center gap-2 p-4 xs:p-5 rounded-[12px] cursor-pointer border-2 transition-all text-center ${
-                    typePaiement === "en_ligne"
-                      ? "bg-[rgba(232,34,10,0.08)] border-[#e8220a] shadow-red-glow"
-                      : "bg-[#111] border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.2)]"
-                  }`}
-                >
-                  <CreditCard className={`w-7 h-7 xs:w-8 xs:h-8 ${typePaiement === "en_ligne" ? "text-[#e8220a]" : "text-[#555]"}`} />
-                  <div className={`font-barlow-condensed font-bold text-[0.95rem] xs:text-[1.05rem] ${typePaiement === "en_ligne" ? "text-white" : "text-[#999]"}`}>Tournoi officiel</div>
-                  <div className={`text-[0.72rem] xs:text-[0.75rem] leading-[1.4] ${typePaiement === "en_ligne" ? "text-[#aaa]" : "text-[#555]"}`}>Paiement en ligne — commission 0,50€</div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setTypePaiement("especes"); setPrixInscription(""); }}
-                  className={`flex flex-col items-center gap-2 p-4 xs:p-5 rounded-[12px] cursor-pointer border-2 transition-all text-center ${
-                    typePaiement === "especes"
-                      ? "bg-[rgba(232,34,10,0.08)] border-[#e8220a] shadow-red-glow"
-                      : "bg-[#111] border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.2)]"
-                  }`}
-                >
-                  <Banknote className={`w-7 h-7 xs:w-8 xs:h-8 ${typePaiement === "especes" ? "text-[#e8220a]" : "text-[#555]"}`} />
-                  <div className={`font-barlow-condensed font-bold text-[0.95rem] xs:text-[1.05rem] ${typePaiement === "especes" ? "text-white" : "text-[#999]"}`}>Tournoi non officiel</div>
-                  <div className={`text-[0.72rem] xs:text-[0.75rem] leading-[1.4] ${typePaiement === "especes" ? "text-[#aaa]" : "text-[#555]"}`}>Paiement sur place — forfait 3€</div>
-                </button>
-              </div>
-            </div>
-
-            {/* Prix inscription (only for official tournaments) */}
-            {typePaiement === "en_ligne" && (
-              <div className="mb-4">
-                <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Prix d&apos;inscription (€) *</label>
-                <input type="number" value={prixInscription} onChange={(e) => setPrixInscription(e.target.value)} placeholder="Ex : 10" min={1} max={500} step="0.01" />
-                <div className="text-[0.75rem] text-[#777] mt-1">Commission de 0,50€ prélevée par DartsTournois sur chaque inscription</div>
-              </div>
-            )}
           </div>
           <div className="flex items-center justify-between gap-2 xs:gap-3 flex-wrap">
             <button onClick={() => router.push("/")} className="bg-transparent text-[#777] border border-[rgba(255,255,255,0.08)] font-barlow-condensed font-bold text-[0.9rem] xs:text-[1rem] px-4 xs:px-6 py-[10px] xs:py-3 rounded-[10px] cursor-pointer transition-all hover:text-white hover:border-[rgba(255,255,255,0.2)]">
