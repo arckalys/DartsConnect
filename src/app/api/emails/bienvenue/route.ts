@@ -3,11 +3,17 @@ import { emailLayout, emailButton, SITE_URL } from "@/lib/email-template";
 
 export const runtime = "edge";
 
-const FROM = "DartsTournois <noreply@dartstournois.fr>";
+const FROM = process.env.RESEND_FROM || "DartsTournois <noreply@dartstournois.fr>";
 
 export async function POST(req: Request) {
   try {
     console.log("[email/bienvenue] Route called");
+
+    if (!process.env.RESEND_API_KEY) {
+      console.error("[email/bienvenue] RESEND_API_KEY is not set — skipping send");
+      return Response.json({ error: "RESEND_API_KEY not configured" }, { status: 500 });
+    }
+
     const resend = new Resend(process.env.RESEND_API_KEY);
     const { to, prenom, pseudo } = await req.json();
 
