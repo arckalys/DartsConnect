@@ -4,7 +4,7 @@ import { emailLayout } from "@/lib/email-template";
 export const runtime = "edge";
 
 const FROM = "DartsTournois <noreply@dartstournois.fr>";
-const TO = "arthur-leborgne22@hotmail.com";
+const TO = "contact@dartstournois.fr";
 
 export async function POST(req: Request) {
   try {

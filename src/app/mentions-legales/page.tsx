@@ -41,7 +41,7 @@ export default function MentionsLegalesPage() {
           <Section title="Éditeur du site">
             <Row label="Nom" value="Arthur Le Borgne" />
             <Row label="Ville" value="Ploubezre (22300), France" />
-            <Row label="Email" value={<a href="mailto:arthur-leborgne22@hotmail.com" className="text-[#e8220a] hover:underline">arthur-leborgne22@hotmail.com</a>} />
+            <Row label="Email" value={<a href="mailto:contact@dartstournois.fr" className="text-[#e8220a] hover:underline">contact@dartstournois.fr</a>} />
             <Row label="SIRET" value="En cours d'immatriculation" />
             <Row label="Statut juridique" value="Micro-entrepreneur" />
           </Section>

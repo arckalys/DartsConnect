@@ -68,7 +68,7 @@ export default function ConfidentialitePage() {
             <Item><strong className="text-white">Droit de rectification</strong> — modifier vos informations depuis votre profil</Item>
             <Item><strong className="text-white">Droit à l&apos;effacement</strong> — demander la suppression de votre compte et données</Item>
             <Item><strong className="text-white">Droit à la portabilité</strong> — recevoir vos données dans un format lisible</Item>
-            <p className="mt-3">Pour exercer ces droits, contactez-nous à : <a href="mailto:arthur-leborgne22@hotmail.com" className="text-[#e8220a] hover:underline">arthur-leborgne22@hotmail.com</a></p>
+            <p className="mt-3">Pour exercer ces droits, contactez-nous à : <a href="mailto:contact@dartstournois.fr" className="text-[#e8220a] hover:underline">contact@dartstournois.fr</a></p>
             <p className="text-[#777]">Toute demande sera traitée dans un délai de 30 jours.</p>
           </Section>
 
@@ -87,7 +87,7 @@ export default function ConfidentialitePage() {
           <Section title="Contact & réclamations">
             <p>Pour toute question relative à vos données personnelles :</p>
             <p className="mt-2">
-              <a href="mailto:arthur-leborgne22@hotmail.com" className="text-[#e8220a] hover:underline">arthur-leborgne22@hotmail.com</a>
+              <a href="mailto:contact@dartstournois.fr" className="text-[#e8220a] hover:underline">contact@dartstournois.fr</a>
             </p>
             <p className="mt-3 text-[#777]">Vous avez également le droit de déposer une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="text-[#e8220a] hover:underline">CNIL</a>.</p>
             <p className="text-[#777] text-[0.82rem] mt-4">Dernière mise à jour : avril 2026</p>
