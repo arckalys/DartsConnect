@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { Target, Users, Ban, Clock, CheckCircle } from "lucide-react";
+import { Target, Users, Ban, Clock, CheckCircle, LayoutGrid, Printer, RefreshCw, AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { Tournament, STATUS_LABELS } from "@/lib/types";
+import { generateTableau, Joueur } from "@/lib/bracket";
 import { fmtDate } from "@/lib/data";
 
 export const runtime = "edge";
@@ -18,6 +19,11 @@ interface Inscription {
   user_meta?: { pseudo?: string; prenom?: string; nom?: string; email?: string };
 }
 
+interface TableauRow {
+  id: string;
+  genere_at: string;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const params = useParams();
@@ -26,9 +32,14 @@ export default function DashboardPage() {
 
   const [tournoi, setTournoi] = useState<Tournament | null>(null);
   const [inscriptions, setInscriptions] = useState<Inscription[]>([]);
+  const [tableau, setTableau] = useState<TableauRow | null>(null);
   const [loading, setLoading] = useState(true);
+  const [generationLoading, setGenerationLoading] = useState(false);
+  const [generationError, setGenerationError] = useState("");
+  const [generationSuccess, setGenerationSuccess] = useState("");
   const [notFound, setNotFound] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -37,6 +48,7 @@ export default function DashboardPage() {
         router.replace("/auth");
         return;
       }
+      setUserEmail(session.user.email || "");
 
       const { data, error } = await supabase
         .from("tournois")
@@ -66,7 +78,6 @@ export default function DashboardPage() {
         .order("created_at", { ascending: true });
 
       if (insData && insData.length > 0) {
-        // Fetch user metadata for each inscription
         const userIds = insData.map((i: Inscription) => i.user_id);
         const { data: profiles } = await supabase
           .from("profiles")
@@ -82,6 +93,18 @@ export default function DashboardPage() {
           user_meta: profileMap.get(i.user_id) || {},
         }));
         setInscriptions(enriched);
+      }
+
+      // Fetch existing tableau
+      const { data: tabData } = await supabase
+        .from("tableaux")
+        .select("id, genere_at")
+        .eq("tournoi_id", tournoiId)
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      if (tabData && tabData.length > 0) {
+        setTableau(tabData[0] as TableauRow);
       }
 
       setLoading(false);
@@ -101,6 +124,79 @@ export default function DashboardPage() {
       );
     }
   }
+
+  async function doGenerate() {
+    if (!tournoi) return;
+    setGenerationLoading(true);
+    setGenerationError("");
+    setGenerationSuccess("");
+
+    try {
+      // Build joueurs list from inscriptions
+      const joueurs: Joueur[] = inscriptions.map((ins) => {
+        const meta = ins.user_meta || {};
+        const nom =
+          meta.pseudo ||
+          [meta.prenom, meta.nom].filter(Boolean).join(" ") ||
+          meta.email ||
+          "Joueur anonyme";
+        return { inscription_id: ins.id, user_id: ins.user_id, nom };
+      });
+
+      if (joueurs.length < 4) {
+        setGenerationError("Il faut au moins 4 joueurs pour générer un tableau.");
+        setGenerationLoading(false);
+        return;
+      }
+
+      // Delete existing tableau if any
+      if (tableau) {
+        await supabase.from("tableaux").delete().eq("tournoi_id", tournoiId);
+      }
+
+      const data = generateTableau(joueurs);
+
+      // Save to Supabase
+      const { data: saved, error: saveErr } = await supabase
+        .from("tableaux")
+        .insert({
+          tournoi_id: tournoiId,
+          poules: data.poules,
+          bracket: data.bracket,
+          genere_at: new Date().toISOString(),
+        })
+        .select("id, genere_at")
+        .single();
+
+      if (saveErr) {
+        setGenerationError("Erreur lors de la sauvegarde : " + saveErr.message);
+        setGenerationLoading(false);
+        return;
+      }
+
+      setTableau(saved as TableauRow);
+      setGenerationSuccess("Tableau généré avec succès !");
+
+      // Send email to organizer
+      if (tournoi.contact_email || userEmail) {
+        fetch("/api/emails/tableau", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: tournoi.contact_email || userEmail,
+            tournoi: { id: tournoiId, nom: tournoi.nom },
+          }),
+        }).catch(() => {/* silent */});
+      }
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Erreur inconnue";
+      setGenerationError(msg);
+    } finally {
+      setGenerationLoading(false);
+    }
+  }
+
+  // ─── Loading / Error states ──────────────────────────────────────────────────
 
   if (loading) {
     return (
@@ -134,6 +230,7 @@ export default function DashboardPage() {
   const pct = tournoi.nb_joueurs > 0 ? Math.round((inscriptions.length / tournoi.nb_joueurs) * 100) : 0;
   const confirmes = inscriptions.filter((i) => i.statut === "confirme").length;
   const enAttente = inscriptions.filter((i) => i.statut !== "confirme").length;
+  const isFull = inscriptions.length >= tournoi.nb_joueurs;
 
   return (
     <div className="animate-page-in min-h-screen pt-[72px] xs:pt-[80px] px-3 xs:px-4 sm:px-6 pb-10 sm:pb-12">
@@ -209,6 +306,130 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* ── Tableau de tournoi ─────────────────────────────────────────── */}
+        <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6 mb-6 sm:mb-8">
+          <div className="flex items-center justify-between gap-3 mb-5">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center">
+                <LayoutGrid className="w-[18px] h-[18px] text-[#e8220a]" />
+              </div>
+              <div className="font-barlow-condensed font-extrabold text-[1.1rem] uppercase">Tableau de tournoi</div>
+            </div>
+            {tableau && (
+              <Link
+                href={`/tournois/${tournoiId}/tableau`}
+                className="flex items-center gap-2 text-[0.82rem] font-bold text-[#e8220a] no-underline hover:underline"
+              >
+                <Printer className="w-4 h-4" />
+                Voir &amp; Imprimer
+              </Link>
+            )}
+          </div>
+
+          {/* Messages */}
+          {generationError && (
+            <div className="flex items-center gap-2 bg-[rgba(248,113,113,0.1)] border border-[rgba(248,113,113,0.25)] text-[#f87171] rounded-[10px] px-4 py-3 text-[0.85rem] mb-4">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              {generationError}
+            </div>
+          )}
+          {generationSuccess && (
+            <div className="flex items-center gap-2 bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.25)] text-[#22c55e] rounded-[10px] px-4 py-3 text-[0.85rem] mb-4">
+              <CheckCircle className="w-4 h-4 shrink-0" />
+              {generationSuccess}{" "}
+              <Link href={`/tournois/${tournoiId}/tableau`} className="font-bold underline text-[#22c55e]">
+                Voir le tableau →
+              </Link>
+            </div>
+          )}
+
+          {tableau ? (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#111] border border-[rgba(255,255,255,0.06)] rounded-[10px] p-4">
+              <div>
+                <div className="text-[0.9rem] text-white font-medium mb-1">Tableau généré</div>
+                <div className="text-[0.78rem] text-[#777]">
+                  Généré le{" "}
+                  {new Date(tableau.genere_at).toLocaleDateString("fr-FR", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/tournois/${tournoiId}/tableau`}
+                  className="flex items-center gap-2 bg-[#e8220a] text-white font-barlow-condensed font-bold text-[0.9rem] px-4 py-2 rounded-[8px] no-underline hover:bg-[#b81a08] transition-all"
+                >
+                  <Printer className="w-4 h-4" />
+                  Voir le tableau
+                </Link>
+                <button
+                  onClick={doGenerate}
+                  disabled={generationLoading}
+                  title="Régénérer le tableau"
+                  className="flex items-center gap-2 bg-transparent border border-[rgba(255,255,255,0.1)] text-[#777] font-barlow-condensed font-bold text-[0.85rem] px-3 py-2 rounded-[8px] cursor-pointer hover:text-white hover:border-[rgba(255,255,255,0.3)] transition-all disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-4 h-4 ${generationLoading ? "animate-spin" : ""}`} />
+                  Régénérer
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-[#111] border border-[rgba(255,255,255,0.06)] rounded-[10px] p-5">
+              {isFull ? (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <div className="text-[0.9rem] text-white font-medium mb-1">
+                      Tournoi complet !
+                    </div>
+                    <div className="text-[0.78rem] text-[#777]">
+                      Tous les joueurs sont inscrits. Générez le tableau pour répartir les poules.
+                    </div>
+                  </div>
+                  <button
+                    onClick={doGenerate}
+                    disabled={generationLoading}
+                    className="flex items-center gap-2 bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[0.95rem] px-5 py-[10px] rounded-[10px] cursor-pointer hover:bg-[#b81a08] transition-all shadow-red-glow-lg disabled:opacity-60 whitespace-nowrap"
+                  >
+                    {generationLoading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <LayoutGrid className="w-4 h-4" />
+                    )}
+                    Générer le tableau
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <div className="text-[0.9rem] text-white font-medium mb-1">
+                      Tournoi non complet ({inscriptions.length}/{tournoi.nb_joueurs})
+                    </div>
+                    <div className="text-[0.78rem] text-[#777]">
+                      Le tableau sera généré avec les joueurs actuellement inscrits.
+                    </div>
+                  </div>
+                  <button
+                    onClick={doGenerate}
+                    disabled={generationLoading || inscriptions.length < 4}
+                    className="flex items-center gap-2 bg-transparent border border-[rgba(232,34,10,0.4)] text-[#e8220a] font-barlow-condensed font-bold text-[0.9rem] px-5 py-[10px] rounded-[10px] cursor-pointer hover:bg-[rgba(232,34,10,0.08)] transition-all disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                  >
+                    {generationLoading ? (
+                      <div className="w-4 h-4 border-2 border-[#e8220a] border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <LayoutGrid className="w-4 h-4" />
+                    )}
+                    Forcer la génération
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* Inscriptions list */}
         <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
           <div className="flex items-center gap-3 mb-5">
@@ -227,7 +448,6 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="flex flex-col gap-2">
-              {/* Header row - desktop */}
               <div className="hidden sm:grid grid-cols-[auto_2fr_1.5fr_1fr_auto] gap-3 px-4 text-[0.72rem] font-bold uppercase tracking-[1px] text-[#777] mb-1">
                 <div className="w-8">#</div>
                 <div>Joueur</div>
