@@ -5,9 +5,72 @@ import ServiceWorker from "@/components/ServiceWorker";
 
 export const runtime = "edge";
 
+const SITE_URL = "https://dartstournois.fr";
+
 export const metadata: Metadata = {
-  title: "DartsTournois — Tournois de fléchettes en France",
-  description: "Trouvez, créez et inscrivez-vous aux tournois de fléchettes partout en France.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "DartsTournois - Trouvez votre prochain tournoi de fléchettes",
+    template: "%s | DartsTournois",
+  },
+  description:
+    "La plateforme qui regroupe tous les tournois de fléchettes en France. Cherchez, trouvez et inscrivez-vous en quelques clics.",
+  keywords: [
+    "tournoi fléchettes",
+    "darts France",
+    "compétition fléchettes",
+    "inscription tournoi darts",
+    "tournoi darts France",
+    "fléchettes compétition",
+    "championnat fléchettes",
+    "organiser tournoi fléchettes",
+  ],
+  authors: [{ name: "DartsTournois" }],
+  creator: "DartsTournois",
+  publisher: "DartsTournois",
+  applicationName: "DartsTournois",
+  alternates: {
+    canonical: SITE_URL,
+  },
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    url: SITE_URL,
+    siteName: "DartsTournois",
+    title: "DartsTournois - Tous les tournois de fléchettes en France",
+    description:
+      "Trouvez et inscrivez-vous aux tournois de fléchettes près de chez vous. Tournois officiels et non officiels dans toute la France.",
+    images: [
+      {
+        url: "/icons/icon-512.png",
+        width: 512,
+        height: 512,
+        alt: "DartsTournois",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DartsTournois - Tous les tournois de fléchettes en France",
+    description:
+      "Trouvez et inscrivez-vous aux tournois de fléchettes près de chez vous.",
+    images: ["/icons/icon-512.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/icon-192.png",
+  },
 };
 
 export default function RootLayout({

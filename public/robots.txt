@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /auth
+Disallow: /auth/
+Disallow: /tournois/*/dashboard
+Disallow: /tournois/*/modifier
+Disallow: /inscriptions
+Disallow: /api/
+
+Sitemap: https://dartstournois.fr/sitemap.xml
