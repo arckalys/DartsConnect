@@ -21,12 +21,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const supabase = createSbClient(supabaseUrl, supabaseAnonKey);
     const { data } = await supabase
       .from("tournois")
-      .select("id, created_at, date")
-      .order("date", { ascending: false })
+      .select("id, created_at, date_tournoi")
+      .order("date_tournoi", { ascending: false })
       .limit(5000);
 
     if (data) {
-      dynamicRoutes = data.map((t: { id: string; created_at?: string; date?: string }) => ({
+      dynamicRoutes = data.map((t: { id: string; created_at?: string; date_tournoi?: string }) => ({
         url: `${SITE_URL}/tournois/${t.id}`,
         lastModified: t.created_at ? new Date(t.created_at) : now,
         changeFrequency: "daily" as const,

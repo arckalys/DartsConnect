@@ -1,17 +1,18 @@
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import { supabaseUrl, supabaseAnonKey } from "@/lib/supabase";
 
 export const runtime = "edge";
 
 export async function POST(req: Request) {
   try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return Response.json({ error: "STRIPE_SECRET_KEY not configured" }, { status: 500 });
+    }
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: "2026-03-25.dahlia",
     });
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
     const body = await req.text();
     const sig = req.headers.get("stripe-signature");

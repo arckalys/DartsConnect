@@ -1,18 +1,19 @@
 import { Resend } from "resend";
 import { createClient } from "@supabase/supabase-js";
 import { emailLayout, emailButton, tournoiInfoTable, SITE_URL } from "@/lib/email-template";
+import { supabaseUrl, supabaseAnonKey } from "@/lib/supabase";
 
 export const runtime = "edge";
 
-const FROM = "DartsTournois <noreply@dartstournois.fr>";
+const FROM = process.env.RESEND_FROM || "DartsTournois <noreply@dartstournois.fr>";
 
 export async function POST(req: Request) {
   try {
+    if (!process.env.RESEND_API_KEY) {
+      return Response.json({ error: "RESEND_API_KEY not configured" }, { status: 500 });
+    }
     const resend = new Resend(process.env.RESEND_API_KEY);
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabaseAdmin = createClient(supabaseUrl, supabaseAnonKey);
     // Optional: verify a shared secret to prevent unauthorized calls
     const { secret } = await req.json().catch(() => ({ secret: undefined }));
     if (process.env.CRON_SECRET && secret !== process.env.CRON_SECRET) {

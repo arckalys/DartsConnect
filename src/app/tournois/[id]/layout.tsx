@@ -14,21 +14,22 @@ type TournoiRow = {
   nom: string | null;
   ville: string | null;
   adresse: string | null;
-  date: string | null;
+  date_tournoi: string | null;
   format: string | null;
   description: string | null;
-  nb_places: number | null;
+  nb_joueurs: number | null;
 };
 
 async function getTournoi(id: string): Promise<TournoiRow | null> {
   try {
     const supabase = createSbClient(supabaseUrl, supabaseAnonKey);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("tournois")
-      .select("id, nom, ville, adresse, date, format, description, nb_places")
+      .select("id, nom, ville, adresse, date_tournoi, format, description, nb_joueurs")
       .eq("id", id)
-      .single();
-    return (data as TournoiRow) ?? null;
+      .maybeSingle();
+    if (error || !data) return null;
+    return data as TournoiRow;
   } catch {
     return null;
   }
@@ -60,9 +61,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const nom = t.nom || "Tournoi de fléchettes";
   const ville = t.ville || "France";
-  const dateStr = formatDateFr(t.date);
+  const dateStr = formatDateFr(t.date_tournoi);
   const format = t.format || "";
-  const places = t.nb_places ? `${t.nb_places} places disponibles. ` : "";
+  const places = t.nb_joueurs ? `${t.nb_joueurs} places disponibles. ` : "";
 
   const title = `${nom} - ${ville}`;
   const description = `Tournoi de fléchettes à ${ville}${dateStr ? ` le ${dateStr}` : ""}.${format ? ` Format ${format}.` : ""} ${places}Inscrivez-vous sur DartsTournois.`;
@@ -95,7 +96,7 @@ export default async function TournoiLayout({ params, children }: Props) {
         "@context": "https://schema.org",
         "@type": "Event",
         name: t.nom || "Tournoi de fléchettes",
-        startDate: t.date || undefined,
+        startDate: t.date_tournoi || undefined,
         eventStatus: "https://schema.org/EventScheduled",
         eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
         location: {
@@ -110,7 +111,7 @@ export default async function TournoiLayout({ params, children }: Props) {
         },
         description:
           t.description ||
-          `Tournoi de fléchettes à ${t.ville || "France"}${t.date ? ` le ${formatDateFr(t.date)}` : ""}.`,
+          `Tournoi de fléchettes à ${t.ville || "France"}${t.date_tournoi ? ` le ${formatDateFr(t.date_tournoi)}` : ""}.`,
         organizer: {
           "@type": "Organization",
           name: "DartsTournois",
