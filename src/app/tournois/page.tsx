@@ -57,6 +57,9 @@ function TournoisContent() {
   const [myInscriptions, setMyInscriptions] = useState<Set<string>>(new Set());
   const [registerLoadingId, setRegisterLoadingId] = useState<string | null>(null);
 
+  // Ratings
+  const [ratings, setRatings] = useState<Record<string, { avg: number; count: number }>>({});
+
   useEffect(() => {
     async function init() {
       try {
@@ -78,6 +81,27 @@ function TournoisContent() {
             map[row.tournoi_id] = (map[row.tournoi_id] || 0) + 1;
           });
           setInscriptionCounts(map);
+        }
+
+        // Fetch ratings aggregated per tournament
+        const { data: avisRows } = await supabase
+          .from("avis")
+          .select("tournoi_id, note");
+        if (avisRows) {
+          const agg: Record<string, { sum: number; count: number }> = {};
+          avisRows.forEach((a: { tournoi_id: string; note: number }) => {
+            if (!agg[a.tournoi_id]) agg[a.tournoi_id] = { sum: 0, count: 0 };
+            agg[a.tournoi_id].sum += a.note;
+            agg[a.tournoi_id].count += 1;
+          });
+          const ratingsMap: Record<string, { avg: number; count: number }> = {};
+          for (const tid in agg) {
+            ratingsMap[tid] = {
+              avg: Math.round((agg[tid].sum / agg[tid].count) * 10) / 10,
+              count: agg[tid].count,
+            };
+          }
+          setRatings(ratingsMap);
         }
 
         // Fetch current user's inscriptions
@@ -334,6 +358,8 @@ function TournoisContent() {
                         onToggleRegister={currentUserId ? () => handleToggleRegister(tid) : undefined}
                         registerLoading={registerLoadingId === tid}
                         currentUserId={currentUserId}
+                        avgRating={ratings[tid]?.avg ?? 0}
+                        ratingCount={ratings[tid]?.count ?? 0}
                       />
                     );
                   })}
@@ -369,6 +395,8 @@ function TournoisContent() {
                         onToggleRegister={currentUserId ? () => handleToggleRegister(tid) : undefined}
                         registerLoading={registerLoadingId === tid}
                         currentUserId={currentUserId}
+                        avgRating={ratings[tid]?.avg ?? 0}
+                        ratingCount={ratings[tid]?.count ?? 0}
                       />
                     );
                   })}
@@ -401,6 +429,8 @@ function TournoisContent() {
                         onToggleRegister={currentUserId ? () => handleToggleRegister(tid) : undefined}
                         registerLoading={registerLoadingId === tid}
                         currentUserId={currentUserId}
+                        avgRating={ratings[tid]?.avg ?? 0}
+                        ratingCount={ratings[tid]?.count ?? 0}
                       />
                     );
                   })}

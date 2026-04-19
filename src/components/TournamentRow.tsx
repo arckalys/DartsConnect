@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check, Pencil, Trash2 } from "lucide-react";
+import { Check, Pencil, Trash2, Star } from "lucide-react";
 import { STATUS_LABELS } from "@/lib/types";
 import type { TournamentStatus } from "@/lib/types";
 import { fmtShort } from "@/lib/data";
@@ -23,6 +23,8 @@ interface Props {
   onToggleRegister?: () => void;
   registerLoading?: boolean;
   currentUserId?: string | null;
+  avgRating?: number;
+  ratingCount?: number;
 }
 
 const statusClass: Record<TournamentStatus, string> = {
@@ -32,7 +34,7 @@ const statusClass: Record<TournamentStatus, string> = {
   closed: "bg-[rgba(248,113,113,0.1)] text-[#f87171]",
 };
 
-export default function TournamentRow({ id, nom, region, date_tournoi, format, type_jeu, nb_joueurs, players, prize, statut, delay = 0, isOwner, onDelete, isRegistered, onToggleRegister, registerLoading, currentUserId }: Props) {
+export default function TournamentRow({ id, nom, region, date_tournoi, format, type_jeu, nb_joueurs, players, prize, statut, delay = 0, isOwner, onDelete, isRegistered, onToggleRegister, registerLoading, currentUserId, avgRating = 0, ratingCount = 0 }: Props) {
   const isFull = players >= nb_joueurs && !isRegistered;
 
   return (
@@ -59,6 +61,13 @@ export default function TournamentRow({ id, nom, region, date_tournoi, format, t
           {isRegistered && (
             <span className="inline-block text-[0.6rem] font-bold uppercase tracking-[1px] px-[7px] py-[2px] rounded-full bg-[rgba(34,197,94,0.15)] text-[#22c55e]">
               <Check className="w-3 h-3 inline" /> Inscrit
+            </span>
+          )}
+          {ratingCount > 0 && (
+            <span className="inline-flex items-center gap-[3px] text-[0.72rem] text-[#f59e0b]">
+              <Star className="w-[11px] h-[11px] fill-[#f59e0b] text-[#f59e0b]" />
+              <span className="font-bold text-white">{avgRating.toFixed(1)}</span>
+              <span className="text-[#777]">({ratingCount})</span>
             </span>
           )}
         </div>

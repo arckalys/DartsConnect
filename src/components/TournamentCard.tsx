@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check, Pencil, Trash2 } from "lucide-react";
+import { Check, Pencil, Trash2, Star } from "lucide-react";
 import { STATUS_LABELS } from "@/lib/types";
 import type { TournamentStatus } from "@/lib/types";
 import { fmtDate } from "@/lib/data";
@@ -23,6 +23,8 @@ interface Props {
   onToggleRegister?: () => void;
   registerLoading?: boolean;
   currentUserId?: string | null;
+  avgRating?: number;
+  ratingCount?: number;
 }
 
 const statusClass: Record<TournamentStatus, string> = {
@@ -32,7 +34,7 @@ const statusClass: Record<TournamentStatus, string> = {
   closed: "bg-[rgba(248,113,113,0.1)] text-[#f87171]",
 };
 
-export default function TournamentCard({ id, nom, ville, region, date_tournoi, format, type_jeu, nb_joueurs, players, prize, statut, delay = 0, isOwner, onDelete, isRegistered, onToggleRegister, registerLoading, currentUserId }: Props) {
+export default function TournamentCard({ id, nom, ville, region, date_tournoi, format, type_jeu, nb_joueurs, players, prize, statut, delay = 0, isOwner, onDelete, isRegistered, onToggleRegister, registerLoading, currentUserId, avgRating = 0, ratingCount = 0 }: Props) {
   const pct = nb_joueurs > 0 ? Math.round((players / nb_joueurs) * 100) : 0;
   const isFull = players >= nb_joueurs && !isRegistered;
 
@@ -86,6 +88,13 @@ export default function TournamentCard({ id, nom, ville, region, date_tournoi, f
             </svg>
             {ville}, {region}
           </div>
+          {ratingCount > 0 && (
+            <div className="flex items-center gap-[6px] text-[0.8rem] text-[#f59e0b] mt-[2px]">
+              <Star className="w-[13px] h-[13px] fill-[#f59e0b] text-[#f59e0b] shrink-0" />
+              <span className="font-bold text-white">{avgRating.toFixed(1)}</span>
+              <span className="text-[#777] text-[0.75rem]">({ratingCount} avis)</span>
+            </div>
+          )}
         </div>
       </Link>
 

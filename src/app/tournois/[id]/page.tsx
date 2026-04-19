@@ -39,8 +39,11 @@ export default function TournoiDetailPage() {
   const [avgRating, setAvgRating] = useState(0);
   const [ratingCount, setRatingCount] = useState(0);
   const [myRating, setMyRating] = useState(0);
+  const [myComment, setMyComment] = useState("");
+  const [commentDraft, setCommentDraft] = useState("");
   const [ratingLoading, setRatingLoading] = useState(false);
   const [canRate, setCanRate] = useState(false);
+  const [allReviews, setAllReviews] = useState<Array<{ id: string; note: number; commentaire: string | null; created_at: string; pseudo: string }>>([]);
 
   useEffect(() => {
     async function load() {
@@ -66,15 +69,36 @@ export default function TournoiDetailPage() {
         .eq("tournoi_id", tournoiId);
       if (countData) setInscriptionCount(countData.length);
 
-      // Fetch ratings
+      // Fetch ratings + comments
       const { data: avisData } = await supabase
         .from("avis")
-        .select("note")
-        .eq("tournoi_id", tournoiId);
+        .select("id, user_id, note, commentaire, created_at")
+        .eq("tournoi_id", tournoiId)
+        .order("created_at", { ascending: false });
       if (avisData && avisData.length > 0) {
         const avg = avisData.reduce((s: number, a: { note: number }) => s + a.note, 0) / avisData.length;
         setAvgRating(Math.round(avg * 10) / 10);
         setRatingCount(avisData.length);
+
+        // Fetch pseudos for reviewers
+        const reviewerIds = avisData.map((a: { user_id: string }) => a.user_id);
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, pseudo, prenom")
+          .in("id", reviewerIds);
+        const pseudoMap: Record<string, string> = {};
+        (profiles || []).forEach((p: { id: string; pseudo: string | null; prenom: string | null }) => {
+          pseudoMap[p.id] = p.pseudo || p.prenom || "Joueur anonyme";
+        });
+        setAllReviews(
+          avisData.map((a: { id: string; user_id: string; note: number; commentaire: string | null; created_at: string }) => ({
+            id: a.id,
+            note: a.note,
+            commentaire: a.commentaire,
+            created_at: a.created_at,
+            pseudo: pseudoMap[a.user_id] || "Joueur anonyme",
+          }))
+        );
       }
 
       // Check current user
@@ -98,11 +122,15 @@ export default function TournoiDetailPage() {
           setCanRate(true);
           const { data: myAvis } = await supabase
             .from("avis")
-            .select("note")
+            .select("note, commentaire")
             .eq("user_id", uid)
             .eq("tournoi_id", tournoiId)
             .maybeSingle();
-          if (myAvis) setMyRating(myAvis.note);
+          if (myAvis) {
+            setMyRating(myAvis.note);
+            setMyComment(myAvis.commentaire || "");
+            setCommentDraft(myAvis.commentaire || "");
+          }
         }
       }
 
@@ -208,7 +236,7 @@ export default function TournoiDetailPage() {
     setRegisterLoading(false);
   }
 
-  async function handleRate(note: number) {
+  async function persistAvis(note: number, commentaire: string) {
     if (!currentUserId) return;
     setRatingLoading(true);
     const prev = myRating;
@@ -216,28 +244,58 @@ export default function TournoiDetailPage() {
     if (prev > 0) {
       await supabase
         .from("avis")
-        .update({ note })
+        .update({ note, commentaire: commentaire || null })
         .eq("user_id", currentUserId)
         .eq("tournoi_id", tournoiId);
     } else {
       await supabase
         .from("avis")
-        .insert([{ user_id: currentUserId, tournoi_id: tournoiId, note }]);
+        .insert([{ user_id: currentUserId, tournoi_id: tournoiId, note, commentaire: commentaire || null }]);
     }
 
     setMyRating(note);
+    setMyComment(commentaire);
 
-    // Recalculate average
+    // Recalculate average + reload comments
     const { data: avisData } = await supabase
       .from("avis")
-      .select("note")
-      .eq("tournoi_id", tournoiId);
+      .select("id, user_id, note, commentaire, created_at")
+      .eq("tournoi_id", tournoiId)
+      .order("created_at", { ascending: false });
     if (avisData && avisData.length > 0) {
       const avg = avisData.reduce((s: number, a: { note: number }) => s + a.note, 0) / avisData.length;
       setAvgRating(Math.round(avg * 10) / 10);
       setRatingCount(avisData.length);
+
+      const reviewerIds = avisData.map((a: { user_id: string }) => a.user_id);
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, pseudo, prenom")
+        .in("id", reviewerIds);
+      const pseudoMap: Record<string, string> = {};
+      (profiles || []).forEach((p: { id: string; pseudo: string | null; prenom: string | null }) => {
+        pseudoMap[p.id] = p.pseudo || p.prenom || "Joueur anonyme";
+      });
+      setAllReviews(
+        avisData.map((a: { id: string; user_id: string; note: number; commentaire: string | null; created_at: string }) => ({
+          id: a.id,
+          note: a.note,
+          commentaire: a.commentaire,
+          created_at: a.created_at,
+          pseudo: pseudoMap[a.user_id] || "Joueur anonyme",
+        }))
+      );
     }
     setRatingLoading(false);
+  }
+
+  async function handleRate(note: number) {
+    await persistAvis(note, commentDraft);
+  }
+
+  async function handleSubmitComment() {
+    if (myRating < 1) return;
+    await persistAvis(myRating, commentDraft);
   }
 
   if (loading) {
@@ -444,7 +502,7 @@ export default function TournoiDetailPage() {
             )}
 
             {/* Rating section */}
-            {(canRate || ratingCount > 0) && (
+            {(canRate || ratingCount > 0 || (!currentUserId && tournoi && new Date(tournoi.date_tournoi) < new Date())) && (
               <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-9 h-9 bg-[rgba(249,115,22,0.12)] border border-[rgba(249,115,22,0.25)] rounded-[8px] flex items-center justify-center shrink-0">
@@ -468,14 +526,84 @@ export default function TournoiDetailPage() {
                     <div className="text-[0.82rem] text-[#ccc] mb-2">
                       {myRating > 0 ? "Ta note :" : "Note ce tournoi :"}
                     </div>
-                    <div className={`flex items-center gap-3 ${ratingLoading ? "opacity-50 pointer-events-none" : ""}`}>
+                    <div className={`flex items-center gap-3 mb-3 ${ratingLoading ? "opacity-50 pointer-events-none" : ""}`}>
                       <StarRating value={myRating} onChange={handleRate} size={28} />
                       {myRating > 0 && (
                         <span className="text-[0.82rem] text-[#777]">{myRating}/5</span>
                       )}
                     </div>
+                    {myRating > 0 && (
+                      <div className="mt-3">
+                        <div className="text-[0.78rem] text-[#777] mb-2">
+                          Un commentaire ? (optionnel)
+                        </div>
+                        <textarea
+                          value={commentDraft}
+                          onChange={(e) => setCommentDraft(e.target.value)}
+                          placeholder="Ton retour sur l'organisation, l'ambiance..."
+                          rows={3}
+                          maxLength={500}
+                          className="w-full bg-[#0a0a0a] border border-[rgba(255,255,255,0.08)] rounded-[10px] px-3 py-2 text-[0.88rem] text-white placeholder:text-[#555] resize-none focus:outline-none focus:border-[rgba(245,158,11,0.4)]"
+                        />
+                        <div className="flex items-center justify-between mt-2">
+                          <span className="text-[0.7rem] text-[#555]">{commentDraft.length}/500</span>
+                          <button
+                            onClick={handleSubmitComment}
+                            disabled={ratingLoading || commentDraft === myComment}
+                            className="bg-[#f59e0b] text-[#111] border-none text-[0.78rem] font-bold px-4 py-[6px] rounded-lg cursor-pointer transition-all hover:bg-[#e89608] disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {ratingLoading ? "..." : myComment ? "Mettre à jour" : "Publier"}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
+
+                {!currentUserId && (
+                  <div className={`${ratingCount > 0 ? "pt-4 border-t border-[rgba(255,255,255,0.06)]" : ""}`}>
+                    <Link href="/auth" className="text-[0.85rem] text-[#f59e0b] no-underline hover:underline">
+                      Connectez-vous pour noter ce tournoi →
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Reviews list */}
+            {allReviews.filter((r) => r.commentaire && r.commentaire.trim()).length > 0 && (
+              <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0">
+                    <Star className="w-[18px] h-[18px] text-[#e8220a]" />
+                  </div>
+                  <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777]">
+                    Avis des joueurs ({allReviews.filter((r) => r.commentaire && r.commentaire.trim()).length})
+                  </div>
+                </div>
+                <div className="flex flex-col gap-4">
+                  {allReviews
+                    .filter((r) => r.commentaire && r.commentaire.trim())
+                    .map((r) => (
+                      <div key={r.id} className="border-b border-[rgba(255,255,255,0.06)] pb-4 last:border-0 last:pb-0">
+                        <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full bg-[rgba(232,34,10,0.15)] text-[#e8220a] flex items-center justify-center font-bold text-[0.78rem]">
+                              {r.pseudo.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="font-bold text-[0.88rem] text-white">{r.pseudo}</div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <StarRating value={r.note} readonly size={14} />
+                            <span className="text-[0.72rem] text-[#777]">
+                              {new Date(r.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-[0.88rem] text-[#ccc] leading-[1.6] whitespace-pre-line">{r.commentaire}</div>
+                      </div>
+                    ))}
+                </div>
               </div>
             )}
           </div>
