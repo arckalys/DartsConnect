@@ -40,10 +40,13 @@ export default function MentionsLegalesPage() {
 
           <Section title="Éditeur du site">
             <Row label="Nom" value="Arthur Le Borgne" />
-            <Row label="Ville" value="Ploubezre (22300), France" />
-            <Row label="Email" value={<a href="mailto:contact@dartstournois.fr" className="text-[#e8220a] hover:underline">contact@dartstournois.fr</a>} />
-            <Row label="SIRET" value="En cours d'immatriculation" />
             <Row label="Statut juridique" value="Micro-entrepreneur" />
+            <Row label="SIRET" value="10340225100010" />
+            <Row label="SIREN" value="103402251" />
+            <Row label="Adresse" value="15 Rue Anatole Le Bras, 22300 Ploubezre, France" />
+            <Row label="Email" value={<a href="mailto:contact@dartstournois.fr" className="text-[#e8220a] hover:underline">contact@dartstournois.fr</a>} />
+            <Row label="Site web" value={<a href="https://dartstournois.fr" className="text-[#e8220a] hover:underline">dartstournois.fr</a>} />
+            <Row label="Date de création" value="15/04/2026" />
           </Section>
 
           <Section title="Hébergement">
