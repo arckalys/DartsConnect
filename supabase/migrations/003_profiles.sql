@@ -11,6 +11,11 @@ CREATE TABLE IF NOT EXISTS profiles (
 );
 
 -- Colonnes supplémentaires pour le profil public
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS created_at  timestamp DEFAULT now();
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS email       text;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS pseudo      text;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS prenom      text;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS nom         text;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS bio         text;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS region      text;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS niveau      text;
