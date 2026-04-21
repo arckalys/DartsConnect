@@ -468,7 +468,12 @@ export default function DashboardPage() {
                   >
                     <div className="hidden sm:block w-8 text-[0.82rem] text-[#555] font-bold">{idx + 1}</div>
                     <div>
-                      <div className="text-[0.9rem] text-white font-medium">{displayName}</div>
+                      <Link
+                        href={`/joueurs/${ins.user_id}`}
+                        className="text-[0.9rem] text-white font-medium no-underline hover:text-[#e8220a] transition-colors"
+                      >
+                        {displayName}
+                      </Link>
                       {fullName && fullName !== displayName && (
                         <div className="text-[0.78rem] text-[#777]">{fullName}</div>
                       )}

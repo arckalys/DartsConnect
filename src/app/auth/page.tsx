@@ -206,8 +206,28 @@ export default function AuthPage() {
     const { data, error: err } = await supabase.auth.updateUser({
       data: { prenom: ePrenom, nom: eNom, pseudo: ePseudo, moyenne: eMoyenne, region: eRegion, bio: eBio },
     });
+    if (err) { setLoading(false); return showError(err.message); }
+
+    // Sync to public profiles table (public profile page relies on it)
+    if (data.user) {
+      try {
+        await supabase.from("profiles").upsert({
+          id: data.user.id,
+          email: data.user.email,
+          prenom: ePrenom,
+          nom: eNom,
+          pseudo: ePseudo,
+          moyenne: eMoyenne,
+          region: eRegion,
+          bio: eBio,
+          avatar_url: avatarUrl || null,
+        });
+      } catch (e) {
+        console.log("[profile sync] failed (trigger may handle it):", e);
+      }
+    }
+
     setLoading(false);
-    if (err) return showError(err.message);
     loadProfile(data.user);
     showSuccess("Profil mis à jour !");
   }

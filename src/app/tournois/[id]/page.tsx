@@ -43,7 +43,7 @@ export default function TournoiDetailPage() {
   const [commentDraft, setCommentDraft] = useState("");
   const [ratingLoading, setRatingLoading] = useState(false);
   const [canRate, setCanRate] = useState(false);
-  const [allReviews, setAllReviews] = useState<Array<{ id: string; note: number; commentaire: string | null; created_at: string; pseudo: string }>>([]);
+  const [allReviews, setAllReviews] = useState<Array<{ id: string; user_id: string; note: number; commentaire: string | null; created_at: string; pseudo: string }>>([]);
 
   useEffect(() => {
     async function load() {
@@ -93,6 +93,7 @@ export default function TournoiDetailPage() {
         setAllReviews(
           avisData.map((a: { id: string; user_id: string; note: number; commentaire: string | null; created_at: string }) => ({
             id: a.id,
+            user_id: a.user_id,
             note: a.note,
             commentaire: a.commentaire,
             created_at: a.created_at,
@@ -279,6 +280,7 @@ export default function TournoiDetailPage() {
       setAllReviews(
         avisData.map((a: { id: string; user_id: string; note: number; commentaire: string | null; created_at: string }) => ({
           id: a.id,
+          user_id: a.user_id,
           note: a.note,
           commentaire: a.commentaire,
           created_at: a.created_at,
@@ -587,12 +589,15 @@ export default function TournoiDetailPage() {
                     .map((r) => (
                       <div key={r.id} className="border-b border-[rgba(255,255,255,0.06)] pb-4 last:border-0 last:pb-0">
                         <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
-                          <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-[rgba(232,34,10,0.15)] text-[#e8220a] flex items-center justify-center font-bold text-[0.78rem]">
+                          <Link
+                            href={`/joueurs/${r.user_id}`}
+                            className="flex items-center gap-2 no-underline group"
+                          >
+                            <div className="w-7 h-7 rounded-full bg-[rgba(232,34,10,0.15)] text-[#e8220a] flex items-center justify-center font-bold text-[0.78rem] group-hover:bg-[rgba(232,34,10,0.25)] transition-colors">
                               {r.pseudo.charAt(0).toUpperCase()}
                             </div>
-                            <div className="font-bold text-[0.88rem] text-white">{r.pseudo}</div>
-                          </div>
+                            <div className="font-bold text-[0.88rem] text-white group-hover:text-[#e8220a] transition-colors">{r.pseudo}</div>
+                          </Link>
                           <div className="flex items-center gap-2">
                             <StarRating value={r.note} readonly size={14} />
                             <span className="text-[0.72rem] text-[#777]">
