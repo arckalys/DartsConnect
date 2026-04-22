@@ -29,6 +29,20 @@ export interface Tournament {
   statut: TournamentStatus;
   user_id?: string;
   created_at?: string;
+  sessions_count?: number;
+  first_session_date?: string;
+}
+
+export interface SessionTournoi {
+  id: string;
+  tournoi_id: string;
+  nom: string;
+  date_session: string;
+  heure?: string;
+  format?: string;
+  nb_joueurs_max: number;
+  type_jeu?: TournamentType;
+  created_at?: string;
 }
 
 export interface UserProfile {

@@ -60,6 +60,9 @@ function TournoisContent() {
   // Ratings
   const [ratings, setRatings] = useState<Record<string, { avg: number; count: number }>>({});
 
+  // Sessions count per tournament
+  const [sessionsCount, setSessionsCount] = useState<Record<string, number>>({});
+
   useEffect(() => {
     async function init() {
       try {
@@ -81,6 +84,18 @@ function TournoisContent() {
             map[row.tournoi_id] = (map[row.tournoi_id] || 0) + 1;
           });
           setInscriptionCounts(map);
+        }
+
+        // Fetch sessions count per tournament
+        const { data: sessRows } = await supabase
+          .from("sessions_tournoi")
+          .select("tournoi_id");
+        if (sessRows) {
+          const scMap: Record<string, number> = {};
+          sessRows.forEach((r: { tournoi_id: string }) => {
+            scMap[r.tournoi_id] = (scMap[r.tournoi_id] || 0) + 1;
+          });
+          setSessionsCount(scMap);
         }
 
         // Fetch ratings aggregated per tournament
@@ -360,6 +375,7 @@ function TournoisContent() {
                         currentUserId={currentUserId}
                         avgRating={ratings[tid]?.avg ?? 0}
                         ratingCount={ratings[tid]?.count ?? 0}
+                        sessionsCount={sessionsCount[tid] ?? 1}
                       />
                     );
                   })}
@@ -397,6 +413,7 @@ function TournoisContent() {
                         currentUserId={currentUserId}
                         avgRating={ratings[tid]?.avg ?? 0}
                         ratingCount={ratings[tid]?.count ?? 0}
+                        sessionsCount={sessionsCount[tid] ?? 1}
                       />
                     );
                   })}
@@ -431,6 +448,7 @@ function TournoisContent() {
                         currentUserId={currentUserId}
                         avgRating={ratings[tid]?.avg ?? 0}
                         ratingCount={ratings[tid]?.count ?? 0}
+                        sessionsCount={sessionsCount[tid] ?? 1}
                       />
                     );
                   })}

@@ -7,7 +7,7 @@ import { Target, Check, Calendar, MapPin, FileText, Info, LayoutDashboard, Star 
 import StarRating from "@/components/StarRating";
 import { createClient } from "@/lib/supabase";
 import { Tournament, STATUS_LABELS } from "@/lib/types";
-import type { TournamentStatus } from "@/lib/types";
+import type { TournamentStatus, SessionTournoi } from "@/lib/types";
 import { fmtDate } from "@/lib/data";
 
 export const runtime = "edge";
@@ -34,6 +34,12 @@ export default function TournoiDetailPage() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [inscriptionCount, setInscriptionCount] = useState(0);
   const [registerLoading, setRegisterLoading] = useState(false);
+
+  // Multi-session state
+  const [sessions, setSessions] = useState<SessionTournoi[]>([]);
+  const [sessionCounts, setSessionCounts] = useState<Record<string, number>>({});
+  const [myRegistrations, setMyRegistrations] = useState<Set<string>>(new Set());
+  const [sessionLoadingId, setSessionLoadingId] = useState<string | null>(null);
 
   // Rating state
   const [avgRating, setAvgRating] = useState(0);
@@ -62,12 +68,29 @@ export default function TournoiDetailPage() {
       }
       setTournoi(data as Tournament);
 
-      // Fetch inscription count
+      // Fetch inscription count (and per-session counts)
       const { data: countData } = await supabase
         .from("inscriptions")
-        .select("id")
+        .select("id, user_id, session_id")
         .eq("tournoi_id", tournoiId);
       if (countData) setInscriptionCount(countData.length);
+
+      // Per-session counts
+      const counts: Record<string, number> = {};
+      (countData || []).forEach((row: { session_id: string | null }) => {
+        if (row.session_id) {
+          counts[row.session_id] = (counts[row.session_id] || 0) + 1;
+        }
+      });
+      setSessionCounts(counts);
+
+      // Fetch sessions for this tournament
+      const { data: sessData } = await supabase
+        .from("sessions_tournoi")
+        .select("*")
+        .eq("tournoi_id", tournoiId)
+        .order("date_session", { ascending: true });
+      setSessions((sessData || []) as SessionTournoi[]);
 
       // Fetch ratings + comments
       const { data: avisData } = await supabase
@@ -109,13 +132,20 @@ export default function TournoiDetailPage() {
         setCurrentUserId(uid);
         if (data.user_id === uid) setIsOwner(true);
 
-        const { data: myReg } = await supabase
+        const { data: myRegs } = await supabase
           .from("inscriptions")
-          .select("id")
+          .select("id, session_id")
           .eq("user_id", uid)
-          .eq("tournoi_id", tournoiId)
-          .maybeSingle();
+          .eq("tournoi_id", tournoiId);
+        const myReg = myRegs && myRegs.length > 0 ? myRegs[0] : null;
         if (myReg) setIsRegistered(true);
+
+        // Populate per-session registrations set
+        const regSet = new Set<string>();
+        (myRegs || []).forEach((r: { session_id: string | null }) => {
+          if (r.session_id) regSet.add(r.session_id);
+        });
+        setMyRegistrations(regSet);
 
         // Check if user can rate (inscribed + tournament date is past)
         const isPast = new Date(data.date_tournoi) < new Date();
@@ -235,6 +265,49 @@ export default function TournoiDetailPage() {
       }
     }
     setRegisterLoading(false);
+  }
+
+  async function handleToggleSessionRegister(sessionId: string) {
+    if (!currentUserId || !tournoi) return;
+    setSessionLoadingId(sessionId);
+
+    const alreadyRegistered = myRegistrations.has(sessionId);
+
+    if (alreadyRegistered) {
+      const { error } = await supabase
+        .from("inscriptions")
+        .delete()
+        .match({ user_id: currentUserId, tournoi_id: tournoiId, session_id: sessionId });
+      if (!error) {
+        setMyRegistrations((prev) => {
+          const next = new Set(prev);
+          next.delete(sessionId);
+          return next;
+        });
+        setSessionCounts((prev) => ({
+          ...prev,
+          [sessionId]: Math.max((prev[sessionId] || 0) - 1, 0),
+        }));
+      }
+    } else {
+      const { error } = await supabase
+        .from("inscriptions")
+        .insert([{ user_id: currentUserId, tournoi_id: tournoiId, session_id: sessionId }]);
+      if (!error) {
+        setMyRegistrations((prev) => {
+          const next = new Set(prev);
+          next.add(sessionId);
+          return next;
+        });
+        setSessionCounts((prev) => ({
+          ...prev,
+          [sessionId]: (prev[sessionId] || 0) + 1,
+        }));
+      } else {
+        console.error("[session inscription] insert FAILED:", error.message, error.details, error.hint);
+      }
+    }
+    setSessionLoadingId(null);
   }
 
   async function persistAvis(note: number, commentaire: string) {
@@ -480,6 +553,106 @@ export default function TournoiDetailPage() {
                 </div>
               </div>
             </div>
+
+            {/* Sessions (multi-session tournaments) */}
+            {sessions.length > 0 && (
+              <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0">
+                    <Calendar className="w-[18px] h-[18px] text-[#e8220a]" />
+                  </div>
+                  <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777]">Sessions</div>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  {sessions.map((s, idx) => {
+                    const count = sessionCounts[s.id] || 0;
+                    const max = s.nb_joueurs_max || 0;
+                    const sessPct = max > 0 ? Math.round((count / max) * 100) : 0;
+                    const mine = myRegistrations.has(s.id);
+                    const full = count >= max && !mine;
+                    const loading = sessionLoadingId === s.id;
+
+                    return (
+                      <div
+                        key={s.id}
+                        className="bg-[#0a0a0a] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-4 sm:p-5"
+                      >
+                        <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
+                          <div>
+                            <div className="font-barlow-condensed font-extrabold text-[1.05rem] uppercase text-white">
+                              {s.nom || `Session ${idx + 1}`}
+                            </div>
+                            <div className="text-[0.85rem] text-[#aaa] mt-[2px]">
+                              {fmtDate(s.date_session)}
+                              {s.heure && <span className="text-[#777]"> · {s.heure}</span>}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {s.format && (
+                              <span className="inline-flex items-center text-[0.68rem] font-bold uppercase tracking-[1px] px-2 py-[3px] rounded-full bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] text-[#aaa]">
+                                {s.format}
+                              </span>
+                            )}
+                            {s.type_jeu && (
+                              <span className={`inline-flex items-center text-[0.68rem] font-bold uppercase tracking-[1px] px-2 py-[3px] rounded-full border ${
+                                s.type_jeu === "electronique"
+                                  ? "bg-[rgba(59,130,246,0.12)] border-[rgba(59,130,246,0.25)] text-[#3b82f6]"
+                                  : "bg-[rgba(168,85,247,0.12)] border-[rgba(168,85,247,0.25)] text-[#a855f7]"
+                              }`}>
+                                {s.type_jeu === "electronique" ? "Électronique" : "Traditionnel"}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="mb-3">
+                          <div className="flex justify-between text-[0.78rem] mb-[6px]">
+                            <span className="text-[#777]">Joueurs</span>
+                            <span className="text-white font-bold">{count}/{max}</span>
+                          </div>
+                          <div className="h-[3px] bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-[#e8220a] transition-all duration-500"
+                              style={{ width: `${Math.min(sessPct, 100)}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        {currentUserId ? (
+                          <button
+                            onClick={() => handleToggleSessionRegister(s.id)}
+                            disabled={loading || (full && !mine) || tournoi.statut === "closed"}
+                            className={`w-full py-[10px] rounded-[10px] font-barlow-condensed font-bold text-[0.95rem] cursor-pointer border transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                              mine
+                                ? "bg-[rgba(248,113,113,0.1)] border-[rgba(248,113,113,0.25)] text-[#f87171] hover:bg-[rgba(248,113,113,0.2)]"
+                                : "bg-[#e8220a] border-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08]"
+                            }`}
+                          >
+                            {loading ? (
+                              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            ) : mine ? (
+                              "Se désinscrire"
+                            ) : full ? (
+                              "Complet"
+                            ) : (
+                              "S'inscrire"
+                            )}
+                          </button>
+                        ) : (
+                          <Link
+                            href="/auth"
+                            className="w-full py-[10px] rounded-[10px] font-barlow-condensed font-bold text-[0.95rem] border-none bg-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08] no-underline flex items-center justify-center gap-2 transition-all"
+                          >
+                            Se connecter pour s&apos;inscrire
+                          </Link>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Description */}
             {tournoi.description && (

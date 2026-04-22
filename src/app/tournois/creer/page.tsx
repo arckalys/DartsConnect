@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Target, MapPin, Phone, ClipboardList, Rocket, AlertTriangle, Zap } from "lucide-react";
+import { Target, MapPin, Phone, ClipboardList, Rocket, AlertTriangle, Zap, Plus, Trash2 } from "lucide-react";
 import StepForm from "@/components/StepForm";
 import { createClient } from "@/lib/supabase";
 import { REGIONS } from "@/lib/types";
@@ -34,8 +34,23 @@ export default function CreerTournoiPage() {
   const [ville, setVille] = useState("");
   const [region, setRegion] = useState("");
   const [adresse, setAdresse] = useState("");
-  const [dateTournoi, setDateTournoi] = useState("");
-  const [heure, setHeure] = useState("10:00");
+
+  // Sessions dynamiques (min 1, max 10)
+  type SessionDraft = { nom: string; date: string; heure: string; format: string; nb_joueurs_max: string };
+  const emptySession = (): SessionDraft => ({ nom: "", date: "", heure: "10:00", format: "", nb_joueurs_max: "" });
+  const [sessions, setSessions] = useState<SessionDraft[]>([emptySession()]);
+
+  function updateSession(idx: number, patch: Partial<SessionDraft>) {
+    setSessions((prev) => prev.map((s, i) => (i === idx ? { ...s, ...patch } : s)));
+  }
+  function addSession() {
+    if (sessions.length >= 10) return;
+    setSessions((prev) => [...prev, emptySession()]);
+  }
+  function removeSession(idx: number) {
+    if (sessions.length <= 1) return;
+    setSessions((prev) => prev.filter((_, i) => i !== idx));
+  }
   const [contactNom, setContactNom] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactTel, setContactTel] = useState("");
@@ -56,8 +71,12 @@ export default function CreerTournoiPage() {
     if (current === 2) {
       if (!ville.trim()) return showError("La ville est obligatoire.");
       if (!region) return showError("Sélectionne une région.");
-      if (!dateTournoi) return showError("La date du tournoi est obligatoire.");
-      if (new Date(dateTournoi) < new Date()) return showError("La date doit être dans le futur.");
+      if (sessions.length === 0) return showError("Ajoute au moins une session.");
+      for (let i = 0; i < sessions.length; i++) {
+        const s = sessions[i];
+        if (!s.date) return showError(`Session ${i + 1} : la date est obligatoire.`);
+        if (new Date(s.date) < new Date(new Date().toDateString())) return showError(`Session ${i + 1} : la date doit être dans le futur.`);
+      }
     }
     setError("");
     setStep(current + 1);
@@ -82,6 +101,10 @@ export default function CreerTournoiPage() {
         return showError("Tu dois être connecté pour créer un tournoi. Rendez-vous sur la page Connexion.");
       }
 
+      // Date principale = première session (pour compat backward)
+      const sortedSessions = [...sessions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      const mainSession = sortedSessions[0];
+
       const tournoi = {
         nom: nom.trim(),
         description: description.trim(),
@@ -91,8 +114,8 @@ export default function CreerTournoiPage() {
         ville: ville.trim(),
         region,
         adresse: adresse.trim(),
-        date_tournoi: dateTournoi,
-        heure,
+        date_tournoi: mainSession.date,
+        heure: mainSession.heure || "10:00",
         contact_nom: contactNom.trim(),
         contact_email: contactEmail.trim(),
         contact_tel: contactTel.trim(),
@@ -101,11 +124,32 @@ export default function CreerTournoiPage() {
         user_id: session.user.id,
       };
 
-      const { error: dbError } = await supabase.from("tournois").insert([tournoi]);
+      const { data: tInserted, error: dbError } = await supabase
+        .from("tournois")
+        .insert([tournoi])
+        .select("id")
+        .single();
 
-      if (dbError) {
+      if (dbError || !tInserted) {
         setLoading(false);
-        return showError("Erreur Supabase : " + dbError.message + (dbError.details ? " — " + dbError.details : "") + (dbError.hint ? " (Hint: " + dbError.hint + ")" : ""));
+        return showError("Erreur Supabase : " + (dbError?.message || "insertion échouée") + (dbError?.details ? " — " + dbError.details : "") + (dbError?.hint ? " (Hint: " + dbError.hint + ")" : ""));
+      }
+
+      const tournoiId = tInserted.id;
+      const sessionsPayload = sortedSessions.map((s, i) => ({
+        tournoi_id: tournoiId,
+        nom: s.nom.trim() || `Session ${i + 1}`,
+        date_session: s.date,
+        heure: s.heure || "10:00",
+        format: s.format || format,
+        nb_joueurs_max: s.nb_joueurs_max ? parseInt(s.nb_joueurs_max) : parseInt(nbJoueurs),
+        type_jeu: typeJeu,
+      }));
+      const { error: sessErr } = await supabase.from("sessions_tournoi").insert(sessionsPayload);
+      if (sessErr) {
+        // Le tournoi est créé mais les sessions ont échoué : on prévient l'utilisateur
+        setLoading(false);
+        return showError("Tournoi créé mais erreur sessions : " + sessErr.message);
       }
 
       setSuccess(true);
@@ -120,12 +164,16 @@ export default function CreerTournoiPage() {
 
   function resetForm() {
     setTypeJeu("traditionnel"); setNom(""); setDescription(""); setNbJoueurs(""); setFormat("");
-    setVille(""); setRegion(""); setAdresse(""); setDateTournoi("");
-    setHeure("10:00"); setContactNom(""); setContactEmail("");
+    setVille(""); setRegion(""); setAdresse("");
+    setSessions([emptySession()]);
+    setContactNom(""); setContactEmail("");
     setContactTel(""); setInfosPratiques("");
     setStep(1); setSuccess(false);
   }
 
+  const firstSessionDate = sessions[0]?.date
+    ? new Date(sessions[0].date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+    : "—";
   const recapFields = [
     { label: "Tournoi", value: nom },
     { label: "Type de jeu", value: typeJeu === "electronique" ? "Électronique" : "Traditionnel" },
@@ -133,8 +181,8 @@ export default function CreerTournoiPage() {
     { label: "Joueurs max", value: nbJoueurs },
     { label: "Ville", value: ville },
     { label: "Région", value: region },
-    { label: "Date", value: dateTournoi ? new Date(dateTournoi).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "—" },
-    { label: "Heure", value: heure || "—" },
+    { label: "Sessions", value: `${sessions.length} session${sessions.length > 1 ? "s" : ""}` },
+    { label: "Première date", value: firstSessionDate },
   ];
 
   return (
@@ -279,14 +327,70 @@ export default function CreerTournoiPage() {
               <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Adresse complète</label>
               <input type="text" value={adresse} onChange={(e) => setAdresse(e.target.value)} placeholder="Ex : Salle des sports, 12 rue de la Paix" />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-              <div>
-                <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Date du tournoi *</label>
-                <input type="date" value={dateTournoi} onChange={(e) => setDateTournoi(e.target.value)} />
+            {/* Sessions dynamiques */}
+            <div className="mb-2">
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-[0.82rem] font-semibold text-[#ccc]">Sessions * ({sessions.length}/10)</label>
+                <button
+                  type="button"
+                  onClick={addSession}
+                  disabled={sessions.length >= 10}
+                  className="bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] text-[#e8220a] font-barlow-condensed font-bold text-[0.85rem] px-3 py-[6px] rounded-[8px] cursor-pointer hover:bg-[rgba(232,34,10,0.2)] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+                >
+                  <Plus className="w-4 h-4" /> Ajouter une session
+                </button>
               </div>
-              <div>
-                <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Heure de début</label>
-                <input type="time" value={heure} onChange={(e) => setHeure(e.target.value)} />
+              <div className="text-[0.75rem] text-[#777] mb-4">
+                Chaque session peut avoir sa propre date, son format et son nombre de joueurs.
+              </div>
+              <div className="flex flex-col gap-3">
+                {sessions.map((s, idx) => (
+                  <div key={idx} className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[12px] p-3 xs:p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="text-[0.8rem] font-bold text-[#e8220a] uppercase tracking-[1px]">Session {idx + 1}</div>
+                      {sessions.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeSession(idx)}
+                          className="text-[#777] hover:text-[#dc2626] bg-transparent border-none cursor-pointer p-1"
+                          aria-label="Supprimer cette session"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                    <div className="mb-3">
+                      <label className="block text-[0.75rem] font-semibold text-[#ccc] mb-[4px]">Nom de la session</label>
+                      <input type="text" value={s.nom} onChange={(e) => updateSession(idx, { nom: e.target.value })} placeholder="Ex : Simple, Doublette, Finale..." maxLength={60} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      <div>
+                        <label className="block text-[0.75rem] font-semibold text-[#ccc] mb-[4px]">Date *</label>
+                        <input type="date" value={s.date} onChange={(e) => updateSession(idx, { date: e.target.value })} />
+                      </div>
+                      <div>
+                        <label className="block text-[0.75rem] font-semibold text-[#ccc] mb-[4px]">Heure</label>
+                        <input type="time" value={s.heure} onChange={(e) => updateSession(idx, { heure: e.target.value })} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 xs:grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[0.75rem] font-semibold text-[#ccc] mb-[4px]">Format</label>
+                        <select value={s.format} onChange={(e) => updateSession(idx, { format: e.target.value })}>
+                          <option value="">Par défaut ({format || "—"})</option>
+                          <option value="Simple">Simple (1v1)</option>
+                          <option value="Doublette">Doublette (2v2)</option>
+                          <option value="Équipe">Équipe (4v4)</option>
+                          <option value="Mixte">Mixte</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[0.75rem] font-semibold text-[#ccc] mb-[4px]">Joueurs max</label>
+                        <input type="number" value={s.nb_joueurs_max} onChange={(e) => updateSession(idx, { nb_joueurs_max: e.target.value })} placeholder={nbJoueurs || "Ex: 16"} min={2} max={512} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

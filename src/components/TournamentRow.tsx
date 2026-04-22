@@ -25,6 +25,7 @@ interface Props {
   currentUserId?: string | null;
   avgRating?: number;
   ratingCount?: number;
+  sessionsCount?: number;
 }
 
 const statusClass: Record<TournamentStatus, string> = {
@@ -34,7 +35,7 @@ const statusClass: Record<TournamentStatus, string> = {
   closed: "bg-[rgba(248,113,113,0.1)] text-[#f87171]",
 };
 
-export default function TournamentRow({ id, nom, region, date_tournoi, format, type_jeu, nb_joueurs, players, prize, statut, delay = 0, isOwner, onDelete, isRegistered, onToggleRegister, registerLoading, currentUserId, avgRating = 0, ratingCount = 0 }: Props) {
+export default function TournamentRow({ id, nom, region, date_tournoi, format, type_jeu, nb_joueurs, players, prize, statut, delay = 0, isOwner, onDelete, isRegistered, onToggleRegister, registerLoading, currentUserId, avgRating = 0, ratingCount = 0, sessionsCount = 1 }: Props) {
   const isFull = players >= nb_joueurs && !isRegistered;
 
   return (
@@ -72,7 +73,7 @@ export default function TournamentRow({ id, nom, region, date_tournoi, format, t
           )}
         </div>
       </Link>
-      <div className="text-[0.85rem] text-[#ccc]">{fmtShort(date_tournoi)}</div>
+      <div className="text-[0.85rem] text-[#ccc]">{sessionsCount > 1 ? "Plusieurs dates" : fmtShort(date_tournoi)}</div>
       <div className="text-[0.82rem] text-[#777]">{region.split("-")[0].trim()}</div>
       <div className="font-barlow-condensed font-extrabold text-[1.1rem] text-[#e8220a]">{prize}€</div>
       <div className="text-[0.8rem] text-[#777]">
