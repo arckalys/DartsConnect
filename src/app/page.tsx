@@ -5,9 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Target, Calendar, Trophy, Plus, ArrowRight } from "lucide-react";
 import TournamentCard from "@/components/TournamentCard";
+import CarouselActu from "@/components/CarouselActu";
 import Footer from "@/components/Footer";
 import { createClient } from "@/lib/supabase";
 import { Tournament } from "@/lib/types";
+import type { CarouselSlide } from "@/components/CarouselActu";
 
 export const runtime = "edge";
 
@@ -17,18 +19,21 @@ export default function HomePage() {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
   const [inscriptionsCount, setInscriptionsCount] = useState(0);
+  const [carouselSlides, setCarouselSlides] = useState<CarouselSlide[]>([]);
 
   useEffect(() => {
     const supabase = createClient();
 
     async function fetchAll() {
       try {
-        const [{ data: tournoiData }, { count }] = await Promise.all([
+        const [{ data: tournoiData }, { count }, { data: carouselData }] = await Promise.all([
           supabase.from("tournois").select("*").order("date_tournoi", { ascending: true }),
           supabase.from("inscriptions").select("id", { count: "exact", head: true }),
+          supabase.from("carousel").select("id, url, titre, description").eq("actif", true).order("ordre", { ascending: true }),
         ]);
         if (tournoiData) setTournaments(tournoiData);
         setInscriptionsCount(count ?? 0);
+        if (carouselData) setCarouselSlides(carouselData);
       } catch {
         // Supabase unavailable — show empty state
       } finally {
@@ -78,41 +83,54 @@ export default function HomePage() {
     <div className="animate-page-in">
       {/* ── HERO ── */}
       <section className="relative min-h-[70vh] xs:min-h-[75vh] sm:min-h-[80vh] lg:min-h-screen flex items-center px-3 xs:px-4 sm:px-6 lg:px-10 overflow-hidden bg-[#080808]">
-        {/* Radial red glow - right side */}
-        <div className="absolute inset-0 z-0" style={{ background: "radial-gradient(ellipse 60% 70% at 80% 50%, rgba(232,34,10,0.06), transparent)" }} />
+        {/* Radial red glow */}
+        <div className="absolute inset-0 z-0" style={{ background: "radial-gradient(ellipse 60% 70% at 75% 50%, rgba(232,34,10,0.07), transparent)" }} />
 
         {/* Horizontal red accent line at bottom */}
         <div className="absolute bottom-0 left-0 right-0 h-px z-[2] bg-[rgba(232,34,10,0.15)]" />
 
-        {/* Content */}
-        <div className="relative z-[1] max-w-[620px] animate-fade-up pt-[80px] xs:pt-[70px] sm:pt-0">
-          <div className="inline-flex items-center gap-2 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.4)] rounded-full px-3 sm:px-[14px] py-[5px] text-[0.62rem] xs:text-[0.65rem] sm:text-[0.72rem] font-bold tracking-[1.5px] uppercase text-[#e8220a] mb-4 sm:mb-6">
-            <Target className="w-[14px] h-[14px]" />
-            Tournois de fléchettes
+        {/* Content — 2 colonnes sur grand écran */}
+        <div className="relative z-[1] w-full max-w-[1280px] mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-14 xl:gap-20 pt-[80px] xs:pt-[70px] sm:pt-10 lg:pt-0 pb-6 lg:pb-0">
+
+          {/* Gauche : texte + recherche */}
+          <div className="flex-1 min-w-0 max-w-[580px] animate-fade-up">
+            <div className="inline-flex items-center gap-2 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.4)] rounded-full px-3 sm:px-[14px] py-[5px] text-[0.62rem] xs:text-[0.65rem] sm:text-[0.72rem] font-bold tracking-[1.5px] uppercase text-[#e8220a] mb-4 sm:mb-6">
+              <Target className="w-[14px] h-[14px]" />
+              Tournois de fléchettes
+            </div>
+            <h1 className="font-barlow-condensed font-black text-[1.8rem] xs:text-[2.2rem] sm:text-[clamp(2.8rem,5vw,4rem)] lg:text-[clamp(2.6rem,4.5vw,3.8rem)] xl:text-[clamp(3rem,5vw,4.4rem)] leading-[1.0] mb-4 sm:mb-5 uppercase tracking-tight">
+              Trouvez votre<br />
+              <span className="text-[#e8220a]">prochain tournoi</span>
+            </h1>
+            <p className="text-[0.85rem] xs:text-[0.9rem] sm:text-[1rem] text-[#aaa] leading-[1.7] mb-6 sm:mb-9 max-w-[480px]">
+              Tous les tournois de fléchettes en France réunis sur une seule plateforme. Cherchez, trouvez et inscrivez-vous en quelques clics.
+            </p>
+            <div className="flex gap-[10px] flex-col sm:flex-row">
+              <input
+                ref={searchRef}
+                className="flex-1 bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] rounded-[10px] px-3 xs:px-[18px] py-[11px] xs:py-[13px] text-white font-barlow text-[0.9rem] xs:text-[0.95rem] outline-none transition-colors focus:border-[rgba(232,34,10,0.5)] placeholder:text-[#555]"
+                type="text"
+                placeholder="Ville, tournoi, région..."
+                onKeyDown={(e) => e.key === "Enter" && heroSearch()}
+              />
+              <button
+                onClick={heroSearch}
+                className="bg-[#e8220a] text-white font-barlow-condensed font-bold text-[0.95rem] xs:text-[1rem] px-[18px] xs:px-[26px] py-[11px] xs:py-[13px] rounded-[10px] flex items-center justify-center gap-2 transition-all shadow-red-glow-lg hover:bg-[#b81a08] whitespace-nowrap"
+              >
+                Chercher
+                <ArrowRight className="w-[14px] h-[14px]" />
+              </button>
+            </div>
           </div>
-          <h1 className="font-barlow-condensed font-black text-[1.8rem] xs:text-[2.2rem] sm:text-[clamp(2.8rem,5vw,4rem)] lg:text-[clamp(3rem,6vw,5rem)] leading-[1.0] mb-4 sm:mb-5 uppercase tracking-tight">
-            Trouvez votre<br />
-            <span className="text-[#e8220a]">prochain tournoi</span>
-          </h1>
-          <p className="text-[0.85rem] xs:text-[0.9rem] sm:text-[1rem] text-[#aaa] leading-[1.7] mb-6 sm:mb-9 max-w-[480px]">
-            Tous les tournois de fléchettes en France réunis sur une seule plateforme. Cherchez, trouvez et inscrivez-vous en quelques clics.
-          </p>
-          <div className="flex gap-[10px] flex-col sm:flex-row">
-            <input
-              ref={searchRef}
-              className="flex-1 bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] rounded-[10px] px-3 xs:px-[18px] py-[11px] xs:py-[13px] text-white font-barlow text-[0.9rem] xs:text-[0.95rem] outline-none transition-colors focus:border-[rgba(232,34,10,0.5)] placeholder:text-[#555]"
-              type="text"
-              placeholder="Ville, tournoi, région..."
-              onKeyDown={(e) => e.key === "Enter" && heroSearch()}
-            />
-            <button
-              onClick={heroSearch}
-              className="bg-[#e8220a] text-white font-barlow-condensed font-bold text-[0.95rem] xs:text-[1rem] px-[18px] xs:px-[26px] py-[11px] xs:py-[13px] rounded-[10px] flex items-center justify-center gap-2 transition-all shadow-red-glow-lg hover:bg-[#b81a08] whitespace-nowrap"
-            >
-              Chercher
-              <ArrowRight className="w-[14px] h-[14px]" />
-            </button>
+
+          {/* Droite : carousel actualités */}
+          <div
+            className="w-full lg:flex-1 lg:max-w-[540px] xl:max-w-[580px] animate-fade-up"
+            style={{ animationDelay: "0.12s" }}
+          >
+            <CarouselActu slides={carouselSlides} />
           </div>
+
         </div>
       </section>
 
