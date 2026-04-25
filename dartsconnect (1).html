@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DartsConnect.FR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red: #e8220a; --red-dark: #b81a08; --red-glow: rgba(232,34,10,0.3);
+      --bg: #0a0a0a; --bg2: #111; --bg3: #181818;
+      --border: rgba(255,255,255,0.08); --text: #fff; --muted: #777; --card: #141414;
+      --green: #22c55e; --orange: #f97316; --error: #f87171;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: 60px;
+      background: rgba(10,10,10,0.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.2rem; text-decoration: none; color: var(--text); cursor: pointer; }
+    .logo-icon { width: 32px; height: 32px; background: var(--red); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 0 12px var(--red-glow); }
+    .nav-links { display: flex; gap: 4px; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--muted); font-size: 0.88rem; font-weight: 500; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; cursor: pointer; }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+    .nav-links a.active { color: var(--text); border: 1px solid rgba(232,34,10,0.4); background: rgba(232,34,10,0.08); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .btn-create { background: var(--red); color: #fff; border: none; cursor: pointer; font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 0.88rem; padding: 8px 18px; border-radius: 8px; transition: all 0.2s; box-shadow: 0 2px 12px var(--red-glow); }
+    .btn-create:hover { background: var(--red-dark); }
+    .nav-user { width: 34px; height: 34px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; transition: border-color 0.2s; }
+    .nav-user:hover { border-color: var(--red); }
+    .nav-user.logged-in { border-color: var(--red); background: rgba(232,34,10,0.1); }
+
+    /* ── PAGES ── */
+    .page { display: none; animation: pageIn 0.3s ease both; }
+    .page.active { display: block; }
+    @keyframes pageIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ════════════════════════════
+       PAGE ACCUEIL
+    ════════════════════════════ */
+    .hero {
+      position: relative; min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 0 2.5rem; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, rgba(10,10,10,1) 30%, rgba(10,10,10,0.7) 60%, rgba(10,10,10,0.15) 100%),
+        linear-gradient(to bottom, rgba(10,10,10,0.5) 0%, transparent 30%, transparent 70%, rgba(10,10,10,0.5) 100%);
+      z-index: 1;
+    }
+    .hero-dartboard {
+      position: absolute; right: -130px; top: 50%;
+      transform: translateY(-52%) rotate(-18deg);
+      width: 820px; height: 820px; opacity: 0.75; z-index: 0;
+      filter: drop-shadow(0 0 80px rgba(232,34,10,0.25)) drop-shadow(0 30px 80px rgba(0,0,0,0.9));
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 620px; animation: fadeUp 0.8s ease both; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(232,34,10,0.12); border: 1px solid rgba(232,34,10,0.4); border-radius: 100px; padding: 5px 14px; font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--red); margin-bottom: 1.4rem; }
+    .hero h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(3rem,6vw,5rem); line-height: 1.0; margin-bottom: 1.2rem; text-transform: uppercase; letter-spacing: -1px; }
+    .hero h1 span { color: var(--red); }
+    .hero p { font-size: 1rem; color: #aaa; line-height: 1.7; margin-bottom: 2.2rem; max-width: 480px; }
+    .search-bar { display: flex; gap: 10px; }
+    .search-input-hero { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 10px; padding: 13px 18px; color: var(--text); font-family: 'Barlow', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+    .search-input-hero::placeholder { color: #555; }
+    .search-input-hero:focus { border-color: rgba(232,34,10,0.5); }
+    .btn-search { background: var(--red); color: #fff; border: none; cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1rem; padding: 13px 26px; border-radius: 10px; display: flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 16px var(--red-glow); white-space: nowrap; }
+    .btn-search:hover { background: var(--red-dark); }
+
+    .stats-strip { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2rem 2.5rem; display: flex; justify-content: center; }
+    .stat-item { flex: 1; max-width: 280px; text-align: center; padding: 0 2rem; border-right: 1px solid var(--border); }
+    .stat-item:last-child { border-right: none; }
+    .stat-number { font-family: 'Barlow Condensed', sans-serif; font-size: 2.8rem; font-weight: 900; color: var(--red); line-height: 1; margin-bottom: 4px; }
+    .stat-label { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+
+    .home-section { padding: 3.5rem 2.5rem; max-width: 1200px; margin: 0 auto; }
+    .quick-nav { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 3.5rem; }
+    .quick-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.4rem 1.6rem; display: flex; align-items: center; gap: 16px; cursor: pointer; text-decoration: none; color: var(--text); transition: border-color 0.2s, background 0.2s, transform 0.2s; }
+    .quick-card:hover { border-color: rgba(232,34,10,0.35); background: rgba(232,34,10,0.05); transform: translateY(-2px); }
+    .quick-card-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .icon-red { background: rgba(232,34,10,0.15); }
+    .icon-orange { background: rgba(255,140,0,0.12); }
+    .icon-green { background: rgba(34,197,94,0.12); }
+    .quick-card-text h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.05rem; margin-bottom: 2px; }
+    .quick-card-text p { font-size: 0.8rem; color: var(--muted); }
+    .quick-card-arrow { margin-left: auto; color: var(--muted); font-size: 1.1rem; transition: transform 0.2s, color 0.2s; }
+    .quick-card:hover .quick-card-arrow { transform: translateX(4px); color: var(--red); }
+
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .section-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .see-all { font-size: 0.85rem; color: var(--red); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 4px; cursor: pointer; transition: gap 0.2s; }
+    .see-all:hover { gap: 8px; }
+
+    .tournaments-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+
+    /* ════════════════════════════
+       CARTES TOURNOI (partagées)
+    ════════════════════════════ */
+    .tournament-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; cursor: pointer; text-decoration: none; color: var(--text); transition: border-color 0.2s, transform 0.2s; display: flex; flex-direction: column; animation: fadeUp 0.4s ease both; }
+    .tournament-card:hover { border-color: rgba(232,34,10,0.4); transform: translateY(-3px); }
+    .tc-top { padding: 1.2rem 1.4rem 0.8rem; border-bottom: 1px solid var(--border); }
+    .tc-badges { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+    .badge { display: inline-block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 3px 9px; border-radius: 100px; }
+    .badge-open { background: rgba(34,197,94,0.12); color: var(--green); }
+    .badge-soon { background: rgba(249,115,22,0.12); color: var(--orange); }
+    .badge-full { background: rgba(255,255,255,0.06); color: var(--muted); }
+    .badge-closed { background: rgba(248,113,113,0.1); color: #f87171; }
+    .badge-format { background: rgba(255,255,255,0.06); color: #aaa; }
+    .tc-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .tc-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.05rem; line-height: 1.25; }
+    .tc-prize { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--red); white-space: nowrap; }
+    .tc-body { padding: 1rem 1.4rem 1.2rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .tc-meta { display: flex; flex-direction: column; gap: 5px; margin-bottom: 1rem; }
+    .tc-row { display: flex; align-items: center; gap: 7px; font-size: 0.8rem; color: var(--muted); }
+    .tc-row svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .tc-footer { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+    .tc-players-info { flex: 1; }
+    .tc-players { font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; }
+    .tc-players strong { color: var(--text); }
+    .progress-bar { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; }
+    .progress-fill { height: 100%; border-radius: 2px; background: var(--red); transition: width 0.4s; }
+    .tc-cta { font-size: 0.78rem; font-weight: 700; color: var(--red); white-space: nowrap; display: flex; align-items: center; gap: 3px; transition: gap 0.2s; }
+    .tc-cta:hover { gap: 6px; }
+
+    /* ════════════════════════════
+       PAGE TOURNOIS
+    ════════════════════════════ */
+    .page-header { padding: 88px 2.5rem 0; background: linear-gradient(to bottom, rgba(232,34,10,0.04) 0%, transparent 100%); border-bottom: 1px solid var(--border); }
+    .page-header-inner { max-width: 1200px; margin: 0 auto; padding-bottom: 1.5rem; }
+    .page-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2.4rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .page-count { font-size: 0.88rem; color: var(--muted); margin-top: 4px; }
+    .page-count span { color: var(--red); font-weight: 700; }
+
+    .filters-bar { padding: 1.2rem 2.5rem; border-bottom: 1px solid var(--border); background: var(--bg2); position: sticky; top: 60px; z-index: 50; }
+    .filters-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .search-wrap { position: relative; flex: 1; min-width: 220px; }
+    .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); }
+    .search-filter { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px 10px 38px; color: var(--text); font-family: 'Barlow', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+    .search-filter:focus { border-color: rgba(232,34,10,0.4); }
+    .search-filter::placeholder { color: #444; }
+    .filter-select { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; color: var(--text); font-family: 'Barlow', sans-serif; font-size: 0.88rem; outline: none; cursor: pointer; }
+    .filter-select option { background: var(--bg2); }
+    .filters-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .view-switch { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .view-btn { width: 36px; height: 36px; border: none; background: none; cursor: pointer; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .view-btn.active { background: var(--red); color: #fff; }
+    .view-btn svg { width: 16px; height: 16px; }
+
+    .t-content { max-width: 1200px; margin: 0 auto; padding: 2rem 2.5rem; }
+    .sort-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
+    .sort-label { font-size: 0.82rem; color: var(--muted); }
+    .sort-select { background: transparent; border: none; color: var(--muted); font-family: 'Barlow', sans-serif; font-size: 0.82rem; cursor: pointer; outline: none; }
+    .sort-select option { background: var(--bg2); }
+
+    .grid-view { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .list-view { display: flex; flex-direction: column; gap: 10px; }
+    .list-header { display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr 1fr auto; gap: 16px; padding: 0.5rem 1.4rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+    .tournament-row { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.4rem; display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr 1fr auto; align-items: center; gap: 16px; cursor: pointer; color: var(--text); transition: border-color 0.2s, background 0.2s; animation: fadeUp 0.3s ease both; }
+    .tournament-row:hover { border-color: rgba(232,34,10,0.35); background: rgba(232,34,10,0.02); }
+    .row-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1rem; }
+    .row-sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+    .row-date { font-size: 0.85rem; color: #ccc; }
+    .row-region { font-size: 0.82rem; color: var(--muted); }
+    .row-prize { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--red); }
+    .row-players { font-size: 0.8rem; color: var(--muted); }
+    .row-players strong { color: var(--text); }
+    .row-btn { background: rgba(232,34,10,0.1); border: 1px solid rgba(232,34,10,0.25); color: var(--red); font-size: 0.78rem; font-weight: 700; padding: 6px 14px; border-radius: 8px; white-space: nowrap; transition: all 0.2s; }
+    .row-btn:hover { background: rgba(232,34,10,0.2); }
+
+    .empty-state { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+    .empty-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.4rem; color: #666; margin-bottom: 8px; }
+    .pagination { display: flex; justify-content: center; gap: 6px; margin-top: 2.5rem; }
+    .page-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--muted); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-family: 'Barlow', sans-serif; }
+    .page-btn:hover, .page-btn.active { background: var(--red); color: #fff; border-color: var(--red); }
+
+    /* ════════════════════════════
+       PAGE AUTH
+    ════════════════════════════ */
+    .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 80px 1.5rem 2rem; }
+    .auth-card { width: 100%; max-width: 440px; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 2.5rem; animation: fadeUp 0.5s ease both; }
+    .card-header { margin-bottom: 2rem; text-align: center; }
+    .card-icon { width: 52px; height: 52px; background: rgba(232,34,10,0.12); border: 1px solid rgba(232,34,10,0.3); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 1rem; }
+    .card-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.8rem; text-transform: uppercase; }
+    .card-sub { font-size: 0.88rem; color: var(--muted); margin-top: 6px; }
+    .tabs { display: flex; gap: 4px; background: var(--bg2); border-radius: 10px; padding: 4px; margin-bottom: 1.8rem; }
+    .tab { flex: 1; text-align: center; padding: 8px; border-radius: 7px; font-size: 0.88rem; font-weight: 600; cursor: pointer; color: var(--muted); transition: all 0.2s; border: none; background: none; }
+    .tab.active { background: var(--card); color: var(--text); box-shadow: 0 1px 6px rgba(0,0,0,0.4); }
+    .form-group { margin-bottom: 1.1rem; }
+    label { display: block; font-size: 0.82rem; font-weight: 600; color: #ccc; margin-bottom: 6px; }
+    input[type=text], input[type=email], input[type=password], select, textarea { width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; color: var(--text); font-family: 'Barlow', sans-serif; font-size: 0.92rem; outline: none; transition: border-color 0.2s; }
+    input:focus, select:focus, textarea:focus { border-color: rgba(232,34,10,0.5); }
+    input::placeholder { color: #444; }
+    select option { background: var(--bg2); }
+    textarea { resize: vertical; min-height: 80px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .input-wrap { position: relative; }
+    .input-wrap input { padding-right: 42px; }
+    .toggle-pw { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; padding: 4px; }
+    .btn { width: 100%; padding: 13px; border-radius: 10px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.05rem; letter-spacing: 0.5px; cursor: pointer; border: none; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-primary { background: var(--red); color: #fff; box-shadow: 0 4px 16px var(--red-glow); }
+    .btn-primary:hover { background: var(--red-dark); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); margin-top: 10px; font-size: 0.9rem; }
+    .btn-outline:hover { background: rgba(255,255,255,0.05); }
+    .btn-danger { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25); color: var(--error); font-size: 0.88rem; }
+    .msg { padding: 12px 14px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 1.2rem; display: none; align-items: flex-start; gap: 8px; }
+    .msg.show { display: flex; }
+    .msg-error { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25); color: var(--error); }
+    .msg-success { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: var(--green); }
+    .link-btn { color: var(--red); font-weight: 600; cursor: pointer; background: none; border: none; font-size: inherit; font-family: inherit; }
+    .link-btn:hover { text-decoration: underline; }
+    .text-center { text-align: center; font-size: 0.84rem; color: var(--muted); margin-top: 1.2rem; }
+    .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .pw-rules { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
+    .pw-rule { font-size: 0.76rem; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .pw-rule.ok { color: var(--green); }
+    .pw-rule::before { content: '○'; font-size: 0.7rem; }
+    .pw-rule.ok::before { content: '●'; }
+    .auth-sub-page { display: none; }
+    .auth-sub-page.active { display: block; }
+
+    /* PROFIL */
+    .avatar-section { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+    .avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--bg2); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
+    .avatar-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.4rem; text-align: center; }
+    .avatar-email { font-size: 0.84rem; color: var(--muted); }
+    .niveau-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,34,10,0.12); border: 1px solid rgba(232,34,10,0.3); border-radius: 100px; padding: 4px 12px; font-size: 0.78rem; font-weight: 700; color: var(--red); margin-top: 4px; }
+    .profile-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1.5rem; }
+    .pstat { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
+    .pstat-num { font-family: 'Barlow Condensed', sans-serif; font-size: 1.6rem; font-weight: 900; color: var(--red); }
+    .pstat-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+    .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 1rem; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 2rem 2.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .footer-logo { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--muted); }
+    .footer-links { display: flex; gap: 24px; list-style: none; }
+    .footer-links a { font-size: 0.82rem; color: var(--muted); text-decoration: none; }
+    .footer-links a:hover { color: var(--text); }
+    .footer-copy { font-size: 0.78rem; color: #444; }
+
+    /* REVEAL */
+    .reveal { opacity:0; transform:translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- ════ NAV ════ -->
+<nav>
+  <div class="nav-logo" onclick="goTo('home')">
+    <div class="logo-icon">🎯</div>
+    DartsConnect.FR
+  </div>
+  <ul class="nav-links">
+    <li><a id="nav-home" class="active" onclick="goTo('home')">Accueil</a></li>
+    <li><a id="nav-tournois" onclick="goTo('tournois')">Tournois</a></li>
+    <li><a id="nav-carte" onclick="goTo('home')">Carte</a></li>
+    <li><a id="nav-inscriptions" onclick="goTo('auth')">Mes inscriptions</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="btn-create" onclick="goTo('auth')">+ Créer un tournoi</button>
+    <div class="nav-user" id="nav-user-btn" onclick="goTo('auth')">👤</div>
+  </div>
+</nav>
+
+<!-- ════════════════════════════
+     PAGE : ACCUEIL
+════════════════════════════ -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <svg id="dartboard" class="hero-dartboard" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="sisal" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#c8b89a"/><stop offset="40%" stop-color="#b8a882"/><stop offset="100%" stop-color="#8a7455"/></radialGradient>
+        <radialGradient id="sisalDark" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#2a2218"/><stop offset="60%" stop-color="#1a1510"/><stop offset="100%" stop-color="#0d0a06"/></radialGradient>
+        <radialGradient id="frame" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#3a2510"/><stop offset="50%" stop-color="#1e1208"/><stop offset="100%" stop-color="#0a0602"/></radialGradient>
+        <radialGradient id="bullGreen" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#009944"/><stop offset="100%" stop-color="#005522"/></radialGradient>
+        <radialGradient id="bullRed" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ee1111"/><stop offset="100%" stop-color="#990000"/></radialGradient>
+      </defs>
+    </svg>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        Tournois de fléchettes
+      </div>
+      <h1>Trouvez votre<br><span>prochain tournoi</span></h1>
+      <p>Tous les tournois de fléchettes en France réunis sur une seule plateforme. Cherchez, trouvez et inscrivez-vous en quelques clics.</p>
+      <div class="search-bar">
+        <input class="search-input-hero" id="hero-search" type="text" placeholder="Ville, tournoi, région..." onkeydown="if(event.key==='Enter') heroSearch()"/>
+        <button class="btn-search" onclick="heroSearch()">Chercher <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats-strip">
+    <div class="stat-item"><div class="stat-number" id="stat-total">12</div><div class="stat-label">Tournois</div></div>
+    <div class="stat-item"><div class="stat-number" id="stat-regions">10</div><div class="stat-label">Régions</div></div>
+    <div class="stat-item"><div class="stat-number" id="stat-players">158</div><div class="stat-label">Joueurs inscrits</div></div>
+  </div>
+
+  <div class="home-section">
+    <div class="quick-nav reveal">
+      <div class="quick-card" onclick="goTo('tournois')">
+        <div class="quick-card-icon icon-red">📅</div>
+        <div class="quick-card-text"><h3>Tous les tournois</h3><p>Parcourir les événements</p></div>
+        <span class="quick-card-arrow">→</span>
+      </div>
+      <div class="quick-card" onclick="goTo('home')">
+        <div class="quick-card-icon icon-orange">📍</div>
+        <div class="quick-card-text"><h3>Carte interactive</h3><p>Trouver près de chez vous</p></div>
+        <span class="quick-card-arrow">→</span>
+      </div>
+      <div class="quick-card" onclick="goTo('auth')">
+        <div class="quick-card-icon icon-green">🏆</div>
+        <div class="quick-card-text"><h3>Mes inscriptions</h3><p>Suivre mes tournois</p></div>
+        <span class="quick-card-arrow">→</span>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <div class="section-header">
+        <h2 class="section-title">Prochains tournois</h2>
+        <span class="see-all" onclick="goTo('tournois')">Voir tout →</span>
+      </div>
+      <div class="tournaments-grid" id="home-grid"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">DartsConnect.FR</div>
+    <ul class="footer-links"><li><a href="#">À propos</a></li><li><a href="#">Contact</a></li><li><a href="#">Mentions légales</a></li></ul>
+    <div class="footer-copy">© 2026 DartsConnect.FR</div>
+  </footer>
+</div>
+
+<!-- ════════════════════════════
+     PAGE : TOURNOIS
+════════════════════════════ -->
+<div class="page" id="page-tournois">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="page-title">Tous les tournois</div>
+      <div class="page-count"><span id="result-count">12</span> tournois trouvés</div>
+    </div>
+  </div>
+
+  <div class="filters-bar">
+    <div class="filters-inner">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input class="search-filter" id="t-search" type="text" placeholder="Rechercher un tournoi, une ville..." oninput="tRender()"/>
+      </div>
+      <select class="filter-select" id="t-region" onchange="tRender()">
+        <option value="">Toutes les régions</option>
+        <option>Île-de-France</option><option>Auvergne-Rhône-Alpes</option>
+        <option>Provence-Alpes-Côte d'Azur</option><option>Nouvelle-Aquitaine</option>
+        <option>Occitanie</option><option>Hauts-de-France</option>
+        <option>Grand Est</option><option>Normandie</option>
+        <option>Bretagne</option><option>Pays de la Loire</option>
+      </select>
+      <select class="filter-select" id="t-date" onchange="tRender()">
+        <option value="">Toutes les dates</option>
+        <option value="week">Cette semaine</option>
+        <option value="month">Ce mois-ci</option>
+        <option value="next">3 prochains mois</option>
+      </select>
+      <div class="filters-right">
+        <button onclick="tReset()" id="btn-reset" style="display:none;background:transparent;border:none;color:var(--muted);font-size:0.8rem;cursor:pointer;">✕ Réinitialiser</button>
+        <div class="view-switch">
+          <button class="view-btn active" id="btn-grid" onclick="tSetView('grid')" title="Vue cartes">
+            <svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </button>
+          <button class="view-btn" id="btn-list" onclick="tSetView('list')" title="Vue liste">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="t-content">
+    <div class="sort-bar">
+      <span class="sort-label" id="sort-label">12 tournois</span>
+      <select class="sort-select" id="t-sort" onchange="tRender()">
+        <option value="date">Trier par date</option>
+        <option value="prize">Trier par dotation</option>
+        <option value="places">Trier par places restantes</option>
+      </select>
+    </div>
+    <div id="t-grid" class="grid-view"></div>
+    <div id="t-list" class="list-view" style="display:none;"></div>
+    <div class="empty-state" id="t-empty" style="display:none;">
+      <div class="empty-icon">🎯</div>
+      <div class="empty-title">Aucun tournoi trouvé</div>
+      <div style="font-size:0.88rem;color:var(--muted);">Essaie de modifier tes critères de recherche</div>
+    </div>
+    <div class="pagination" id="t-pagination"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     PAGE : AUTH
+════════════════════════════ -->
+<div class="page" id="page-auth">
+  <div class="auth-wrap">
+
+    <!-- LOGIN / REGISTER -->
+    <div class="auth-card auth-sub-page active" id="auth-main">
+      <div class="card-header">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">DartsConnect.FR</div>
+        <div class="card-sub">Rejoins la communauté des fléchettes</div>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="authTab('login')">Connexion</button>
+        <button class="tab" onclick="authTab('register')">Inscription</button>
+      </div>
+      <div class="msg msg-error" id="auth-error"><span>⚠️</span><span id="auth-error-txt"></span></div>
+      <div class="msg msg-success" id="auth-success"><span>✅</span><span id="auth-success-txt"></span></div>
+
+      <!-- LOGIN -->
+      <div id="tab-login">
+        <div class="form-group"><label>Email</label><input type="email" id="l-email" placeholder="ton@email.fr"/></div>
+        <div class="form-group"><label>Mot de passe</label>
+          <div class="input-wrap"><input type="password" id="l-pwd" placeholder="••••••••"/><button class="toggle-pw" onclick="togglePw('l-pwd',this)">👁</button></div>
+        </div>
+        <div style="text-align:right;margin-bottom:1.2rem;"><button class="link-btn" onclick="authShow('forgot')" style="font-size:0.82rem;">Mot de passe oublié ?</button></div>
+        <button class="btn btn-primary" id="btn-login" data-label="Se connecter" onclick="doLogin()">Se connecter</button>
+        <p class="text-center">Pas de compte ? <button class="link-btn" onclick="authTab('register')">S'inscrire</button></p>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="tab-register" style="display:none;">
+        <div class="form-row">
+          <div class="form-group"><label>Prénom *</label><input type="text" id="r-prenom" placeholder="Jean"/></div>
+          <div class="form-group"><label>Nom *</label><input type="text" id="r-nom" placeholder="Dupont"/></div>
+        </div>
+        <div class="form-group"><label>Pseudo *</label><input type="text" id="r-pseudo" placeholder="DartMaster69"/></div>
+        <div class="form-group"><label>Email *</label><input type="email" id="r-email" placeholder="ton@email.fr"/></div>
+        <div class="form-group"><label>Mot de passe *</label>
+          <div class="input-wrap"><input type="password" id="r-pwd" placeholder="Min. 8 caractères" oninput="checkPw(this.value)"/><button class="toggle-pw" onclick="togglePw('r-pwd',this)">👁</button></div>
+          <div class="pw-rules"><div class="pw-rule" id="rule-len">Au moins 8 caractères</div><div class="pw-rule" id="rule-upper">Une majuscule</div><div class="pw-rule" id="rule-num">Un chiffre</div></div>
+        </div>
+        <div class="form-group"><label>Niveau</label>
+          <select id="r-niveau"><option value="">Sélectionne ton niveau</option><option value="debutant">Débutant</option><option value="intermediaire">Intermédiaire</option><option value="confirme">Confirmé</option><option value="expert">Expert</option></select>
+        </div>
+        <div class="form-group"><label>Région</label>
+          <select id="r-region"><option value="">Ta région</option><option>Île-de-France</option><option>Auvergne-Rhône-Alpes</option><option>Provence-Alpes-Côte d'Azur</option><option>Nouvelle-Aquitaine</option><option>Occitanie</option><option>Hauts-de-France</option><option>Grand Est</option><option>Normandie</option><option>Bretagne</option><option>Pays de la Loire</option></select>
+        </div>
+        <button class="btn btn-primary" id="btn-register" data-label="Créer mon compte" onclick="doRegister()">Créer mon compte</button>
+        <p class="text-center">Déjà un compte ? <button class="link-btn" onclick="authTab('login')">Se connecter</button></p>
+      </div>
+    </div>
+
+    <!-- FORGOT PASSWORD -->
+    <div class="auth-card auth-sub-page" id="auth-forgot">
+      <div class="card-header"><div class="card-icon">🔑</div><div class="card-title">Mot de passe oublié</div><div class="card-sub">On t'envoie un lien de réinitialisation</div></div>
+      <div class="msg msg-error" id="f-error"><span>⚠️</span><span id="f-error-txt"></span></div>
+      <div class="msg msg-success" id="f-success"><span>✅</span><span id="f-success-txt"></span></div>
+      <div class="form-group"><label>Email</label><input type="email" id="f-email" placeholder="ton@email.fr"/></div>
+      <button class="btn btn-primary" id="btn-forgot" data-label="Envoyer le lien" onclick="doForgot()">Envoyer le lien</button>
+      <button class="btn btn-outline" onclick="authShow('main')">← Retour</button>
+    </div>
+
+    <!-- PROFIL -->
+    <div class="auth-card auth-sub-page" id="auth-profile" style="max-width:520px;">
+      <div class="avatar-section">
+        <div class="avatar">👤</div>
+        <div>
+          <div class="avatar-name" id="p-name">—</div>
+          <div class="avatar-email" id="p-email">—</div>
+          <div class="niveau-badge" id="p-niveau">🎯 Niveau non défini</div>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="pstat"><div class="pstat-num">0</div><div class="pstat-label">Tournois</div></div>
+        <div class="pstat"><div class="pstat-num">0</div><div class="pstat-label">Victoires</div></div>
+        <div class="pstat"><div class="pstat-num" id="p-region">—</div><div class="pstat-label">Région</div></div>
+      </div>
+      <div class="msg msg-error" id="p-error"><span>⚠️</span><span id="p-error-txt"></span></div>
+      <div class="msg msg-success" id="p-success"><span>✅</span><span id="p-success-txt"></span></div>
+      <div class="section-label">Modifier mon profil</div>
+      <div class="form-row">
+        <div class="form-group"><label>Prénom</label><input type="text" id="e-prenom"/></div>
+        <div class="form-group"><label>Nom</label><input type="text" id="e-nom"/></div>
+      </div>
+      <div class="form-group"><label>Pseudo</label><input type="text" id="e-pseudo"/></div>
+      <div class="form-group"><label>Niveau</label>
+        <select id="e-niveau"><option value="debutant">Débutant</option><option value="intermediaire">Intermédiaire</option><option value="confirme">Confirmé</option><option value="expert">Expert</option></select>
+      </div>
+      <div class="form-group"><label>Région</label>
+        <select id="e-region"><option value="">Ma région</option><option>Île-de-France</option><option>Auvergne-Rhône-Alpes</option><option>Provence-Alpes-Côte d'Azur</option><option>Nouvelle-Aquitaine</option><option>Occitanie</option><option>Hauts-de-France</option><option>Grand Est</option><option>Normandie</option><option>Bretagne</option><option>Pays de la Loire</option></select>
+      </div>
+      <div class="form-group"><label>Bio</label><textarea id="e-bio" placeholder="Parle de toi..."></textarea></div>
+      <button class="btn btn-primary" id="btn-save" data-label="Sauvegarder" onclick="doSave()">Sauvegarder</button>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
+        <button class="btn btn-outline" style="flex:1;" onclick="goTo('home')">← Accueil</button>
+        <button class="btn btn-danger" style="flex:1;" onclick="doLogout()">Se déconnecter</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── SUPABASE ──
+const { createClient } = supabase;
+const sb = createClient(
+  'https://ubblzubuercumamjosfs.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InViYmx6dWJ1ZXJjdW1hbWpvc2ZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NzU5OTAsImV4cCI6MjA5MDM1MTk5MH0.Dq505N7KRdYhDn9DuE8f3RcK4VfrCOh56s9rJCzwljU'
+);
+
+// ── NAVIGATION ──
+function goTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  const navEl = document.getElementById('nav-'+page);
+  if(navEl) navEl.classList.add('active');
+  window.scrollTo(0,0);
+  if(page === 'tournois') tRender();
+}
+
+// ── DARTBOARD ──
+(function() {
+  const svg = document.getElementById('dartboard');
+  const ns = 'http://www.w3.org/2000/svg';
+  const cx=250, cy=250;
+  const R = { frameOut:248, out:215, dblOut:215, dblIn:198, triOut:135, triIn:118, bullOut:34, bullIn:16 };
+  const nums = [20,1,18,4,13,6,10,15,2,17,3,19,7,16,8,11,14,9,12,5];
+  function pt(r,a) { const rad=(a-90)*Math.PI/180; return [cx+r*Math.cos(rad), cy+r*Math.sin(rad)]; }
+  function arcPath(r1,r2,s,e) {
+    const [x1,y1]=pt(r1,s),[x2,y2]=pt(r2,s),[x3,y3]=pt(r2,e),[x4,y4]=pt(r1,e);
+    return `M${x1},${y1} A${r1},${r1} 0 0,1 ${x4},${y4} L${x3},${y3} A${r2},${r2} 0 0,0 ${x2},${y2} Z`;
+  }
+  function add(tag, attrs) { const el=document.createElementNS(ns,tag); Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v)); svg.appendChild(el); return el; }
+  add('circle',{cx,cy,r:R.frameOut,fill:'url(#frame)'});
+  add('circle',{cx,cy,r:R.out,fill:'#1a1510'});
+  for(let i=0;i<20;i++){const s=i*18-9,e=s+18,light=i%2===0;add('path',{d:arcPath(R.out,R.bullOut+2,s,e),fill:light?'url(#sisal)':'url(#sisalDark)',stroke:'#0d0a06','stroke-width':'0.8'});}
+  for(let i=0;i<20;i++){const s=i*18-9,e=s+18,red=i%2===0;add('path',{d:arcPath(R.dblOut,R.dblIn,s,e),fill:red?'#cc1111':'#006633',stroke:'#0d0a06','stroke-width':'0.5'});}
+  for(let i=0;i<20;i++){const s=i*18-9,e=s+18,light=i%2===0;add('path',{d:arcPath(R.dblIn,R.triOut,s,e),fill:light?'url(#sisal)':'url(#sisalDark)',stroke:'#0d0a06','stroke-width':'0.5'});}
+  for(let i=0;i<20;i++){const s=i*18-9,e=s+18,red=i%2===0;add('path',{d:arcPath(R.triOut,R.triIn,s,e),fill:red?'#cc1111':'#006633',stroke:'#0d0a06','stroke-width':'0.5'});}
+  for(let i=0;i<20;i++){const s=i*18-9,e=s+18,light=i%2===0;add('path',{d:arcPath(R.triIn,R.bullOut+2,s,e),fill:light?'url(#sisal)':'url(#sisalDark)',stroke:'#0d0a06','stroke-width':'0.5'});}
+  for(let i=0;i<20;i++){const a=i*18-9,[x1,y1]=pt(R.bullOut+2,a),[x2,y2]=pt(R.out,a);add('line',{x1,y1,x2,y2,stroke:'#0d0a06','stroke-width':'1.2'});}
+  [R.dblOut,R.dblIn,R.triOut,R.triIn].forEach(r=>add('circle',{cx,cy,r,fill:'none',stroke:'#0d0a06','stroke-width':'1.5'}));
+  add('circle',{cx,cy,r:R.out,fill:'none',stroke:'#0d0a06','stroke-width':'2'});
+  add('circle',{cx,cy,r:R.bullOut,fill:'url(#bullGreen)',stroke:'#0d0a06','stroke-width':'1.5'});
+  add('circle',{cx,cy,r:R.bullIn,fill:'url(#bullRed)',stroke:'#0d0a06','stroke-width':'1'});
+  add('circle',{cx,cy,r:3,fill:'#ff4422'});
+  nums.forEach((num,i)=>{
+    const [x,y]=pt(R.out+17,i*18);
+    const t=document.createElementNS(ns,'text');
+    Object.entries({x,y,'text-anchor':'middle','dominant-baseline':'middle','font-family':'Arial Black, sans-serif','font-size':'17','font-weight':'900','fill':'#f0e0c0'}).forEach(([k,v])=>t.setAttribute(k,v));
+    t.textContent=num; svg.appendChild(t);
+  });
+})();
+
+// ── DONNÉES ──
+const TOURNAMENTS = [
+  {id:1,name:"Open de Paris — Fléchettes 2026",city:"Paris",region:"Île-de-France",date:"2026-04-12",prize:500,format:"Simple",players:18,maxPlayers:32,status:"open"},
+  {id:2,name:"Championnat de Lyon 501",city:"Lyon",region:"Auvergne-Rhône-Alpes",date:"2026-04-19",prize:300,format:"Doublette",players:28,maxPlayers:32,status:"soon"},
+  {id:3,name:"Grand Prix Marseille Summer",city:"Marseille",region:"Provence-Alpes-Côte d'Azur",date:"2026-05-03",prize:1000,format:"Simple",players:8,maxPlayers:64,status:"open"},
+  {id:4,name:"Tournoi des Flandres",city:"Lille",region:"Hauts-de-France",date:"2026-04-26",prize:200,format:"Simple",players:16,maxPlayers:16,status:"full"},
+  {id:5,name:"Open Bordelais de Fléchettes",city:"Bordeaux",region:"Nouvelle-Aquitaine",date:"2026-05-10",prize:400,format:"Triplette",players:6,maxPlayers:24,status:"open"},
+  {id:6,name:"Nantes Darts Challenge",city:"Nantes",region:"Pays de la Loire",date:"2026-05-17",prize:250,format:"Simple",players:12,maxPlayers:32,status:"open"},
+  {id:7,name:"Toulouse Open 2026",city:"Toulouse",region:"Occitanie",date:"2026-06-07",prize:600,format:"Doublette",players:4,maxPlayers:32,status:"open"},
+  {id:8,name:"Strasbourg Darts Masters",city:"Strasbourg",region:"Grand Est",date:"2026-05-24",prize:350,format:"Simple",players:22,maxPlayers:24,status:"soon"},
+  {id:9,name:"Breizh Darts Open",city:"Rennes",region:"Bretagne",date:"2026-06-14",prize:150,format:"Simple",players:10,maxPlayers:32,status:"open"},
+  {id:10,name:"Normandie Challenge Cup",city:"Rouen",region:"Normandie",date:"2026-04-05",prize:200,format:"Doublette",players:32,maxPlayers:32,status:"full"},
+  {id:11,name:"Montpellier Darts Festival",city:"Montpellier",region:"Occitanie",date:"2026-07-12",prize:800,format:"Simple",players:0,maxPlayers:64,status:"open"},
+  {id:12,name:"Dijon Classic Fléchettes",city:"Dijon",region:"Bourgogne-Franche-Comté",date:"2026-05-30",prize:180,format:"Simple",players:14,maxPlayers:24,status:"open"},
+];
+
+function statusLabel(s){return{open:'Inscriptions ouvertes',soon:'Bientôt complet',full:'Complet',closed:'Terminé'}[s]||s;}
+function statusClass(s){return{open:'badge-open',soon:'badge-soon',full:'badge-full',closed:'badge-closed'}[s]||'';}
+function fmtDate(d){return new Date(d).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});}
+function fmtShort(d){return new Date(d).toLocaleDateString('fr-FR',{day:'numeric',month:'short'});}
+
+// ── ACCUEIL : stats + cartes ──
+const totalP = TOURNAMENTS.reduce((s,t)=>s+t.players,0);
+const regs = [...new Set(TOURNAMENTS.map(t=>t.region))].length;
+document.getElementById('stat-total').textContent = TOURNAMENTS.length;
+document.getElementById('stat-regions').textContent = regs;
+document.getElementById('stat-players').textContent = totalP;
+
+const upcoming = [...TOURNAMENTS].sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,3);
+document.getElementById('home-grid').innerHTML = upcoming.map(t => {
+  const p = Math.round((t.players/t.maxPlayers)*100);
+  return `<div class="tournament-card" onclick="goTo('tournois')">
+    <div class="tc-top">
+      <div class="tc-badges"><span class="badge ${statusClass(t.status)}">${statusLabel(t.status)}</span><span class="badge badge-format">${t.format}</span></div>
+      <div class="tc-header-row"><div class="tc-name">${t.name}</div><div class="tc-prize">${t.prize.toLocaleString('fr-FR')}€</div></div>
+    </div>
+    <div class="tc-body">
+      <div class="tc-meta">
+        <div class="tc-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${fmtDate(t.date)}</div>
+        <div class="tc-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${t.city}, ${t.region}</div>
+      </div>
+      <div class="tc-footer">
+        <div class="tc-players-info">
+          <div class="tc-players"><strong>${t.players}</strong>/${t.maxPlayers} joueurs</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${p}%"></div></div>
+        </div>
+        <span class="tc-cta">${t.status==='full'?'Voir →':"S'inscrire →"}</span>
+      </div>
+    </div>
+  </div>`;
+}).join('');
+
+// ── SCROLL REVEAL ──
+const revealObs = new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(r=>revealObs.observe(r));
+
+// ── HERO SEARCH ──
+function heroSearch() {
+  const q = document.getElementById('hero-search').value;
+  if(q) document.getElementById('t-search').value = q;
+  goTo('tournois');
+}
+
+// ════════════════════════════
+// TOURNOIS
+// ════════════════════════════
+let tView = 'grid', tPage = 1;
+const PER = 9;
+
+function tGetFiltered() {
+  let data = [...TOURNAMENTS];
+  const q = document.getElementById('t-search').value.toLowerCase();
+  const reg = document.getElementById('t-region').value;
+  const df = document.getElementById('t-date').value;
+  const sort = document.getElementById('t-sort').value;
+  const now = new Date();
+  if(q) data = data.filter(t=>t.name.toLowerCase().includes(q)||t.city.toLowerCase().includes(q)||t.region.toLowerCase().includes(q));
+  if(reg) data = data.filter(t=>t.region===reg);
+  if(df==='week'){const e=new Date(now);e.setDate(e.getDate()+7);data=data.filter(t=>new Date(t.date)>=now&&new Date(t.date)<=e);}
+  else if(df==='month'){data=data.filter(t=>{const d=new Date(t.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});}
+  else if(df==='next'){const e=new Date(now);e.setMonth(e.getMonth()+3);data=data.filter(t=>new Date(t.date)>=now&&new Date(t.date)<=e);}
+  if(sort==='date') data.sort((a,b)=>new Date(a.date)-new Date(b.date));
+  else if(sort==='prize') data.sort((a,b)=>b.prize-a.prize);
+  else if(sort==='places') data.sort((a,b)=>(a.maxPlayers-a.players)-(b.maxPlayers-b.players));
+  return data;
+}
+
+function tRender() {
+  const filtered = tGetFiltered();
+  const total = filtered.length;
+  const paged = filtered.slice((tPage-1)*PER, tPage*PER);
+  document.getElementById('result-count').textContent = total;
+  document.getElementById('sort-label').textContent = `${total} tournoi${total>1?'s':''}`;
+  const q=document.getElementById('t-search').value, r=document.getElementById('t-region').value, d=document.getElementById('t-date').value;
+  document.getElementById('btn-reset').style.display = (q||r||d)?'block':'none';
+  document.getElementById('t-empty').style.display = total===0?'block':'none';
+  if(tView==='grid'){
+    document.getElementById('t-grid').style.display='grid';
+    document.getElementById('t-list').style.display='none';
+    document.getElementById('t-grid').innerHTML = paged.map((t,i)=>renderCard(t,i)).join('');
+  } else {
+    document.getElementById('t-grid').style.display='none';
+    document.getElementById('t-list').style.display='flex';
+    document.getElementById('t-list').innerHTML = `<div class="list-header"><div>Tournoi</div><div>Date</div><div>Région</div><div>Dotation</div><div>Joueurs</div><div></div></div>` + paged.map((t,i)=>renderRow(t,i)).join('');
+  }
+  tRenderPagination(total);
+}
+
+function renderCard(t,i){
+  const p=Math.round((t.players/t.maxPlayers)*100);
+  return `<div class="tournament-card" style="animation-delay:${i*0.05}s">
+    <div class="tc-top">
+      <div class="tc-badges"><span class="badge ${statusClass(t.status)}">${statusLabel(t.status)}</span><span class="badge badge-format">${t.format}</span></div>
+      <div class="tc-header-row"><div class="tc-name">${t.name}</div><div class="tc-prize">${t.prize}€</div></div>
+    </div>
+    <div class="tc-body">
+      <div class="tc-meta">
+        <div class="tc-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${fmtDate(t.date)}</div>
+        <div class="tc-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${t.city}, ${t.region}</div>
+      </div>
+      <div class="tc-footer">
+        <div class="tc-players-info">
+          <div class="tc-players"><strong>${t.players}</strong>/${t.maxPlayers} joueurs</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${p}%"></div></div>
+        </div>
+        <span class="tc-cta">${t.status==='full'?'Voir →':"S'inscrire →"}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderRow(t,i){
+  return `<div class="tournament-row" style="animation-delay:${i*0.04}s">
+    <div><div class="row-name">${t.name}</div><div class="row-sub"><span class="badge ${statusClass(t.status)}" style="font-size:.6rem;padding:2px 7px;">${statusLabel(t.status)}</span><span>${t.format}</span></div></div>
+    <div class="row-date">${fmtShort(t.date)}</div>
+    <div class="row-region">${t.region.split('-')[0].trim()}</div>
+    <div class="row-prize">${t.prize}€</div>
+    <div class="row-players"><strong>${t.players}</strong>/${t.maxPlayers}</div>
+    <div class="row-btn">${t.status==='full'?'Voir':"S'inscrire"}</div>
+  </div>`;
+}
+
+function tRenderPagination(total){
+  const pages=Math.ceil(total/PER);
+  if(pages<=1){document.getElementById('t-pagination').innerHTML='';return;}
+  let h='';
+  if(tPage>1) h+=`<button class="page-btn" onclick="tGoPage(${tPage-1})">‹</button>`;
+  for(let i=1;i<=pages;i++) h+=`<button class="page-btn ${i===tPage?'active':''}" onclick="tGoPage(${i})">${i}</button>`;
+  if(tPage<pages) h+=`<button class="page-btn" onclick="tGoPage(${tPage+1})">›</button>`;
+  document.getElementById('t-pagination').innerHTML=h;
+}
+
+function tGoPage(p){tPage=p;tRender();window.scrollTo({top:200,behavior:'smooth'});}
+function tSetView(v){tView=v;document.getElementById('btn-grid').classList.toggle('active',v==='grid');document.getElementById('btn-list').classList.toggle('active',v==='list');tRender();}
+function tReset(){document.getElementById('t-search').value='';document.getElementById('t-region').value='';document.getElementById('t-date').value='';tRender();}
+
+// ════════════════════════════
+// AUTH
+// ════════════════════════════
+function authShow(sub){
+  document.querySelectorAll('.auth-sub-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('auth-'+sub).classList.add('active');
+}
+function authTab(tab){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('tab-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('tab-register').style.display=tab==='register'?'block':'none';
+}
+function togglePw(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'👁':'🙈';}
+function checkPw(v){document.getElementById('rule-len').classList.toggle('ok',v.length>=8);document.getElementById('rule-upper').classList.toggle('ok',/[A-Z]/.test(v));document.getElementById('rule-num').classList.toggle('ok',/[0-9]/.test(v));}
+function showMsg(id,txt,type){const el=document.getElementById(id);el.className='msg msg-'+type+' show';document.getElementById(id+'-txt').textContent=txt;setTimeout(()=>el.classList.remove('show'),5000);}
+function setLoading(id,on){const b=document.getElementById(id);b.disabled=on;b.innerHTML=on?'<div class="spinner"></div>':b.dataset.label;}
+
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim(), pwd=document.getElementById('l-pwd').value;
+  if(!email||!pwd)return showMsg('auth-error','Remplis tous les champs.','error');
+  setLoading('btn-login',true);
+  const{data,error}=await sb.auth.signInWithPassword({email,password:pwd});
+  setLoading('btn-login',false);
+  if(error)return showMsg('auth-error',error.message==='Invalid login credentials'?'Email ou mot de passe incorrect.':error.message,'error');
+  loadProfile(data.user); authShow('profile');
+  document.getElementById('nav-user-btn').classList.add('logged-in');
+  document.getElementById('nav-user-btn').textContent='😊';
+}
+
+async function doRegister(){
+  const prenom=document.getElementById('r-prenom').value.trim(), nom=document.getElementById('r-nom').value.trim();
+  const pseudo=document.getElementById('r-pseudo').value.trim(), email=document.getElementById('r-email').value.trim();
+  const pwd=document.getElementById('r-pwd').value, niveau=document.getElementById('r-niveau').value, region=document.getElementById('r-region').value;
+  if(!prenom||!nom||!pseudo||!email||!pwd)return showMsg('auth-error','Remplis tous les champs obligatoires.','error');
+  if(pwd.length<8)return showMsg('auth-error','Mot de passe trop court.','error');
+  setLoading('btn-register',true);
+  const{data,error}=await sb.auth.signUp({email,password:pwd,options:{data:{prenom,nom,pseudo,niveau,region}}});
+  setLoading('btn-register',false);
+  if(error)return showMsg('auth-error',error.message,'error');
+  if(data.user&&!data.session){showMsg('auth-success','Compte créé ! Vérifie ta boite mail.','success');}
+  else if(data.session){loadProfile(data.user);authShow('profile');document.getElementById('nav-user-btn').classList.add('logged-in');document.getElementById('nav-user-btn').textContent='😊';}
+}
+
+async function doForgot(){
+  const email=document.getElementById('f-email').value.trim();
+  if(!email)return showMsg('f-error','Entre ton email.','error');
+  setLoading('btn-forgot',true);
+  const{error}=await sb.auth.resetPasswordForEmail(email);
+  setLoading('btn-forgot',false);
+  if(error)return showMsg('f-error',error.message,'error');
+  showMsg('f-success','Email envoyé ! Vérifie ta boite mail.','success');
+}
+
+function loadProfile(user){
+  const m=user.user_metadata||{};
+  document.getElementById('p-name').textContent=(m.prenom||'')+(m.nom?' '+m.nom:'')||user.email;
+  document.getElementById('p-email').textContent=user.email;
+  const niv={debutant:'🟢 Débutant',intermediaire:'🟡 Intermédiaire',confirme:'🔴 Confirmé',expert:'⭐ Expert'};
+  document.getElementById('p-niveau').textContent=niv[m.niveau]||'🎯 Niveau non défini';
+  document.getElementById('p-region').textContent=(m.region||'?').substring(0,8);
+  document.getElementById('e-prenom').value=m.prenom||'';
+  document.getElementById('e-nom').value=m.nom||'';
+  document.getElementById('e-pseudo').value=m.pseudo||'';
+  document.getElementById('e-niveau').value=m.niveau||'debutant';
+  document.getElementById('e-region').value=m.region||'';
+  document.getElementById('e-bio').value=m.bio||'';
+}
+
+async function doSave(){
+  const prenom=document.getElementById('e-prenom').value.trim(), nom=document.getElementById('e-nom').value.trim();
+  const pseudo=document.getElementById('e-pseudo').value.trim(), niveau=document.getElementById('e-niveau').value;
+  const region=document.getElementById('e-region').value, bio=document.getElementById('e-bio').value.trim();
+  setLoading('btn-save',true);
+  const{data,error}=await sb.auth.updateUser({data:{prenom,nom,pseudo,niveau,region,bio}});
+  setLoading('btn-save',false);
+  if(error)return showMsg('p-error',error.message,'error');
+  loadProfile(data.user); showMsg('p-success','Profil mis à jour !','success');
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  document.getElementById('nav-user-btn').classList.remove('logged-in');
+  document.getElementById('nav-user-btn').textContent='👤';
+  authShow('main'); authTab('login');
+}
+
+// Auto-login check
+(async()=>{
+  const{data:{session}}=await sb.auth.getSession();
+  if(session){loadProfile(session.user);authShow('profile');document.getElementById('nav-user-btn').classList.add('logged-in');document.getElementById('nav-user-btn').textContent='😊';}
+})();
+</script>
+</body>
+</html>

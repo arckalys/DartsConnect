@@ -18,7 +18,6 @@ interface PublicProfile {
   bio: string | null;
   region: string | null;
   niveau: string | null;
-  moyenne: string | null;
   avatar_url: string | null;
   created_at: string | null;
 }
@@ -31,15 +30,8 @@ interface TournoiLite {
   format: string;
 }
 
-// Niveau inféré à partir de la moyenne PPD (points per dart) si pas explicite
-function deriveNiveau(moyenne: string | null, niveauExplicit: string | null): string {
-  if (niveauExplicit && niveauExplicit.trim()) return niveauExplicit;
-  const m = parseFloat(moyenne || "");
-  if (!m || isNaN(m)) return "";
-  if (m < 30) return "Débutant";
-  if (m < 45) return "Intermédiaire";
-  if (m < 60) return "Confirmé";
-  return "Expert";
+function deriveNiveau(niveauExplicit: string | null): string {
+  return niveauExplicit?.trim() || "";
 }
 
 const niveauClass: Record<string, string> = {
@@ -66,7 +58,7 @@ export default function JoueurPage() {
       // Fetch public profile (no email column)
       const { data: profileData, error: profileErr } = await supabase
         .from("profiles")
-        .select("id, pseudo, prenom, nom, bio, region, niveau, moyenne, avatar_url, created_at")
+        .select("id, pseudo, prenom, nom, bio, region, niveau, avatar_url, created_at")
         .eq("id", userId)
         .maybeSingle();
 
@@ -147,7 +139,7 @@ export default function JoueurPage() {
   const fullName = [profile.prenom, profile.nom].filter(Boolean).join(" ");
   const initials = ((profile.prenom?.charAt(0) || "") + (profile.nom?.charAt(0) || "")).toUpperCase()
     || (profile.pseudo?.substring(0, 2) || "??").toUpperCase();
-  const niveau = deriveNiveau(profile.moyenne, profile.niveau);
+  const niveau = deriveNiveau(profile.niveau);
   const joinedDate = profile.created_at
     ? new Date(profile.created_at).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })
     : "";
@@ -199,8 +191,9 @@ export default function JoueurPage() {
               </div>
 
               {fullName && profile.pseudo && (
-                <div className="text-[0.88rem] text-[#999] mb-3">{fullName}</div>
+                <div className="text-[0.88rem] text-[#999] mb-2">{fullName}</div>
               )}
+
 
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.85rem] text-[#777] mb-3">
                 {profile.region && (

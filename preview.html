@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>DartConnect 🎯</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
+<style>
+body { font-family: Arial; background:#18191a; color:white; margin:0; }
+.container { max-width:600px; margin:auto; padding:10px; }
+.box { background:#242526; padding:15px; margin:10px 0; border-radius:10px; }
+input, button { width:100%; padding:10px; margin-top:5px; }
+button { background:#2374e1; color:white; border:none; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div id="auth" class="box">
+<h3>Connexion</h3>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Mot de passe">
+<button onclick="register()">Créer compte</button>
+<button onclick="login()">Connexion</button>
+</div>
+
+<div id="app" style="display:none;">
+<div class="box">
+<h3>Créer tournoi</h3>
+<input id="title" placeholder="Nom tournoi">
+<input id="place" placeholder="Lieu">
+<input type="date" id="date">
+<button onclick="createEvent()">Publier</button>
+</div>
+
+<div id="events"></div>
+</div>
+
+</div>
+
+<script>
+// ⚠️ REMPLACE PAR TA CONFIG FIREBASE
+const firebaseConfig = {
+  apiKey: "TA_CLE",
+  authDomain: "TON_PROJET.firebaseapp.com",
+  projectId: "TON_PROJET",
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// AUTH
+function register() {
+  auth.createUserWithEmailAndPassword(email.value, password.value);
+}
+
+function login() {
+  auth.signInWithEmailAndPassword(email.value, password.value);
+}
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    auth.style.display = "none";
+    app.style.display = "block";
+    loadEvents();
+  }
+});
+
+// CREATE
+function createEvent() {
+  db.collection("events").add({
+    title: title.value,
+    place: place.value,
+    date: date.value,
+    user: auth.currentUser.email
+  });
+}
+
+// READ
+function loadEvents() {
+  db.collection("events").onSnapshot(snapshot => {
+    events.innerHTML = "";
+    snapshot.forEach(doc => {
+      const e = doc.data();
+      events.innerHTML += `
+        <div class="box">
+          <strong>${e.user}</strong>
+          <h3>${e.title}</h3>
+          <p>${e.place} - ${e.date}</p>
+        </div>
+      `;
+    });
+  });
+}
+</script>
+
+</body>
+</html>

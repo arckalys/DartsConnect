@@ -38,7 +38,6 @@ export default function AuthPage() {
   const [rEmail, setREmail] = useState("");
   const [rPwd, setRPwd] = useState("");
   const [rPwdVisible, setRPwdVisible] = useState(false);
-  const [rMoyenne, setRMoyenne] = useState("");
   const [rRegion, setRRegion] = useState("");
 
   // Forgot field
@@ -48,9 +47,9 @@ export default function AuthPage() {
   const [ePrenom, setEPrenom] = useState("");
   const [eNom, setENom] = useState("");
   const [ePseudo, setEPseudo] = useState("");
-  const [eMoyenne, setEMoyenne] = useState("");
   const [eRegion, setERegion] = useState("");
   const [eBio, setEBio] = useState("");
+  const [eNotifsRegion, setENotifsRegion] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [avatarLoading, setAvatarLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -72,15 +71,21 @@ export default function AuthPage() {
     setTimeout(() => setSuccess(""), 5000);
   }
 
-  function loadProfile(u: User) {
+  async function loadProfile(u: User) {
     const m = u.user_metadata || {};
     setEPrenom(m.prenom || "");
     setENom(m.nom || "");
     setEPseudo(m.pseudo || "");
-    setEMoyenne(m.moyenne || "");
     setERegion(m.region || "");
     setEBio(m.bio || "");
     setAvatarUrl(m.avatar_url || "");
+    // Charge les préférences depuis la table profiles
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("notifs_region")
+      .eq("id", u.id)
+      .single();
+    setENotifsRegion(profileData?.notifs_region ?? false);
     setUser(u);
     setView("profile");
   }
@@ -112,16 +117,16 @@ export default function AuthPage() {
         return showError("Erreur upload : " + uploadError.message);
       }
 
-      // Get public URL
+      // Get public URL (sans timestamp pour le stockage)
       const { data: urlData } = supabase.storage
         .from("avatars")
         .getPublicUrl(filePath);
 
-      const publicUrl = urlData.publicUrl + "?t=" + Date.now();
+      const cleanUrl = urlData.publicUrl;
 
       // Save URL in user metadata
       const { data, error: updateError } = await supabase.auth.updateUser({
-        data: { avatar_url: publicUrl },
+        data: { avatar_url: cleanUrl },
       });
 
       if (updateError) {
@@ -129,7 +134,13 @@ export default function AuthPage() {
         return showError("Erreur mise à jour : " + updateError.message);
       }
 
-      setAvatarUrl(publicUrl);
+      // Sync directly to profiles table (don't rely solely on trigger)
+      if (data.user) {
+        await supabase.from("profiles").upsert({ id: data.user.id, avatar_url: cleanUrl });
+      }
+
+      // Add cache-buster only for local display state
+      setAvatarUrl(cleanUrl + "?t=" + Date.now());
       if (data.user) setUser(data.user);
       showSuccess("Photo de profil mise à jour !");
     } catch {
@@ -165,28 +176,24 @@ export default function AuthPage() {
       email: rEmail,
       password: rPwd,
       options: {
-        data: { prenom: rPrenom, nom: rNom, pseudo: rPseudo, moyenne: rMoyenne, region: rRegion },
+        data: { prenom: rPrenom, nom: rNom, pseudo: rPseudo, region: rRegion },
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
     setLoading(false);
     if (err) return showError(err.message);
     if (data.user) {
-      // Send welcome email
-      console.log("[register] sending welcome email to", rEmail);
       fetch("/api/emails/bienvenue", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ to: rEmail, prenom: rPrenom, pseudo: rPseudo }),
-      })
-        .then((r) => r.json())
-        .then((d) => console.log("[bienvenue email]", d))
-        .catch((e) => console.error("[bienvenue email] error:", e));
+      }).catch(() => {});
     }
     if (data.user && !data.session) {
       showSuccess("Compte créé ! Vérifie ta boite mail.");
     } else if (data.session) {
-      loadProfile(data.user!);
+      showSuccess("Bienvenue ! Redirection...");
+      setTimeout(() => router.push("/"), 1200);
     }
   }
 
@@ -204,7 +211,7 @@ export default function AuthPage() {
   async function doSave() {
     setLoading(true);
     const { data, error: err } = await supabase.auth.updateUser({
-      data: { prenom: ePrenom, nom: eNom, pseudo: ePseudo, moyenne: eMoyenne, region: eRegion, bio: eBio },
+      data: { prenom: ePrenom, nom: eNom, pseudo: ePseudo, region: eRegion, bio: eBio },
     });
     if (err) { setLoading(false); return showError(err.message); }
 
@@ -213,14 +220,13 @@ export default function AuthPage() {
       try {
         await supabase.from("profiles").upsert({
           id: data.user.id,
-          email: data.user.email,
           prenom: ePrenom,
           nom: eNom,
           pseudo: ePseudo,
-          moyenne: eMoyenne,
           region: eRegion,
           bio: eBio,
-          avatar_url: avatarUrl || null,
+          avatar_url: avatarUrl.split("?")[0] || null,
+          notifs_region: eNotifsRegion,
         });
       } catch (e) {
         console.log("[profile sync] failed (trigger may handle it):", e);
@@ -228,8 +234,8 @@ export default function AuthPage() {
     }
 
     setLoading(false);
-    loadProfile(data.user);
-    showSuccess("Profil mis à jour !");
+    showSuccess("Profil mis à jour ! Redirection...");
+    setTimeout(() => router.push("/"), 1200);
   }
 
   async function doLogout() {
@@ -329,10 +335,6 @@ export default function AuthPage() {
                 </div>
               </div>
               <div className="mb-4">
-                <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Moyenne (ex : 25)</label>
-                <input type="number" value={rMoyenne} onChange={(e) => setRMoyenne(e.target.value)} placeholder="Ta moyenne aux fléchettes" step="0.1" min="0" max="180" />
-              </div>
-              <div className="mb-4">
                 <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Région</label>
                 <select value={rRegion} onChange={(e) => setRRegion(e.target.value)}>
                   <option value="">Ta région</option>
@@ -416,9 +418,6 @@ export default function AuthPage() {
             <div>
               <div className="font-barlow-condensed font-extrabold text-[1.4rem] text-center">{displayName}</div>
               <div className="text-[0.84rem] text-[#777] text-center">{user?.email}</div>
-              <div className="inline-flex items-center gap-[6px] bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.3)] rounded-full px-3 py-1 text-[0.78rem] font-bold text-[#e8220a] mt-1">
-                Moyenne : {meta.moyenne || "—"}
-              </div>
             </div>
           </div>
 
@@ -459,10 +458,6 @@ export default function AuthPage() {
             <input type="text" value={ePseudo} onChange={(e) => setEPseudo(e.target.value)} />
           </div>
           <div className="mb-4">
-            <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Moyenne (ex : 25)</label>
-            <input type="number" value={eMoyenne} onChange={(e) => setEMoyenne(e.target.value)} placeholder="Ta moyenne aux fléchettes" step="0.1" min="0" max="180" />
-          </div>
-          <div className="mb-4">
             <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Région</label>
             <select value={eRegion} onChange={(e) => setERegion(e.target.value)}>
               <option value="">Ma région</option>
@@ -473,6 +468,25 @@ export default function AuthPage() {
             <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Bio</label>
             <textarea value={eBio} onChange={(e) => setEBio(e.target.value)} placeholder="Parle de toi..." />
           </div>
+
+          {/* Notifications région */}
+          <div className="mb-5 flex items-center justify-between gap-4 bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] p-4">
+            <div className="min-w-0">
+              <div className="text-[0.88rem] font-semibold text-white">Alertes tournois de ma région</div>
+              <div className="text-[0.76rem] text-[#777] mt-[3px] leading-[1.4]">
+                Reçois un email à chaque nouveau tournoi publié dans{eRegion ? ` ${eRegion}` : " ta région"}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setENotifsRegion(!eNotifsRegion)}
+              aria-pressed={eNotifsRegion}
+              className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors duration-200 border-none cursor-pointer ${eNotifsRegion ? "bg-[#e8220a]" : "bg-[#333]"}`}
+            >
+              <span className={`absolute top-[2px] left-[2px] w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${eNotifsRegion ? "translate-x-5" : "translate-x-0"}`} />
+            </button>
+          </div>
+
           <button onClick={doSave} disabled={loading} className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] tracking-[0.5px] cursor-pointer border-none bg-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
             {loading ? <div className="spinner" /> : "Sauvegarder"}
           </button>

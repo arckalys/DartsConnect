@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Tableau — Open de Ploubezre 2026</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: #f4f4f5;
+    padding: 20px;
+    color: #111;
+  }
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    padding: 32px 40px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  /* Print button (écran seulement) */
+  .print-btn {
+    position: fixed; top: 20px; right: 20px;
+    background: #e8220a; color: white;
+    border: none; padding: 12px 24px; border-radius: 10px;
+    font-weight: bold; cursor: pointer; font-size: 14px;
+    box-shadow: 0 4px 12px rgba(232,34,10,0.3);
+    z-index: 100;
+  }
+  .print-btn:hover { background: #b81a08; }
+
+  /* Header */
+  .logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #111; }
+  .logo-box {
+    width: 40px; height: 40px; background: #e8220a; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-title { font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+  .logo-sub { font-size: 11px; color: #666; margin-top: 2px; }
+
+  .tournoi-card {
+    border: 1px solid #ddd; border-radius: 8px; padding: 20px 24px;
+    margin-bottom: 24px; background: #fafafa;
+  }
+  .tournoi-nom { font-size: 24px; font-weight: 900; text-transform: uppercase; margin-bottom: 14px; color: #111; }
+  .tournoi-meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .meta-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #888; margin-bottom: 4px; }
+  .meta-value { font-size: 13px; color: #111; font-weight: 500; }
+
+  /* Sections */
+  .section-title {
+    font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px;
+    color: #111; margin: 28px 0 14px; padding-bottom: 6px; border-bottom: 2px solid #e8220a;
+  }
+
+  /* Poules grid */
+  .poules-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+  .poule {
+    border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background: white;
+    page-break-inside: avoid;
+  }
+  .poule-header {
+    background: #111; color: white; padding: 8px 14px;
+    font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .poule-header span { opacity: 0.7; font-weight: 400; font-size: 11px; margin-left: 8px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #f5f5f5; font-size: 10px; font-weight: 700; text-transform: uppercase;
+       letter-spacing: 0.5px; padding: 6px 8px; text-align: left; color: #555; border-bottom: 1px solid #ddd; }
+  th.c { text-align: center; width: 28px; }
+  td { padding: 6px 8px; font-size: 12px; border-bottom: 1px solid #eee; }
+  td.c { text-align: center; color: #bbb; }
+  td.c .box { display: inline-block; min-width: 20px; border-bottom: 1px solid #aaa; }
+  tbody tr:nth-child(even) td { background: #fafafa; }
+
+  .matches-box { padding: 10px 14px; border-top: 1px solid #eee; }
+  .matches-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #888; margin-bottom: 6px; }
+  .match-line {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 4px 0; border-bottom: 1px dashed #eee; font-size: 11.5px;
+  }
+  .match-line:last-child { border: 0; }
+  .match-line .players { color: #111; }
+  .match-line .vs { color: #888; margin: 0 6px; font-size: 10.5px; }
+  .match-line .score { color: #888; font-size: 11px; }
+  .score .box { display: inline-block; min-width: 22px; border-bottom: 1px solid #aaa; margin: 0 2px; }
+
+  /* Bracket */
+  .bracket-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .round {
+    border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background: white;
+    page-break-inside: avoid;
+  }
+  .round-header {
+    padding: 8px 14px; font-size: 12px; font-weight: 900;
+    text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 2px solid;
+  }
+  .round-h-qf { background: #fff5ec; color: #c2410c; border-color: #f97316; }
+  .round-h-sf { background: #fde8e4; color: #b81a08; border-color: #e8220a; }
+  .round-h-f  { background: #fef3c7; color: #b45309; border-color: #f59e0b; }
+  .matches { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .match {
+    border: 1px solid #e5e5e5; border-radius: 6px; padding: 8px 10px; background: #fcfcfc;
+  }
+  .match-num { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #999; margin-bottom: 4px; }
+  .match-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 2px 0; font-size: 12px;
+  }
+  .match-row .name { font-weight: 500; }
+  .match-row .score-cell { display: inline-block; border-bottom: 1px solid #aaa; min-width: 24px; }
+  .match-vs { font-size: 9px; color: #bbb; padding: 2px 0 2px 2px; font-weight: 600; }
+  .bye { color: #aaa; font-style: italic; }
+
+  .rules-box {
+    margin-top: 20px; padding: 10px 14px; background: #fafafa;
+    border: 1px solid #eee; border-radius: 6px; font-size: 11px; color: #555;
+  }
+  .rules-box strong { color: #111; }
+
+  footer {
+    text-align: center; margin-top: 28px; padding-top: 12px;
+    border-top: 1px solid #eee; font-size: 10px; color: #999;
+  }
+
+  /* Print styles — A4 optimisé */
+  @media print {
+    @page { size: A4; margin: 1.2cm; }
+    body { background: white; padding: 0; }
+    .page { box-shadow: none; padding: 0; max-width: 100%; border-radius: 0; }
+    .print-btn { display: none !important; }
+    .poules-grid { grid-template-columns: repeat(2, 1fr); }
+    .bracket-grid { grid-template-columns: repeat(3, 1fr); }
+    .section-title { page-break-after: avoid; }
+  }
+
+  @media (max-width: 720px) {
+    .poules-grid, .bracket-grid, .tournoi-meta { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">🖨️ Imprimer</button>
+
+<div class="page">
+
+  <!-- Logo -->
+  <div class="logo-row">
+    <div class="logo-box">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-title">DartsTournois</div>
+      <div class="logo-sub">dartstournois.fr</div>
+    </div>
+  </div>
+
+  <!-- Tournament header -->
+  <div class="tournoi-card">
+    <div class="tournoi-nom">Open de Ploubezre 2026</div>
+    <div class="tournoi-meta">
+      <div><div class="meta-label">Date</div><div class="meta-value">samedi 25 avril 2026</div></div>
+      <div><div class="meta-label">Lieu</div><div class="meta-value">Salle des fêtes, Ploubezre (22)</div></div>
+      <div><div class="meta-label">Format</div><div class="meta-value">Simple — 501 DO</div></div>
+      <div><div class="meta-label">Joueurs</div><div class="meta-value">16</div></div>
+    </div>
+  </div>
+
+  <!-- PHASE DE POULES -->
+  <div class="section-title">Phase de poules</div>
+
+  <div class="poules-grid">
+
+    <!-- Poule A -->
+    <div class="poule">
+      <div class="poule-header">Poule A<span>4 joueurs</span></div>
+      <table>
+        <thead><tr><th>Joueur</th><th class="c">J</th><th class="c">G</th><th class="c">N</th><th class="c">D</th><th class="c">Pts</th></tr></thead>
+        <tbody>
+          <tr><td>Jean Dupont</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+          <tr><td>Sophie Bernard</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+          <tr><td>Ethan Bertrand</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+          <tr><td>Louise David</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+        </tbody>
+      </table>
+      <div class="matches-box">
+        <div class="matches-label">Matches — 6 à jouer</div>
+        <div class="match-line"><span class="players">Jean Dupont<span class="vs">vs</span>Sophie Bernard</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Jean Dupont<span class="vs">vs</span>Ethan Bertrand</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Jean Dupont<span class="vs">vs</span>Louise David</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Sophie Bernard<span class="vs">vs</span>Ethan Bertrand</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Sophie Bernard<span class="vs">vs</span>Louise David</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Ethan Bertrand<span class="vs">vs</span>Louise David</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+      </div>
+    </div>
+
+    <!-- Poule B -->
+    <div class="poule">
+      <div class="poule-header">Poule B<span>4 joueurs</span></div>
+      <table>
+        <thead><tr><th>Joueur</th><th class="c">J</th><th class="c">G</th><th class="c">N</th><th class="c">D</th><th class="c">Pts</th></tr></thead>
+        <tbody>
+          <tr><td>Marie Martin</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+          <tr><td>Hugo Simon</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+          <tr><td>Camille Robert</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+          <tr><td>Tom Roux</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+        </tbody>
+      </table>
+      <div class="matches-box">
+        <div class="matches-label">Matches — 6 à jouer</div>
+        <div class="match-line"><span class="players">Marie Martin<span class="vs">vs</span>Hugo Simon</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Marie Martin<span class="vs">vs</span>Camille Robert</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Marie Martin<span class="vs">vs</span>Tom Roux</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Hugo Simon<span class="vs">vs</span>Camille Robert</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Hugo Simon<span class="vs">vs</span>Tom Roux</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Camille Robert<span class="vs">vs</span>Tom Roux</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+      </div>
+    </div>
+
+    <!-- Poule C -->
+    <div class="poule">
+      <div class="poule-header">Poule C<span>4 joueurs</span></div>
+      <table>
+        <thead><tr><th>Joueur</th><th class="c">J</th><th class="c">G</th><th class="c">N</th><th class="c">D</th><th class="c">Pts</th></tr></thead>
+        <tbody>
+          <tr><td>Pierre Durand</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+          <tr><td>Lucas Petit</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+          <tr><td>Emma Moreau</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+          <tr><td>Louis Richard</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+        </tbody>
+      </table>
+      <div class="matches-box">
+        <div class="matches-label">Matches — 6 à jouer</div>
+        <div class="match-line"><span class="players">Pierre Durand<span class="vs">vs</span>Lucas Petit</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Pierre Durand<span class="vs">vs</span>Emma Moreau</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Pierre Durand<span class="vs">vs</span>Louis Richard</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Lucas Petit<span class="vs">vs</span>Emma Moreau</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Lucas Petit<span class="vs">vs</span>Louis Richard</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Emma Moreau<span class="vs">vs</span>Louis Richard</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+      </div>
+    </div>
+
+    <!-- Poule D -->
+    <div class="poule">
+      <div class="poule-header">Poule D<span>4 joueurs</span></div>
+      <table>
+        <thead><tr><th>Joueur</th><th class="c">J</th><th class="c">G</th><th class="c">N</th><th class="c">D</th><th class="c">Pts</th></tr></thead>
+        <tbody>
+          <tr><td>Léa Laurent</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+          <tr><td>Nathan Michel</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+          <tr><td>Chloé Garcia</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+          <tr><td>Alice Thomas</td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td><td class="c"><span class="box">&nbsp;</span></td></tr>
+        </tbody>
+      </table>
+      <div class="matches-box">
+        <div class="matches-label">Matches — 6 à jouer</div>
+        <div class="match-line"><span class="players">Léa Laurent<span class="vs">vs</span>Nathan Michel</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Léa Laurent<span class="vs">vs</span>Chloé Garcia</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Léa Laurent<span class="vs">vs</span>Alice Thomas</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Nathan Michel<span class="vs">vs</span>Chloé Garcia</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Nathan Michel<span class="vs">vs</span>Alice Thomas</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+        <div class="match-line"><span class="players">Chloé Garcia<span class="vs">vs</span>Alice Thomas</span><span class="score"><span class="box">&nbsp;</span>–<span class="box">&nbsp;</span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE FINALE -->
+  <div class="section-title">Phase finale</div>
+
+  <div class="bracket-grid">
+
+    <!-- QUARTS -->
+    <div class="round">
+      <div class="round-header round-h-qf">Quarts de finale</div>
+      <div class="matches">
+        <div class="match">
+          <div class="match-num">Match QF1</div>
+          <div class="match-row"><span class="name">Qualifié A1</span><span class="score-cell">&nbsp;</span></div>
+          <div class="match-vs">vs</div>
+          <div class="match-row"><span class="name">Qualifié D2</span><span class="score-cell">&nbsp;</span></div>
+        </div>
+        <div class="match">
+          <div class="match-num">Match QF2</div>
+          <div class="match-row"><span class="name">Qualifié B1</span><span class="score-cell">&nbsp;</span></div>
+          <div class="match-vs">vs</div>
+          <div class="match-row"><span class="name">Qualifié C2</span><span class="score-cell">&nbsp;</span></div>
+        </div>
+        <div class="match">
+          <div class="match-num">Match QF3</div>
+          <div class="match-row"><span class="name">Qualifié C1</span><span class="score-cell">&nbsp;</span></div>
+          <div class="match-vs">vs</div>
+          <div class="match-row"><span class="name">Qualifié B2</span><span class="score-cell">&nbsp;</span></div>
+        </div>
+        <div class="match">
+          <div class="match-num">Match QF4</div>
+          <div class="match-row"><span class="name">Qualifié D1</span><span class="score-cell">&nbsp;</span></div>
+          <div class="match-vs">vs</div>
+          <div class="match-row"><span class="name">Qualifié A2</span><span class="score-cell">&nbsp;</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEMIS -->
+    <div class="round">
+      <div class="round-header round-h-sf">Demi-finales</div>
+      <div class="matches">
+        <div class="match">
+          <div class="match-num">Match SF1</div>
+          <div class="match-row"><span class="name">Vainqueur QF1</span><span class="score-cell">&nbsp;</span></div>
+          <div class="match-vs">vs</div>
+          <div class="match-row"><span class="name">Vainqueur QF2</span><span class="score-cell">&nbsp;</span></div>
+        </div>
+        <div class="match">
+          <div class="match-num">Match SF2</div>
+          <div class="match-row"><span class="name">Vainqueur QF3</span><span class="score-cell">&nbsp;</span></div>
+          <div class="match-vs">vs</div>
+          <div class="match-row"><span class="name">Vainqueur QF4</span><span class="score-cell">&nbsp;</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FINALE -->
+    <div class="round">
+      <div class="round-header round-h-f">🏆 Finale</div>
+      <div class="matches">
+        <div class="match">
+          <div class="match-num">Match Final</div>
+          <div class="match-row"><span class="name">Vainqueur SF1</span><span class="score-cell">&nbsp;</span></div>
+          <div class="match-vs">vs</div>
+          <div class="match-row"><span class="name">Vainqueur SF2</span><span class="score-cell">&nbsp;</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rules -->
+  <div class="rules-box">
+    <strong>Règle de qualification :</strong> Les 2 premiers de chaque poule (par points) sont qualifiés pour la phase finale.
+    En cas d'égalité de points, la différence de legs prévaut.
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    dartstournois.fr — Tableau généré automatiquement le 18 avril 2026
+  </footer>
+
+</div>
+
+</body>
+</html>

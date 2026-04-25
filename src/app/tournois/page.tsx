@@ -346,9 +346,9 @@ function TournoisContent() {
               </select>
             </div>
 
-            {/* Grid view (always on mobile, toggle on desktop) */}
-            {(view === "grid" || typeof window !== "undefined") && filtered.length > 0 && (
-              <div className={`${view === "list" ? "hidden sm:hidden lg:hidden" : ""}`}>
+            {/* Grid view */}
+            {filtered.length > 0 && (
+              <div className={`${view === "list" ? "hidden" : ""}`}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 xs:gap-4">
                   {paged.map((t, i) => {
                     const tid = String(t.id);

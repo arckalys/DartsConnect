@@ -61,7 +61,6 @@ export default function TournoiDetailPage() {
         .single();
 
       if (error || !data) {
-        console.error("Tournoi fetch error:", error?.message, error?.details, error?.hint);
         setNotFound(true);
         setLoading(false);
         return;
@@ -189,18 +188,14 @@ export default function TournoiDetailPage() {
       const { error } = await supabase
         .from("inscriptions")
         .insert([{ user_id: currentUserId, tournoi_id: tournoiId }]);
-      console.log("[inscription] insert result, error:", error);
       if (!error) {
         setIsRegistered(true);
         const newCount = inscriptionCount + 1;
         setInscriptionCount(newCount);
 
-        // Get session email for player confirmation
         const { data: { session } } = await supabase.auth.getSession();
         const userEmail = session?.user?.email;
-        console.log("[inscription] userEmail:", userEmail, "contact_email:", tournoi.contact_email);
 
-        // Get user profile for organizer notification (non-blocking)
         let profile = null;
         try {
           const { data: p } = await supabase
@@ -209,12 +204,10 @@ export default function TournoiDetailPage() {
             .eq("id", currentUserId)
             .maybeSingle();
           profile = p;
-        } catch (e) {
-          console.log("[inscription] profiles fetch failed, continuing:", e);
+        } catch {
+          // non-bloquant
         }
 
-        // Email 1: confirmation to player
-        console.log("[inscription] sending confirmation email...");
         const emailTo = userEmail || session?.user?.user_metadata?.email;
         if (emailTo) {
           fetch("/api/emails/inscription", {
@@ -232,16 +225,9 @@ export default function TournoiDetailPage() {
                 format: tournoi.format,
               },
             }),
-          })
-            .then((r) => r.json())
-            .then((d) => console.log("[inscription email] response:", d))
-            .catch((e) => console.error("[inscription email] fetch error:", e));
-        } else {
-          console.log("[inscription email] skipped: no email found in session");
+          }).catch(() => {});
         }
 
-        // Email 2: notification to organizer
-        console.log("[nouveau-inscrit] sending organizer email...");
         if (tournoi.contact_email) {
           fetch("/api/emails/nouveau-inscrit", {
             method: "POST",
@@ -253,15 +239,8 @@ export default function TournoiDetailPage() {
               inscrits: newCount,
               max: tournoi.nb_joueurs,
             }),
-          })
-            .then((r) => r.json())
-            .then((d) => console.log("[nouveau-inscrit email] response:", d))
-            .catch((e) => console.error("[nouveau-inscrit email] fetch error:", e));
-        } else {
-          console.log("[nouveau-inscrit email] skipped: no contact_email on tournoi");
+          }).catch(() => {});
         }
-      } else {
-        console.error("[inscription] insert FAILED:", error.message, error.details, error.hint);
       }
     }
     setRegisterLoading(false);
@@ -303,8 +282,6 @@ export default function TournoiDetailPage() {
           ...prev,
           [sessionId]: (prev[sessionId] || 0) + 1,
         }));
-      } else {
-        console.error("[session inscription] insert FAILED:", error.message, error.details, error.hint);
       }
     }
     setSessionLoadingId(null);
@@ -571,7 +548,7 @@ export default function TournoiDetailPage() {
                     const sessPct = max > 0 ? Math.round((count / max) * 100) : 0;
                     const mine = myRegistrations.has(s.id);
                     const full = count >= max && !mine;
-                    const loading = sessionLoadingId === s.id;
+                    const sessLoading = sessionLoadingId === s.id;
 
                     return (
                       <div
@@ -622,14 +599,14 @@ export default function TournoiDetailPage() {
                         {currentUserId ? (
                           <button
                             onClick={() => handleToggleSessionRegister(s.id)}
-                            disabled={loading || (full && !mine) || tournoi.statut === "closed"}
+                            disabled={sessLoading || (full && !mine) || tournoi.statut === "closed"}
                             className={`w-full py-[10px] rounded-[10px] font-barlow-condensed font-bold text-[0.95rem] cursor-pointer border transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
                               mine
                                 ? "bg-[rgba(248,113,113,0.1)] border-[rgba(248,113,113,0.25)] text-[#f87171] hover:bg-[rgba(248,113,113,0.2)]"
                                 : "bg-[#e8220a] border-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08]"
                             }`}
                           >
-                            {loading ? (
+                            {sessLoading ? (
                               <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                             ) : mine ? (
                               "Se désinscrire"

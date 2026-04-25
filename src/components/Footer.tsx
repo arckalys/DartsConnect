@@ -1,6 +1,12 @@
+"use client";
+
 import Link from "next/link";
 
 export default function Footer() {
+  function gererCookies() {
+    (window as Window & { resetCookieConsent?: () => void }).resetCookieConsent?.();
+  }
+
   return (
     <footer className="border-t border-[rgba(255,255,255,0.08)] px-3 xs:px-4 sm:px-6 lg:px-10 xl:px-16 py-5 sm:py-8 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 sm:justify-between">
       <div className="font-barlow-condensed font-extrabold text-[0.95rem] xs:text-[1rem] sm:text-[1.1rem] xl:text-[1.2rem] text-[#777]">
@@ -11,6 +17,14 @@ export default function Footer() {
         <li><Link href="/contact" className="text-[0.78rem] xs:text-[0.8rem] sm:text-[0.82rem] text-[#777] no-underline hover:text-white transition-colors">Contact</Link></li>
         <li><Link href="/mentions-legales" className="text-[0.78rem] xs:text-[0.8rem] sm:text-[0.82rem] text-[#777] no-underline hover:text-white transition-colors">Mentions légales</Link></li>
         <li><Link href="/confidentialite" className="text-[0.78rem] xs:text-[0.8rem] sm:text-[0.82rem] text-[#777] no-underline hover:text-white transition-colors">Confidentialité</Link></li>
+        <li>
+          <button
+            onClick={gererCookies}
+            className="text-[0.78rem] xs:text-[0.8rem] sm:text-[0.82rem] text-[#777] no-underline hover:text-white transition-colors bg-transparent border-none cursor-pointer p-0 font-barlow"
+          >
+            Gérer les cookies
+          </button>
+        </li>
       </ul>
       <div className="text-[0.75rem] xs:text-[0.78rem] text-[#444]">© 2026 DartsTournois</div>
     </footer>

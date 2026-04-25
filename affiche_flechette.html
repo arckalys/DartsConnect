@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tournoi de Fléchettes - 12 Doublette</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;600;700&family=Rajdhani:wght@300;500;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .poster {
+    width: 794px;
+    height: 1123px;
+    background: #0d0d0d;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #222;
+  }
+
+  /* Background texture */
+  .poster::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(180,20,20,0.18) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 80%, rgba(180,20,20,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.02) 0%, transparent 70%);
+    z-index: 0;
+  }
+
+  /* Diagonal accent lines */
+  .lines {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+    overflow: hidden;
+    opacity: 0.07;
+  }
+  .lines svg { width: 100%; height: 100%; }
+
+  /* Top banner */
+  .top-banner {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 14px;
+    background: linear-gradient(90deg, #b41414, #e03030, #b41414);
+    z-index: 10;
+  }
+
+  /* Bottom banner */
+  .bottom-banner {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 14px;
+    background: linear-gradient(90deg, #b41414, #e03030, #b41414);
+    z-index: 10;
+  }
+
+  /* Side accents */
+  .side-left {
+    position: absolute;
+    top: 14px; left: 0; bottom: 14px;
+    width: 6px;
+    background: linear-gradient(180deg, #b41414, #7a0f0f, #b41414);
+    z-index: 10;
+  }
+  .side-right {
+    position: absolute;
+    top: 14px; right: 0; bottom: 14px;
+    width: 6px;
+    background: linear-gradient(180deg, #b41414, #7a0f0f, #b41414);
+    z-index: 10;
+  }
+
+  /* Content wrapper */
+  .content {
+    position: relative;
+    z-index: 5;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 50px 30px 50px;
+  }
+
+  /* Header label */
+  .event-label {
+    margin-top: 16px;
+    letter-spacing: 10px;
+    font-size: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 300;
+    color: #888;
+    text-transform: uppercase;
+  }
+
+  /* Main title */
+  .main-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 90px;
+    color: #fff;
+    line-height: 1;
+    text-align: center;
+    letter-spacing: 8px;
+    margin-top: 10px;
+    text-shadow: 0 0 60px rgba(220,40,40,0.5), 4px 4px 0px rgba(180,20,20,0.8);
+  }
+
+  .main-title .highlight {
+    color: #e03030;
+    display: inline;
+    font-size: 90px;
+    text-shadow: 0 0 80px rgba(220,40,40,0.8), 4px 4px 0px rgba(100,10,10,1);
+  }
+
+  /* Divider */
+  .divider {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 18px 0;
+  }
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #b41414, transparent);
+  }
+  .divider-diamond {
+    width: 10px; height: 10px;
+    background: #e03030;
+    transform: rotate(45deg);
+  }
+
+  /* Dartboard SVG section */
+  .dartboard-section {
+    position: relative;
+    width: 340px;
+    height: 340px;
+    flex-shrink: 0;
+  }
+
+  /* Number badge */
+  .number-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 54px;
+    color: #fff;
+    text-shadow: 0 0 20px rgba(255,255,255,0.5);
+    z-index: 20;
+    text-align: center;
+    line-height: 1;
+  }
+
+  /* Subtitle */
+  .subtitle {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 62px;
+    color: #e8e8e8;
+    letter-spacing: 12px;
+    text-align: center;
+    margin-top: 10px;
+    text-shadow: 2px 2px 0px rgba(180,20,20,0.6);
+  }
+
+  /* Info boxes */
+  .info-grid {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    margin-top: 22px;
+  }
+
+  .info-box {
+    flex: 1;
+    border: 1px solid #2a2a2a;
+    border-top: 3px solid #b41414;
+    padding: 18px 14px;
+    text-align: center;
+    background: rgba(255,255,255,0.02);
+  }
+
+  .info-box .label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #b41414;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .info-box .value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 34px;
+    color: #fff;
+    letter-spacing: 2px;
+  }
+
+  .info-box .sub {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    color: #555;
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+
+  /* Darts decorative row */
+  .darts-row {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-top: 20px;
+    opacity: 0.25;
+  }
+  .dart-icon {
+    font-size: 28px;
+    transform: rotate(45deg);
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: auto;
+    text-align: center;
+    padding-bottom: 20px;
+  }
+  .footer-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: #444;
+    text-transform: uppercase;
+  }
+
+  /* Corner decorations */
+  .corner {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    z-index: 6;
+  }
+  .corner-tl { top: 20px; left: 14px; border-top: 2px solid #b41414; border-left: 2px solid #b41414; }
+  .corner-tr { top: 20px; right: 14px; border-top: 2px solid #b41414; border-right: 2px solid #b41414; }
+  .corner-bl { bottom: 20px; left: 14px; border-bottom: 2px solid #b41414; border-left: 2px solid #b41414; }
+  .corner-br { bottom: 20px; right: 14px; border-bottom: 2px solid #b41414; border-right: 2px solid #b41414; }
+
+</style>
+</head>
+<body>
+<div class="poster">
+  <!-- Banners -->
+  <div class="top-banner"></div>
+  <div class="bottom-banner"></div>
+  <div class="side-left"></div>
+  <div class="side-right"></div>
+
+  <!-- Corners -->
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+
+  <!-- Diagonal lines background -->
+  <div class="lines">
+    <svg viewBox="0 0 794 1123" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="200" x2="794" y2="900" stroke="white" stroke-width="1"/>
+      <line x1="0" y1="400" x2="794" y2="1100" stroke="white" stroke-width="1"/>
+      <line x1="200" y1="0" x2="794" y2="600" stroke="white" stroke-width="1"/>
+      <line x1="794" y1="200" x2="0" y2="900" stroke="white" stroke-width="1"/>
+      <line x1="600" y1="0" x2="0" y2="600" stroke="white" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <div class="content">
+
+    <div class="main-title">
+      FLÉCH<span class="highlight">ETTES</span>
+    </div>
+
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-diamond"></div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Dartboard SVG - vraie cible -->
+    <div class="dartboard-section">
+      <svg id="dartboard" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;"></svg>
+      <script>
+        (function() {
+          const svg = document.getElementById('dartboard');
+          const cx = 200, cy = 200;
+          // Rayons : outer board, doubles outer, doubles inner, triples outer, triples inner, bull outer, bull inner
+          const R_OUT   = 190;  // bord extérieur décoratif
+          const R_DO    = 170;  // doubles outer
+          const R_DI    = 158;  // doubles inner
+          const R_TO    = 108;  // triples outer
+          const R_TI    = 96;   // triples inner
+          const R_BO    = 28;   // bull outer (25)
+          const R_BI    = 12;   // bull inner (50)
+
+          // Ordre des secteurs sur une vraie cible (sens horaire depuis le haut = 20)
+          const sectors = [20,1,18,4,13,6,10,15,2,17,3,19,7,16,8,11,14,9,12,5];
+          const nSectors = 20;
+          const angleStep = 360 / nSectors; // 18°
+          // Le 20 est centré en haut, offset de -9° pour que le centre du secteur 20 soit à 270° (haut)
+          const startOffset = -90 - angleStep / 2; // bord gauche du secteur 20 en haut
+
+          function toRad(deg) { return deg * Math.PI / 180; }
+          function polarToCart(r, angleDeg) {
+            return [
+              cx + r * Math.cos(toRad(angleDeg)),
+              cy + r * Math.sin(toRad(angleDeg))
+            ];
+          }
+
+          function makeSectorPath(r1, r2, startAngle, endAngle) {
+            const [x1, y1] = polarToCart(r1, startAngle);
+            const [x2, y2] = polarToCart(r2, startAngle);
+            const [x3, y3] = polarToCart(r2, endAngle);
+            const [x4, y4] = polarToCart(r1, endAngle);
+            const largeArc = (endAngle - startAngle > 180) ? 1 : 0;
+            return `M${x1},${y1} L${x2},${y2} A${r2},${r2} 0 ${largeArc} 1 ${x3},${y3} L${x4},${y4} A${r1},${r1} 0 ${largeArc} 0 ${x1},${y1} Z`;
+          }
+
+          function createEl(tag, attrs) {
+            const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+            for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+            return el;
+          }
+
+          // --- Fond noir bord extérieur ---
+          svg.appendChild(createEl('circle', { cx, cy, r: R_OUT, fill: '#111', stroke: '#555', 'stroke-width': '2' }));
+
+          // Couleurs alternées : noir/crème, doubles/triples rouge/vert
+          const colBlack = '#1a1211';
+          const colCream = '#e8d9b0';
+          const colRed   = '#c0221a';
+          const colGreen = '#1a7a2a';
+
+          for (let i = 0; i < nSectors; i++) {
+            const a1 = startOffset + i * angleStep;
+            const a2 = a1 + angleStep;
+            const isEven = i % 2 === 0;
+            const baseColor = isEven ? colBlack : colCream;
+            const accentColor = isEven ? colRed : colGreen;
+
+            // Zone large (entre triples inner et doubles inner)
+            svg.appendChild(createEl('path', { d: makeSectorPath(R_TI, R_DI, a1, a2), fill: baseColor }));
+            // Doubles ring
+            svg.appendChild(createEl('path', { d: makeSectorPath(R_DI, R_DO, a1, a2), fill: accentColor }));
+            // Triples ring
+            svg.appendChild(createEl('path', { d: makeSectorPath(R_TO, R_TI, a1, a2), fill: accentColor }));
+            // Inner zone (centre → triples outer)
+            svg.appendChild(createEl('path', { d: makeSectorPath(R_BO, R_TO, a1, a2), fill: baseColor }));
+          }
+
+          // Bull outer (25) - vert
+          svg.appendChild(createEl('circle', { cx, cy, r: R_BO, fill: colGreen, stroke: '#111', 'stroke-width': '1' }));
+          // Bull inner (50) - rouge
+          svg.appendChild(createEl('circle', { cx, cy, r: R_BI, fill: colRed }));
+
+          // --- Lignes de séparation entre secteurs ---
+          for (let i = 0; i < nSectors; i++) {
+            const angle = startOffset + i * angleStep;
+            const [x1, y1] = polarToCart(R_BI, angle);
+            const [x2, y2] = polarToCart(R_DO, angle);
+            svg.appendChild(createEl('line', { x1, y1, x2, y2, stroke: '#111', 'stroke-width': '1' }));
+          }
+
+          // Cercles de délimitation
+          for (const r of [R_DO, R_DI, R_TO, R_TI, R_BO]) {
+            svg.appendChild(createEl('circle', { cx, cy, r, fill: 'none', stroke: '#111', 'stroke-width': '1.2' }));
+          }
+
+          // --- Numéros ---
+          const R_NUM = 182;
+          for (let i = 0; i < nSectors; i++) {
+            const midAngle = startOffset + i * angleStep + angleStep / 2;
+            const [tx, ty] = polarToCart(R_NUM, midAngle);
+            const t = createEl('text', {
+              x: tx, y: ty,
+              'text-anchor': 'middle',
+              'dominant-baseline': 'central',
+              'font-family': 'Bebas Neue, Arial Black, sans-serif',
+              'font-size': '16',
+              'font-weight': 'bold',
+              fill: '#fff',
+              'paint-order': 'stroke',
+              stroke: '#000',
+              'stroke-width': '2'
+            });
+            t.textContent = sectors[i];
+            svg.appendChild(t);
+          }
+
+          // --- 3 fléchettes ---
+          function drawDart(tx, ty, rot, color) {
+            const g = createEl('g', { transform: `translate(${tx},${ty}) rotate(${rot})` });
+            // Pointe
+            const tip = createEl('polygon', { points: '0,0 -2,-4 2,-4', fill: '#ccc' });
+            // Corps
+            const body = createEl('rect', { x: '-2', y: '-28', width: '4', height: '24', fill: color, rx: '1' });
+            // Grip
+            const grip = createEl('rect', { x: '-2.5', y: '-32', width: '5', height: '8', fill: '#888', rx: '1' });
+            // Ailettes
+            const f1 = createEl('polygon', { points: '-2,-32 -7,-44 -2,-40', fill: color, opacity: '0.9' });
+            const f2 = createEl('polygon', { points: '2,-32 7,-44 2,-40', fill: color, opacity: '0.9' });
+            g.appendChild(tip); g.appendChild(body); g.appendChild(grip);
+            g.appendChild(f1); g.appendChild(f2);
+            svg.appendChild(g);
+          }
+
+          drawDart(195, 148, -8,  '#c8a84b');
+          drawDart(208, 155,  6,  '#4b8fc8');
+          drawDart(200, 160, -2,  '#c84b4b');
+
+          // Glow extérieur
+          svg.appendChild(createEl('circle', { cx, cy, r: R_OUT, fill: 'none', stroke: '#b41414', 'stroke-width': '3', opacity: '0.4' }));
+        })();
+      </script>
+    </div>
+
+    <div class="subtitle">DOUBLETTE</div>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-diamond"></div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Info boxes -->
+    <div class="info-grid">
+      <div class="info-box">
+        <div class="label">Format</div>
+        <div class="value">2 vs 2</div>
+        <div class="sub">Par Équipe</div>
+      </div>
+      <div class="info-box">
+        <div class="label">Équipes</div>
+        <div class="value">12</div>
+        <div class="sub">Doublettes</div>
+      </div>
+      <div class="info-box">
+        <div class="label">Jeu</div>
+        <div class="value" style="font-size:24px;">501 / Cricket</div>
+        <div class="sub">Double Out</div>
+      </div>
+    </div>
+
+    <!-- Inscription -->
+    <div style="width:100%; border:1px solid #2a2a2a; border-top:3px solid #b41414; padding:14px; text-align:center; background:rgba(255,255,255,0.02); margin-top:16px;">
+      <div style="font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:4px; color:#b41414; text-transform:uppercase; margin-bottom:6px;">Inscription</div>
+      <div style="font-family:'Bebas Neue',sans-serif; font-size:42px; color:#fff; letter-spacing:3px; text-shadow: 0 0 20px rgba(220,40,40,0.4);">15 €</div>
+      <div style="font-family:'Rajdhani',sans-serif; font-size:13px; letter-spacing:3px; color:#888; margin-top:2px;">Par Doublette</div>
+    </div>
+    <div class="darts-row">
+      <span class="dart-icon">🎯</span>
+      <span style="font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:5px;color:#444;">✦ ✦ ✦</span>
+      <span class="dart-icon">🎯</span>
+    </div>
+
+    <div class="footer">
+      <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:6px; color:#fff; text-align:center; text-shadow: 0 0 20px rgba(220,40,40,0.5);">
+        Vins Scènes
+      </div>
+      <div style="font-family:'Rajdhani',sans-serif; font-size:16px; letter-spacing:5px; color:#e03030; text-align:center; margin-top:2px; text-transform:uppercase;">
+        18 Avril 2026
+      </div>
+      <div style="margin-top:10px; font-family:'Rajdhani',sans-serif; font-size:15px; letter-spacing:3px; color:#bbb; text-align:center;">
+        📍 4 Av. de Park Nevez, 22300 Lannion
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

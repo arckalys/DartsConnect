@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DartsConnect.FR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #e8220a;
+      --red-dark: #b81a08;
+      --red-glow: rgba(232,34,10,0.35);
+      --bg: #0a0a0a;
+      --bg2: #111111;
+      --bg3: #181818;
+      --border: rgba(255,255,255,0.07);
+      --text: #ffffff;
+      --muted: #888;
+      --card-bg: #141414;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 60px;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800; font-size: 1.25rem;
+      letter-spacing: 0.5px;
+      text-decoration: none; color: var(--text);
+    }
+
+    .logo-icon {
+      width: 34px; height: 34px;
+      background: var(--red);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      box-shadow: 0 0 12px var(--red-glow);
+    }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 4px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .nav-links a.active {
+      color: var(--text);
+      border: 1px solid rgba(232,34,10,0.5);
+      background: rgba(232,34,10,0.1);
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+
+    .btn-create {
+      background: var(--red);
+      color: #fff;
+      border: none; cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      font-weight: 600; font-size: 0.88rem;
+      padding: 8px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      display: flex; align-items: center; gap: 6px;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 12px var(--red-glow);
+    }
+
+    .btn-create:hover {
+      background: var(--red-dark);
+      box-shadow: 0 4px 20px var(--red-glow);
+    }
+
+    .nav-user {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .nav-user:hover { border-color: var(--red); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 0 2.5rem;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to right, rgba(10,10,10,1) 30%, rgba(10,10,10,0.7) 60%, rgba(10,10,10,0.15) 100%),
+        linear-gradient(to bottom, rgba(10,10,10,0.5) 0%, transparent 30%, transparent 70%, rgba(10,10,10,0.5) 100%);
+      z-index: 1;
+    }
+
+    /* Dartboard SVG background */
+    .hero-dartboard {
+      position: absolute;
+      right: -130px; top: 50%;
+      transform: translateY(-52%) rotate(-18deg);
+      width: 820px; height: 820px;
+      opacity: 0.75;
+      z-index: 0;
+      filter: drop-shadow(0 0 80px rgba(232,34,10,0.25)) drop-shadow(0 30px 80px rgba(0,0,0,0.9));
+    }
+
+    .hero-content {
+      position: relative; z-index: 1;
+      max-width: 620px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(232,34,10,0.12);
+      border: 1px solid rgba(232,34,10,0.4);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 1.4rem;
+    }
+
+    .hero-badge svg { width: 14px; height: 14px; }
+
+    .hero h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: clamp(3rem, 6vw, 5rem);
+      line-height: 1.0;
+      margin-bottom: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: -1px;
+    }
+
+    .hero h1 span { color: var(--red); }
+
+    .hero p {
+      font-size: 1rem;
+      color: #aaa;
+      line-height: 1.7;
+      margin-bottom: 2.2rem;
+      max-width: 480px;
+    }
+
+    .search-bar {
+      display: flex; gap: 10px;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .search-input {
+      flex: 1;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 18px;
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input::placeholder { color: #555; }
+    .search-input:focus { border-color: rgba(232,34,10,0.5); }
+
+    .btn-search {
+      background: var(--red);
+      color: #fff; border: none; cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 1rem;
+      letter-spacing: 0.5px;
+      padding: 13px 26px;
+      border-radius: 10px;
+      display: flex; align-items: center; gap: 8px;
+      transition: background 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px var(--red-glow);
+    }
+
+    .btn-search:hover {
+      background: var(--red-dark);
+      box-shadow: 0 6px 24px var(--red-glow);
+    }
+
+    /* ── STATS STRIP ── */
+    .stats-strip {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 2.5rem;
+      display: flex; justify-content: center; gap: 0;
+    }
+
+    .stat-item {
+      flex: 1; max-width: 280px;
+      text-align: center;
+      padding: 0 2rem;
+      border-right: 1px solid var(--border);
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .stat-item:last-child { border-right: none; }
+
+    .stat-number {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: var(--red);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* ── QUICK NAV CARDS ── */
+    .section { padding: 3.5rem 2.5rem; }
+
+    .quick-nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 3.5rem;
+    }
+
+    .quick-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem 1.6rem;
+      display: flex; align-items: center; gap: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+
+    .quick-card:hover {
+      border-color: rgba(232,34,10,0.35);
+      background: rgba(232,34,10,0.05);
+      transform: translateY(-2px);
+    }
+
+    .quick-card-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0;
+    }
+
+    .icon-red { background: rgba(232,34,10,0.15); }
+    .icon-orange { background: rgba(255,140,0,0.12); }
+    .icon-green { background: rgba(34,197,94,0.12); }
+
+    .quick-card-text h3 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 1.05rem;
+      margin-bottom: 2px;
+    }
+
+    .quick-card-text p { font-size: 0.8rem; color: var(--muted); }
+
+    .quick-card-arrow {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 1.1rem;
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .quick-card:hover .quick-card-arrow {
+      transform: translateX(4px);
+      color: var(--red);
+    }
+
+    /* ── TOURNAMENTS SECTION ── */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800; font-size: 1.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .see-all {
+      font-size: 0.85rem; color: var(--red);
+      text-decoration: none; font-weight: 600;
+      display: flex; align-items: center; gap: 4px;
+      transition: gap 0.2s;
+    }
+
+    .see-all:hover { gap: 8px; }
+
+    .tournaments-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .tournament-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.2s, transform 0.2s;
+      display: block;
+    }
+
+    .tournament-card:hover {
+      border-color: rgba(232,34,10,0.4);
+      transform: translateY(-3px);
+    }
+
+    .tc-header {
+      padding: 1.2rem 1.4rem 0.8rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+    }
+
+    .tc-badge {
+      display: inline-block;
+      font-size: 0.65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      padding: 3px 9px; border-radius: 100px;
+      margin-bottom: 8px;
+    }
+
+    .badge-open { background: rgba(34,197,94,0.15); color: #22c55e; }
+    .badge-soon { background: rgba(232,34,10,0.15); color: var(--red); }
+    .badge-full { background: rgba(255,255,255,0.08); color: var(--muted); }
+
+    .tc-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800; font-size: 1.1rem;
+      line-height: 1.2;
+    }
+
+    .tc-prize {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 1.1rem;
+      color: var(--red); white-space: nowrap;
+    }
+
+    .tc-body { padding: 1rem 1.4rem 1.2rem; }
+
+    .tc-meta {
+      display: flex; flex-direction: column; gap: 6px;
+      margin-bottom: 1rem;
+    }
+
+    .tc-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.82rem; color: var(--muted);
+    }
+
+    .tc-row svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+    .tc-footer {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .tc-players {
+      font-size: 0.78rem; color: var(--muted);
+    }
+
+    .tc-players span { color: var(--text); font-weight: 600; }
+
+    .progress-bar {
+      height: 4px; background: rgba(255,255,255,0.08);
+      border-radius: 2px; margin-top: 4px; width: 100%;
+    }
+
+    .progress-fill {
+      height: 100%; border-radius: 2px;
+      background: var(--red);
+      transition: width 0.3s;
+    }
+
+    .tc-register {
+      font-size: 0.78rem; font-weight: 600;
+      color: var(--red); text-decoration: none;
+      display: flex; align-items: center; gap: 3px;
+      transition: gap 0.2s;
+    }
+
+    .tc-register:hover { gap: 6px; }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 2rem;
+      border-top: 1px solid var(--border);
+      padding: 2rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800; font-size: 1.1rem;
+      color: var(--muted);
+    }
+
+    .footer-links {
+      display: flex; gap: 24px; list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.82rem; color: var(--muted);
+      text-decoration: none; transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text); }
+
+    .footer-copy {
+      font-size: 0.78rem; color: #444;
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1; transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-icon">🎯</div>
+    DartsConnect.FR
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Accueil</a></li>
+    <li><a href="tournois.html">Tournois</a></li>
+    <li><a href="#">Carte</a></li>
+    <li><a href="#">Mes inscriptions</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <a href="#" class="btn-create">+ Créer un tournoi</a>
+    <a href="auth.html" class="nav-user" style="text-decoration:none;">👤</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+
+  <!-- Cible de fléchettes ultra-réaliste (générée par JS) -->
+  <svg id="dartboard" class="hero-dartboard" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="sisal" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#c8b89a"/>
+        <stop offset="40%" stop-color="#b8a882"/>
+        <stop offset="100%" stop-color="#8a7455"/>
+      </radialGradient>
+      <radialGradient id="sisalDark" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#2a2218"/>
+        <stop offset="60%" stop-color="#1a1510"/>
+        <stop offset="100%" stop-color="#0d0a06"/>
+      </radialGradient>
+      <radialGradient id="frame" cx="40%" cy="35%" r="65%">
+        <stop offset="0%" stop-color="#3a2510"/>
+        <stop offset="50%" stop-color="#1e1208"/>
+        <stop offset="100%" stop-color="#0a0602"/>
+      </radialGradient>
+      <radialGradient id="bullGreen" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#009944"/>
+        <stop offset="100%" stop-color="#005522"/>
+      </radialGradient>
+      <radialGradient id="bullRed" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ee1111"/>
+        <stop offset="100%" stop-color="#990000"/>
+      </radialGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="innerShadow">
+        <feGaussianBlur stdDeviation="4"/>
+      </filter>
+    </defs>
+  </svg>
+  <script>
+  (function() {
+    const svg = document.getElementById('dartboard');
+    const ns = 'http://www.w3.org/2000/svg';
+    const cx = 250, cy = 250;
+    // Rayons : cadre ext, cadre int, double ext, double int, triple ext, triple int, bull ext, bull int
+    const R = { frameOut:248, frameIn:228, out:215, dblOut:215, dblIn:198, mid:170, triOut:135, triIn:118, bullOut:34, bullIn:16 };
+    // Ordre officiel des numéros (depuis le haut, sens horaire)
+    const nums = [20,1,18,4,13,6,10,15,2,17,3,19,7,16,8,11,14,9,12,5];
+    const segAngle = 18; // 360/20
+
+    function pt(r, angleDeg) {
+      const a = (angleDeg - 90) * Math.PI / 180;
+      return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+    }
+
+    function arcPath(r1, r2, startDeg, endDeg) {
+      const [x1,y1] = pt(r1, startDeg);
+      const [x2,y2] = pt(r2, startDeg);
+      const [x3,y3] = pt(r2, endDeg);
+      const [x4,y4] = pt(r1, endDeg);
+      return `M${x1},${y1} A${r1},${r1} 0 0,1 ${x4},${y4} L${x3},${y3} A${r2},${r2} 0 0,0 ${x2},${y2} Z`;
+    }
+
+    function addPath(d, fill, stroke, sw) {
+      const p = document.createElementNS(ns, 'path');
+      p.setAttribute('d', d);
+      p.setAttribute('fill', fill);
+      if (stroke) { p.setAttribute('stroke', stroke); p.setAttribute('stroke-width', sw||'1'); }
+      svg.appendChild(p);
+    }
+
+    function addCircle(r, fill, stroke, sw) {
+      const c = document.createElementNS(ns, 'circle');
+      c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', r);
+      c.setAttribute('fill', fill);
+      if (stroke) { c.setAttribute('stroke', stroke); c.setAttribute('stroke-width', sw||'1'); }
+      svg.appendChild(c);
+    }
+
+    // Cadre en bois
+    addCircle(R.frameOut, 'url(#frame)');
+    addCircle(R.frameIn+4, '#0d0a06');
+
+    // Base sisal pleine
+    addCircle(R.out, '#1a1510');
+
+    // Segments principaux (sisal crème / noir)
+    for (let i = 0; i < 20; i++) {
+      const start = i * segAngle - segAngle/2;
+      const end = start + segAngle;
+      const isLight = i % 2 === 0;
+      addPath(arcPath(R.out, R.bullOut+2, start, end), isLight ? 'url(#sisal)' : 'url(#sisalDark)', '#0d0a06', '0.8');
+    }
+
+    // Anneau double (extérieur)
+    for (let i = 0; i < 20; i++) {
+      const start = i * segAngle - segAngle/2;
+      const end = start + segAngle;
+      const isRed = i % 2 === 0;
+      addPath(arcPath(R.dblOut, R.dblIn, start, end), isRed ? '#cc1111' : '#006633', '#0d0a06', '0.5');
+    }
+
+    // Zone entre double et triple (sisal)
+    for (let i = 0; i < 20; i++) {
+      const start = i * segAngle - segAngle/2;
+      const end = start + segAngle;
+      const isLight = i % 2 === 0;
+      addPath(arcPath(R.dblIn, R.triOut, start, end), isLight ? 'url(#sisal)' : 'url(#sisalDark)', '#0d0a06', '0.5');
+    }
+
+    // Anneau triple (milieu)
+    for (let i = 0; i < 20; i++) {
+      const start = i * segAngle - segAngle/2;
+      const end = start + segAngle;
+      const isRed = i % 2 === 0;
+      addPath(arcPath(R.triOut, R.triIn, start, end), isRed ? '#cc1111' : '#006633', '#0d0a06', '0.5');
+    }
+
+    // Zone entre triple et bull (sisal)
+    for (let i = 0; i < 20; i++) {
+      const start = i * segAngle - segAngle/2;
+      const end = start + segAngle;
+      const isLight = i % 2 === 0;
+      addPath(arcPath(R.triIn, R.bullOut+2, start, end), isLight ? 'url(#sisal)' : 'url(#sisalDark)', '#0d0a06', '0.5');
+    }
+
+    // Lignes de séparation radiales
+    for (let i = 0; i < 20; i++) {
+      const angle = i * segAngle - segAngle/2;
+      const [x1,y1] = pt(R.bullOut+2, angle);
+      const [x2,y2] = pt(R.out, angle);
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+      line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+      line.setAttribute('stroke', '#0d0a06'); line.setAttribute('stroke-width', '1.2');
+      svg.appendChild(line);
+    }
+
+    // Cercles délimiteurs
+    [R.dblOut, R.dblIn, R.triOut, R.triIn].forEach(r => {
+      addCircle(r, 'none', '#0d0a06', '1.5');
+    });
+    addCircle(R.out, 'none', '#0d0a06', '2');
+
+    // Bull outer (25) vert
+    addCircle(R.bullOut, 'url(#bullGreen)', '#0d0a06', '1.5');
+    // Bull inner (50) rouge
+    addCircle(R.bullIn, 'url(#bullRed)', '#0d0a06', '1');
+    // Point central
+    addCircle(3, '#ff4422');
+
+    // Numéros
+    nums.forEach((num, i) => {
+      const angle = i * segAngle;
+      const [x, y] = pt(R.out + 17, angle);
+      const t = document.createElementNS(ns, 'text');
+      t.setAttribute('x', x); t.setAttribute('y', y);
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('dominant-baseline', 'middle');
+      t.setAttribute('font-family', 'Arial Black, sans-serif');
+      t.setAttribute('font-size', '17');
+      t.setAttribute('font-weight', '900');
+      t.setAttribute('fill', '#f0e0c0');
+      t.textContent = num;
+      svg.appendChild(t);
+    });
+
+    // Reflet léger sur le cadre
+    const shine = document.createElementNS(ns, 'circle');
+    shine.setAttribute('cx', cx - 60); shine.setAttribute('cy', cy - 70);
+    shine.setAttribute('r', '80');
+    shine.setAttribute('fill', 'radial-gradient');
+    shine.setAttribute('fill', 'rgba(255,220,150,0.04)');
+    svg.appendChild(shine);
+  })();
+  </script>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      Tournois de fléchettes
+    </div>
+
+    <h1>Trouvez votre<br><span>prochain tournoi</span></h1>
+
+    <p>Tous les tournois de fléchettes en France réunis sur une seule plateforme. Cherchez, trouvez et inscrivez-vous en quelques clics.</p>
+
+    <div class="search-bar">
+      <input class="search-input" type="text" placeholder="Ville, tournoi, région..." />
+      <button class="btn-search">
+        Chercher
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat-item">
+    <div class="stat-number">24</div>
+    <div class="stat-label">Tournois</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">13</div>
+    <div class="stat-label">Régions</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">312</div>
+    <div class="stat-label">Joueurs inscrits</div>
+  </div>
+</div>
+
+<!-- SECTION PRINCIPALE -->
+<section class="section">
+
+  <!-- Quick nav -->
+  <div class="quick-nav reveal">
+    <a href="tournois.html" class="quick-card">
+      <div class="quick-card-icon icon-red">📅</div>
+      <div class="quick-card-text">
+        <h3>Tous les tournois</h3>
+        <p>Parcourir les événements</p>
+      </div>
+      <span class="quick-card-arrow">→</span>
+    </a>
+    <a href="#" class="quick-card">
+      <div class="quick-card-icon icon-orange">📍</div>
+      <div class="quick-card-text">
+        <h3>Carte interactive</h3>
+        <p>Trouver près de chez vous</p>
+      </div>
+      <span class="quick-card-arrow">→</span>
+    </a>
+    <a href="auth.html" class="quick-card">
+      <div class="quick-card-icon icon-green">🏆</div>
+      <div class="quick-card-text">
+        <h3>Mes inscriptions</h3>
+        <p>Suivre mes tournois</p>
+      </div>
+      <span class="quick-card-arrow">→</span>
+    </a>
+  </div>
+
+  <!-- Prochains tournois -->
+  <div class="reveal">
+    <div class="section-header">
+      <h2 class="section-title">Prochains tournois</h2>
+      <a href="tournois.html" class="see-all">Voir tout →</a>
+    </div>
+
+    <div class="tournaments-grid" id="home-tournaments">
+      <!-- Rempli dynamiquement -->
+    </div>
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">DartsConnect.FR</div>
+  <ul class="footer-links">
+    <li><a href="#">À propos</a></li>
+    <li><a href="#">Contact</a></li>
+    <li><a href="#">Mentions légales</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 DartsConnect.FR</div>
+</footer>
+
+<script>
+  // ── DONNÉES PARTAGÉES ──
+  const TOURNAMENTS = [
+    { id:1, name:"Open de Paris — Fléchettes 2026", city:"Paris", region:"Île-de-France", date:"2026-04-12", prize:500, format:"Simple", players:18, maxPlayers:32, status:"open" },
+    { id:2, name:"Championnat de Lyon 501", city:"Lyon", region:"Auvergne-Rhône-Alpes", date:"2026-04-19", prize:300, format:"Doublette", players:28, maxPlayers:32, status:"soon" },
+    { id:3, name:"Grand Prix Marseille Summer", city:"Marseille", region:"Provence-Alpes-Côte d'Azur", date:"2026-05-03", prize:1000, format:"Simple", players:8, maxPlayers:64, status:"open" },
+    { id:4, name:"Tournoi des Flandres", city:"Lille", region:"Hauts-de-France", date:"2026-04-26", prize:200, format:"Simple", players:16, maxPlayers:16, status:"full" },
+    { id:5, name:"Open Bordelais de Fléchettes", city:"Bordeaux", region:"Nouvelle-Aquitaine", date:"2026-05-10", prize:400, format:"Triplette", players:6, maxPlayers:24, status:"open" },
+    { id:6, name:"Nantes Darts Challenge", city:"Nantes", region:"Pays de la Loire", date:"2026-05-17", prize:250, format:"Simple", players:12, maxPlayers:32, status:"open" },
+    { id:7, name:"Toulouse Open 2026", city:"Toulouse", region:"Occitanie", date:"2026-06-07", prize:600, format:"Doublette", players:4, maxPlayers:32, status:"open" },
+    { id:8, name:"Strasbourg Darts Masters", city:"Strasbourg", region:"Grand Est", date:"2026-05-24", prize:350, format:"Simple", players:22, maxPlayers:24, status:"soon" },
+    { id:9, name:"Breizh Darts Open", city:"Rennes", region:"Bretagne", date:"2026-06-14", prize:150, format:"Simple", players:10, maxPlayers:32, status:"open" },
+    { id:10, name:"Normandie Challenge Cup", city:"Rouen", region:"Normandie", date:"2026-04-05", prize:200, format:"Doublette", players:32, maxPlayers:32, status:"full" },
+    { id:11, name:"Montpellier Darts Festival", city:"Montpellier", region:"Occitanie", date:"2026-07-12", prize:800, format:"Simple", players:0, maxPlayers:64, status:"open" },
+    { id:12, name:"Dijon Classic Fléchettes", city:"Dijon", region:"Bourgogne-Franche-Comté", date:"2026-05-30", prize:180, format:"Simple", players:14, maxPlayers:24, status:"open" },
+  ];
+
+  // ── STATS DYNAMIQUES ──
+  const totalPlayers = TOURNAMENTS.reduce((s,t) => s + t.players, 0);
+  const regions = [...new Set(TOURNAMENTS.map(t => t.region))].length;
+  document.querySelectorAll('.stat-number')[0].textContent = TOURNAMENTS.length;
+  document.querySelectorAll('.stat-number')[1].textContent = regions;
+  document.querySelectorAll('.stat-number')[2].textContent = totalPlayers;
+
+  // ── HELPERS ──
+  function statusLabel(s) {
+    return { open:'Inscriptions ouvertes', soon:'Bientôt complet', full:'Complet', closed:'Terminé' }[s] || s;
+  }
+  function statusClass(s) {
+    return { open:'badge-open', soon:'badge-soon', full:'badge-full', closed:'badge-closed' }[s] || '';
+  }
+  function formatDate(d) {
+    return new Date(d).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+  }
+
+  // ── RENDU CARTES ACCUEIL ──
+  // Trier par date, prendre les 3 prochains
+  const upcoming = [...TOURNAMENTS]
+    .sort((a,b) => new Date(a.date) - new Date(b.date))
+    .slice(0, 3);
+
+  const grid = document.getElementById('home-tournaments');
+  grid.innerHTML = upcoming.map(t => {
+    const pct = Math.round((t.players / t.maxPlayers) * 100);
+    return `
+    <a href="tournois.html" class="tournament-card">
+      <div class="tc-header">
+        <div>
+          <div class="tc-badge ${statusClass(t.status)}">${statusLabel(t.status)}</div>
+          <div class="tc-name">${t.name}</div>
+        </div>
+        <div class="tc-prize">${t.prize.toLocaleString('fr-FR')}€</div>
+      </div>
+      <div class="tc-body">
+        <div class="tc-meta">
+          <div class="tc-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            ${formatDate(t.date)}
+          </div>
+          <div class="tc-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            ${t.city}, ${t.region}
+          </div>
+          <div class="tc-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            Format : ${t.format}
+          </div>
+        </div>
+        <div class="tc-footer">
+          <div>
+            <div class="tc-players"><span>${t.players}</span> / ${t.maxPlayers} joueurs</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+          </div>
+          <span class="tc-register">${t.status === 'full' ? 'Voir →' : "S'inscrire →"}</span>
+        </div>
+      </div>
+    </a>`;
+  }).join('');
+
+  // ── SCROLL REVEAL ──
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+  // ── RECHERCHE HERO ──
+  document.querySelector('.btn-search').addEventListener('click', () => {
+    const q = document.querySelector('.search-input').value;
+    window.location.href = 'tournois.html' + (q ? '?q='+encodeURIComponent(q) : '');
+  });
+  document.querySelector('.search-input').addEventListener('keydown', e => {
+    if(e.key === 'Enter') document.querySelector('.btn-search').click();
+  });
+</script>
+
+</body>
+</html>

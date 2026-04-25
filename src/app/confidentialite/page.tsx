@@ -42,7 +42,7 @@ export default function ConfidentialitePage() {
             <p className="mb-2">Lors de la création de votre compte et de l&apos;utilisation du service, nous collectons :</p>
             <Item>Nom, prénom et pseudo</Item>
             <Item>Adresse email</Item>
-            <Item>Région et niveau de jeu (moyenne)</Item>
+            <Item>Région</Item>
             <Item>Historique des inscriptions aux tournois</Item>
             <Item>Photo de profil (si téléchargée)</Item>
           </Section>

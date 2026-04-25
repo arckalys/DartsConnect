@@ -16,23 +16,39 @@ export default function HomePage() {
   const searchRef = useRef<HTMLInputElement>(null);
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
+  const [inscriptionsCount, setInscriptionsCount] = useState(0);
 
   useEffect(() => {
-    async function fetchTournaments() {
+    const supabase = createClient();
+
+    async function fetchAll() {
       try {
-        const supabase = createClient();
-        const { data } = await supabase
-          .from("tournois")
-          .select("*")
-          .order("date_tournoi", { ascending: true });
-        if (data) setTournaments(data);
+        const [{ data: tournoiData }, { count }] = await Promise.all([
+          supabase.from("tournois").select("*").order("date_tournoi", { ascending: true }),
+          supabase.from("inscriptions").select("id", { count: "exact", head: true }),
+        ]);
+        if (tournoiData) setTournaments(tournoiData);
+        setInscriptionsCount(count ?? 0);
       } catch {
         // Supabase unavailable — show empty state
       } finally {
         setLoading(false);
       }
     }
-    fetchTournaments();
+    fetchAll();
+
+    // Realtime : mise à jour dès qu'un joueur s'inscrit ou se désinscrit
+    const channel = supabase
+      .channel("inscriptions-count")
+      .on("postgres_changes", { event: "*", schema: "public", table: "inscriptions" }, () => {
+        supabase
+          .from("inscriptions")
+          .select("id", { count: "exact", head: true })
+          .then(({ count }) => setInscriptionsCount(count ?? 0));
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   // Stats
@@ -112,8 +128,8 @@ export default function HomePage() {
             <div className="text-[0.82rem] xs:text-[0.85rem] text-[#777] font-medium">Régions</div>
           </div>
           <div className="flex-1 text-center px-3 xs:px-4 sm:px-8 py-2 sm:py-0">
-            <div className="font-barlow-condensed text-[1.8rem] xs:text-[2.2rem] sm:text-[2.8rem] xl:text-[3.2rem] font-black text-[#e8220a] leading-none mb-1">{tournaments.reduce((s, t) => s + (t.nb_joueurs ?? 0), 0)}</div>
-            <div className="text-[0.82rem] xs:text-[0.85rem] text-[#777] font-medium">Places disponibles</div>
+            <div className="font-barlow-condensed text-[1.8rem] xs:text-[2.2rem] sm:text-[2.8rem] xl:text-[3.2rem] font-black text-[#e8220a] leading-none mb-1">{inscriptionsCount}</div>
+            <div className="text-[0.82rem] xs:text-[0.85rem] text-[#777] font-medium">Joueurs inscrits</div>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import ServiceWorker from "@/components/ServiceWorker";
+import CookieBanner from "@/components/CookieBanner";
 
 export const runtime = "edge";
 
@@ -96,6 +97,7 @@ export default function RootLayout({
         <ServiceWorker />
         <Navbar />
         {children}
+        <CookieBanner />
       </body>
     </html>
   );

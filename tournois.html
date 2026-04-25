@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DartsConnect.FR — Tournois</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red: #e8220a; --red-dark: #b81a08; --red-glow: rgba(232,34,10,0.3);
+      --bg: #0a0a0a; --bg2: #111; --bg3: #181818;
+      --border: rgba(255,255,255,0.08); --text: #fff; --muted: #777; --card: #141414;
+      --green: #22c55e; --orange: #f97316;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: 60px;
+      background: rgba(10,10,10,0.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.2rem; text-decoration: none; color: var(--text); }
+    .logo-icon { width: 32px; height: 32px; background: var(--red); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 0 12px var(--red-glow); }
+    .nav-links { display: flex; gap: 4px; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--muted); font-size: 0.88rem; font-weight: 500; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+    .nav-links a.active { color: var(--text); border: 1px solid rgba(232,34,10,0.4); background: rgba(232,34,10,0.08); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .btn-create { background: var(--red); color: #fff; border: none; cursor: pointer; font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 0.88rem; padding: 8px 18px; border-radius: 8px; text-decoration: none; transition: all 0.2s; box-shadow: 0 2px 12px var(--red-glow); }
+    .btn-create:hover { background: var(--red-dark); }
+    .nav-user { width: 34px; height: 34px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; transition: border-color 0.2s; text-decoration: none; }
+    .nav-user:hover { border-color: var(--red); }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      padding: 88px 2.5rem 0;
+      background: linear-gradient(to bottom, rgba(232,34,10,0.04) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .page-header-inner { max-width: 1200px; margin: 0 auto; padding-bottom: 1.5rem; }
+    .page-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2.4rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .page-count { font-size: 0.88rem; color: var(--muted); margin-top: 4px; }
+    .page-count span { color: var(--red); font-weight: 700; }
+
+    /* ── FILTRES ── */
+    .filters-bar {
+      padding: 1.2rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      position: sticky; top: 60px; z-index: 50;
+    }
+    .filters-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+    .search-wrap { position: relative; flex: 1; min-width: 220px; }
+    .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); }
+    .search-input { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px 10px 38px; color: var(--text); font-family: 'Barlow', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+    .search-input:focus { border-color: rgba(232,34,10,0.4); }
+    .search-input::placeholder { color: #444; }
+
+    .filter-select { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; color: var(--text); font-family: 'Barlow', sans-serif; font-size: 0.88rem; outline: none; cursor: pointer; transition: border-color 0.2s; }
+    .filter-select:focus { border-color: rgba(232,34,10,0.4); }
+    .filter-select option { background: var(--bg2); }
+
+    .filters-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+
+    /* Active filters */
+    .active-filters { display: flex; gap: 6px; flex-wrap: wrap; padding: 0.6rem 2.5rem 0; max-width: calc(1200px + 5rem); margin: 0 auto; }
+    .filter-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,34,10,0.1); border: 1px solid rgba(232,34,10,0.3); border-radius: 100px; padding: 3px 10px; font-size: 0.75rem; font-weight: 600; color: var(--red); cursor: pointer; }
+    .filter-tag:hover { background: rgba(232,34,10,0.18); }
+
+    /* Vue switch */
+    .view-switch { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .view-btn { width: 36px; height: 36px; border: none; background: none; cursor: pointer; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .view-btn.active { background: var(--red); color: #fff; }
+    .view-btn svg { width: 16px; height: 16px; }
+
+    /* ── CONTENU ── */
+    .content { max-width: 1200px; margin: 0 auto; padding: 2rem 2.5rem; }
+
+    /* ── VUE CARTES ── */
+    .grid-view { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    .tournament-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      overflow: hidden; cursor: pointer; text-decoration: none; color: var(--text);
+      transition: border-color 0.2s, transform 0.2s; display: flex; flex-direction: column;
+      animation: fadeUp 0.4s ease both;
+    }
+    .tournament-card:hover { border-color: rgba(232,34,10,0.4); transform: translateY(-3px); }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+    .tc-top { padding: 1.2rem 1.4rem 0.8rem; border-bottom: 1px solid var(--border); }
+    .tc-badges { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+    .badge { display: inline-block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 3px 9px; border-radius: 100px; }
+    .badge-open { background: rgba(34,197,94,0.12); color: var(--green); }
+    .badge-soon { background: rgba(249,115,22,0.12); color: var(--orange); }
+    .badge-full { background: rgba(255,255,255,0.06); color: var(--muted); }
+    .badge-closed { background: rgba(248,113,113,0.1); color: #f87171; }
+    .badge-format { background: rgba(255,255,255,0.06); color: #aaa; }
+
+    .tc-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .tc-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.05rem; line-height: 1.25; }
+    .tc-prize { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--red); white-space: nowrap; }
+
+    .tc-body { padding: 1rem 1.4rem 1.2rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .tc-meta { display: flex; flex-direction: column; gap: 5px; margin-bottom: 1rem; }
+    .tc-row { display: flex; align-items: center; gap: 7px; font-size: 0.8rem; color: var(--muted); }
+    .tc-row svg { width: 13px; height: 13px; flex-shrink: 0; color: #555; }
+
+    .tc-footer { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+    .tc-players-info { flex: 1; }
+    .tc-players { font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; }
+    .tc-players strong { color: var(--text); }
+    .progress-bar { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; }
+    .progress-fill { height: 100%; border-radius: 2px; background: var(--red); transition: width 0.4s; }
+    .progress-fill.full { background: #f87171; }
+    .tc-cta { font-size: 0.78rem; font-weight: 700; color: var(--red); white-space: nowrap; display: flex; align-items: center; gap: 3px; transition: gap 0.2s; }
+    .tc-cta:hover { gap: 6px; }
+
+    /* ── VUE LISTE ── */
+    .list-view { display: flex; flex-direction: column; gap: 10px; }
+    .list-view { display: none; }
+    .list-view.active { display: flex; }
+    .grid-view.active { display: grid; }
+
+    .tournament-row {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.1rem 1.4rem; display: grid;
+      grid-template-columns: 2fr 1.2fr 1fr 1fr 1fr auto;
+      align-items: center; gap: 16px;
+      cursor: pointer; text-decoration: none; color: var(--text);
+      transition: border-color 0.2s, background 0.2s;
+      animation: fadeUp 0.3s ease both;
+    }
+    .tournament-row:hover { border-color: rgba(232,34,10,0.35); background: rgba(232,34,10,0.02); }
+
+    .row-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1rem; }
+    .row-sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+    .row-sub svg { width: 11px; height: 11px; }
+    .row-date { font-size: 0.85rem; color: #ccc; }
+    .row-region { font-size: 0.82rem; color: var(--muted); }
+    .row-prize { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--red); }
+    .row-players { font-size: 0.8rem; color: var(--muted); }
+    .row-players strong { color: var(--text); }
+    .row-btn { background: rgba(232,34,10,0.1); border: 1px solid rgba(232,34,10,0.25); color: var(--red); font-size: 0.78rem; font-weight: 700; padding: 6px 14px; border-radius: 8px; white-space: nowrap; transition: all 0.2s; }
+    .row-btn:hover { background: rgba(232,34,10,0.2); }
+
+    /* List header */
+    .list-header { display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr 1fr auto; gap: 16px; padding: 0.5rem 1.4rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+    .empty-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.4rem; color: #666; margin-bottom: 8px; }
+    .empty-sub { font-size: 0.88rem; }
+
+    /* ── SORT ── */
+    .sort-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
+    .sort-label { font-size: 0.82rem; color: var(--muted); }
+    .sort-select { background: transparent; border: none; color: var(--muted); font-family: 'Barlow', sans-serif; font-size: 0.82rem; cursor: pointer; outline: none; }
+    .sort-select option { background: var(--bg2); }
+
+    /* Pagination */
+    .pagination { display: flex; justify-content: center; gap: 6px; margin-top: 2.5rem; }
+    .page-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--muted); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-family: 'Barlow', sans-serif; }
+    .page-btn:hover, .page-btn.active { background: var(--red); color: #fff; border-color: var(--red); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-icon">🎯</div>
+    DartsConnect.FR
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="tournois.html" class="active">Tournois</a></li>
+    <li><a href="#">Carte</a></li>
+    <li><a href="#">Mes inscriptions</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="creer-tournoi.html" class="btn-create">+ Créer un tournoi</a>
+    <a href="auth.html" class="nav-user">👤</a>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-title">Tous les tournois</div>
+    <div class="page-count"><span id="result-count">12</span> tournois trouvés</div>
+  </div>
+</div>
+
+<!-- FILTRES -->
+<div class="filters-bar">
+  <div class="filters-inner">
+    <!-- Recherche -->
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input class="search-input" id="search" type="text" placeholder="Rechercher un tournoi, une ville..." oninput="applyFilters()"/>
+    </div>
+
+    <!-- Région -->
+    <select class="filter-select" id="filter-region" onchange="applyFilters()">
+      <option value="">Toutes les régions</option>
+      <option>Île-de-France</option>
+      <option>Auvergne-Rhône-Alpes</option>
+      <option>Provence-Alpes-Côte d'Azur</option>
+      <option>Nouvelle-Aquitaine</option>
+      <option>Occitanie</option>
+      <option>Hauts-de-France</option>
+      <option>Grand Est</option>
+      <option>Normandie</option>
+      <option>Bretagne</option>
+      <option>Pays de la Loire</option>
+    </select>
+
+    <!-- Date -->
+    <select class="filter-select" id="filter-date" onchange="applyFilters()">
+      <option value="">Toutes les dates</option>
+      <option value="week">Cette semaine</option>
+      <option value="month">Ce mois-ci</option>
+      <option value="next">3 prochains mois</option>
+    </select>
+
+    <!-- Vue switch + reset -->
+    <div class="filters-right">
+      <button onclick="resetFilters()" id="btn-reset" style="background:transparent;border:none;color:var(--muted);font-size:0.8rem;cursor:pointer;display:none;">✕ Réinitialiser</button>
+      <div class="view-switch">
+        <button class="view-btn active" id="btn-grid" onclick="setView('grid')" title="Vue cartes">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </button>
+        <button class="view-btn" id="btn-list" onclick="setView('list')" title="Vue liste">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENU -->
+<div class="content">
+  <div class="sort-bar">
+    <span class="sort-label" id="sort-label">12 tournois</span>
+    <select class="sort-select" id="sort" onchange="applyFilters()">
+      <option value="date">Trier par date</option>
+      <option value="prize">Trier par dotation</option>
+      <option value="places">Trier par places restantes</option>
+    </select>
+  </div>
+
+  <!-- VUE CARTES -->
+  <div class="grid-view active" id="grid-view">
+    <!-- Rempli par JS -->
+  </div>
+
+  <!-- VUE LISTE -->
+  <div class="list-view" id="list-view">
+    <div class="list-header">
+      <div>Tournoi</div>
+      <div>Date</div>
+      <div>Région</div>
+      <div>Dotation</div>
+      <div>Joueurs</div>
+      <div></div>
+    </div>
+    <!-- Rempli par JS -->
+  </div>
+
+  <!-- EMPTY -->
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <div class="empty-icon">🎯</div>
+    <div class="empty-title">Aucun tournoi trouvé</div>
+    <div class="empty-sub">Essaie de modifier tes critères de recherche</div>
+  </div>
+
+  <!-- PAGINATION -->
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<script>
+// ── DONNÉES FICTIVES ──
+const TOURNAMENTS = [
+  { id:1, name:"Open de Paris — Fléchettes 2026", city:"Paris", region:"Île-de-France", date:"2026-04-12", prize:500, format:"Simple", players:18, maxPlayers:32, status:"open" },
+  { id:2, name:"Championnat de Lyon 501", city:"Lyon", region:"Auvergne-Rhône-Alpes", date:"2026-04-19", prize:300, format:"Doublette", players:28, maxPlayers:32, status:"soon" },
+  { id:3, name:"Grand Prix Marseille Summer", city:"Marseille", region:"Provence-Alpes-Côte d'Azur", date:"2026-05-03", prize:1000, format:"Simple", players:8, maxPlayers:64, status:"open" },
+  { id:4, name:"Tournoi des Flandres", city:"Lille", region:"Hauts-de-France", date:"2026-04-26", prize:200, format:"Simple", players:16, maxPlayers:16, status:"full" },
+  { id:5, name:"Open Bordelais de Fléchettes", city:"Bordeaux", region:"Nouvelle-Aquitaine", date:"2026-05-10", prize:400, format:"Triplette", players:6, maxPlayers:24, status:"open" },
+  { id:6, name:"Nantes Darts Challenge", city:"Nantes", region:"Pays de la Loire", date:"2026-05-17", prize:250, format:"Simple", players:12, maxPlayers:32, status:"open" },
+  { id:7, name:"Toulouse Open 2026", city:"Toulouse", region:"Occitanie", date:"2026-06-07", prize:600, format:"Doublette", players:4, maxPlayers:32, status:"open" },
+  { id:8, name:"Strasbourg Darts Masters", city:"Strasbourg", region:"Grand Est", date:"2026-05-24", prize:350, format:"Simple", players:22, maxPlayers:24, status:"soon" },
+  { id:9, name:"Breizh Darts Open", city:"Rennes", region:"Bretagne", date:"2026-06-14", prize:150, format:"Simple", players:10, maxPlayers:32, status:"open" },
+  { id:10, name:"Normandie Challenge Cup", city:"Rouen", region:"Normandie", date:"2026-04-05", prize:200, format:"Doublette", players:32, maxPlayers:32, status:"full" },
+  { id:11, name:"Montpellier Darts Festival", city:"Montpellier", region:"Occitanie", date:"2026-07-12", prize:800, format:"Simple", players:0, maxPlayers:64, status:"open" },
+  { id:12, name:"Dijon Classic Fléchettes", city:"Dijon", region:"Bourgogne-Franche-Comté", date:"2026-05-30", prize:180, format:"Simple", players:14, maxPlayers:24, status:"open" },
+];
+
+let currentView = 'grid';
+let currentPage = 1;
+const PER_PAGE = 9;
+
+function statusLabel(s) {
+  const map = { open:'Inscriptions ouvertes', soon:'Bientôt complet', full:'Complet', closed:'Terminé' };
+  return map[s] || s;
+}
+function statusClass(s) {
+  const map = { open:'badge-open', soon:'badge-soon', full:'badge-full', closed:'badge-closed' };
+  return map[s] || '';
+}
+function formatDate(d) {
+  return new Date(d).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+}
+function formatDateShort(d) {
+  return new Date(d).toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
+}
+function pct(p, m) { return Math.round((p/m)*100); }
+
+function getFiltered() {
+  let data = [...TOURNAMENTS];
+  const q = document.getElementById('search').value.toLowerCase();
+  const region = document.getElementById('filter-region').value;
+  const dateF = document.getElementById('filter-date').value;
+  const sort = document.getElementById('sort').value;
+  const now = new Date();
+
+  if(q) data = data.filter(t => t.name.toLowerCase().includes(q) || t.city.toLowerCase().includes(q) || t.region.toLowerCase().includes(q));
+  if(region) data = data.filter(t => t.region === region);
+  if(dateF === 'week') {
+    const end = new Date(now); end.setDate(end.getDate()+7);
+    data = data.filter(t => new Date(t.date) >= now && new Date(t.date) <= end);
+  } else if(dateF === 'month') {
+    data = data.filter(t => { const d = new Date(t.date); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); });
+  } else if(dateF === 'next') {
+    const end = new Date(now); end.setMonth(end.getMonth()+3);
+    data = data.filter(t => new Date(t.date) >= now && new Date(t.date) <= end);
+  }
+
+  if(sort === 'date') data.sort((a,b) => new Date(a.date)-new Date(b.date));
+  else if(sort === 'prize') data.sort((a,b) => b.prize-a.prize);
+  else if(sort === 'places') data.sort((a,b) => (a.maxPlayers-a.players)-(b.maxPlayers-b.players));
+
+  return data;
+}
+
+function applyFilters() {
+  currentPage = 1;
+  render();
+  // Bouton reset
+  const q = document.getElementById('search').value;
+  const r = document.getElementById('filter-region').value;
+  const d = document.getElementById('filter-date').value;
+  document.getElementById('btn-reset').style.display = (q||r||d) ? 'block' : 'none';
+}
+
+function resetFilters() {
+  document.getElementById('search').value = '';
+  document.getElementById('filter-region').value = '';
+  document.getElementById('filter-date').value = '';
+  document.getElementById('btn-reset').style.display = 'none';
+  applyFilters();
+}
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('btn-grid').classList.toggle('active', v==='grid');
+  document.getElementById('btn-list').classList.toggle('active', v==='list');
+  render();
+}
+
+function renderCard(t, i) {
+  const p = pct(t.players, t.maxPlayers);
+  const remaining = t.maxPlayers - t.players;
+  return `
+  <a href="#" class="tournament-card" style="animation-delay:${i*0.05}s">
+    <div class="tc-top">
+      <div class="tc-badges">
+        <span class="badge ${statusClass(t.status)}">${statusLabel(t.status)}</span>
+        <span class="badge badge-format">${t.format}</span>
+      </div>
+      <div class="tc-header-row">
+        <div class="tc-name">${t.name}</div>
+        <div class="tc-prize">${t.prize}€</div>
+      </div>
+    </div>
+    <div class="tc-body">
+      <div class="tc-meta">
+        <div class="tc-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          ${formatDate(t.date)}
+        </div>
+        <div class="tc-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${t.city}, ${t.region}
+        </div>
+      </div>
+      <div class="tc-footer">
+        <div class="tc-players-info">
+          <div class="tc-players"><strong>${t.players}</strong> / ${t.maxPlayers} joueurs${remaining > 0 ? ` · <span style="color:${remaining<=4?'var(--orange)':'var(--muted)'}">${remaining} place${remaining>1?'s':''} restante${remaining>1?'s':''}</span>` : ''}</div>
+          <div class="progress-bar"><div class="progress-fill ${p>=100?'full':''}" style="width:${Math.min(p,100)}%"></div></div>
+        </div>
+        <span class="tc-cta">${t.status==='full'?'Voir →':'S\'inscrire →'}</span>
+      </div>
+    </div>
+  </a>`;
+}
+
+function renderRow(t, i) {
+  const remaining = t.maxPlayers - t.players;
+  return `
+  <a href="#" class="tournament-row" style="animation-delay:${i*0.04}s">
+    <div>
+      <div class="row-name">${t.name}</div>
+      <div class="row-sub">
+        <span class="badge ${statusClass(t.status)}" style="font-size:0.6rem;padding:2px 7px;">${statusLabel(t.status)}</span>
+        <span>${t.format}</span>
+      </div>
+    </div>
+    <div class="row-date">${formatDateShort(t.date)}</div>
+    <div class="row-region">${t.region.split('-')[0].trim()}</div>
+    <div class="row-prize">${t.prize}€</div>
+    <div class="row-players"><strong>${t.players}</strong>/${t.maxPlayers}</div>
+    <div class="row-btn">${t.status==='full'?'Voir':'S\'inscrire'}</div>
+  </a>`;
+}
+
+function renderPagination(total) {
+  const pages = Math.ceil(total / PER_PAGE);
+  if(pages <= 1) { document.getElementById('pagination').innerHTML = ''; return; }
+  let html = '';
+  if(currentPage > 1) html += `<button class="page-btn" onclick="goPage(${currentPage-1})">‹</button>`;
+  for(let i=1; i<=pages; i++) html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  if(currentPage < pages) html += `<button class="page-btn" onclick="goPage(${currentPage+1})">›</button>`;
+  document.getElementById('pagination').innerHTML = html;
+}
+
+function goPage(p) { currentPage = p; render(); window.scrollTo({top:200,behavior:'smooth'}); }
+
+function render() {
+  const filtered = getFiltered();
+  const total = filtered.length;
+  const start = (currentPage-1)*PER_PAGE;
+  const paged = filtered.slice(start, start+PER_PAGE);
+
+  document.getElementById('result-count').textContent = total;
+  document.getElementById('sort-label').textContent = `${total} tournoi${total>1?'s':''}`;
+
+  const empty = document.getElementById('empty-state');
+  const gridV = document.getElementById('grid-view');
+  const listV = document.getElementById('list-view');
+
+  if(total === 0) {
+    empty.style.display = 'block';
+    gridV.innerHTML = ''; listV.innerHTML = '';
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  if(currentView === 'grid') {
+    gridV.classList.add('active'); listV.classList.remove('active'); listV.style.display = 'none'; gridV.style.display = 'grid';
+    gridV.innerHTML = paged.map((t,i) => renderCard(t,i)).join('');
+  } else {
+    listV.classList.add('active'); gridV.classList.remove('active'); gridV.style.display = 'none'; listV.style.display = 'flex';
+    const header = `<div class="list-header"><div>Tournoi</div><div>Date</div><div>Région</div><div>Dotation</div><div>Joueurs</div><div></div></div>`;
+    listV.innerHTML = header + paged.map((t,i) => renderRow(t,i)).join('');
+  }
+
+  renderPagination(total);
+}
+
+// Init
+render();
+</script>
+</body>
+</html>

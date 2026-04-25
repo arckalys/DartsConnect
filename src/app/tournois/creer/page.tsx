@@ -152,6 +152,23 @@ export default function CreerTournoiPage() {
         return showError("Tournoi créé mais erreur sessions : " + sessErr.message);
       }
 
+      // Notifie les abonnés de la région
+      fetch("/api/emails/notif-tournoi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tournoi: {
+            id: tournoiId,
+            nom,
+            region,
+            ville,
+            date_tournoi: mainSession.date,
+            heure: mainSession.heure || "10:00",
+            format,
+          },
+        }),
+      }).catch(() => {});
+
       setSuccess(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err: unknown) {

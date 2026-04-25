@@ -49,25 +49,38 @@ export interface UserProfile {
   prenom?: string;
   nom?: string;
   pseudo?: string;
-  moyenne?: string;
   region?: string;
   bio?: string;
 }
 
 export const REGIONS = [
-  "Île-de-France",
+  // Métropole
   "Auvergne-Rhône-Alpes",
-  "Provence-Alpes-Côte d'Azur",
-  "Nouvelle-Aquitaine",
-  "Occitanie",
-  "Hauts-de-France",
-  "Grand Est",
-  "Normandie",
-  "Bretagne",
-  "Pays de la Loire",
   "Bourgogne-Franche-Comté",
+  "Bretagne",
   "Centre-Val de Loire",
   "Corse",
+  "Grand Est",
+  "Hauts-de-France",
+  "Île-de-France",
+  "Normandie",
+  "Nouvelle-Aquitaine",
+  "Occitanie",
+  "Pays de la Loire",
+  "Provence-Alpes-Côte d'Azur",
+  // DOM-ROM
+  "Guadeloupe",
+  "Martinique",
+  "Guyane",
+  "La Réunion",
+  "Mayotte",
+  // Collectivités d'outre-mer
+  "Nouvelle-Calédonie",
+  "Polynésie française",
+  "Saint-Barthélemy",
+  "Saint-Martin",
+  "Saint-Pierre-et-Miquelon",
+  "Wallis-et-Futuna",
 ];
 
 export const STATUS_LABELS: Record<TournamentStatus, string> = {
