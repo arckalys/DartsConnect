@@ -58,7 +58,11 @@ export default function HomePage() {
 
   // Stats
   const totalRegions = [...new Set(tournaments.map((t) => t.region))].length;
-  const upcoming = tournaments.slice(0, 3);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const upcoming = tournaments
+    .filter((t) => new Date(t.date_tournoi) >= today)
+    .slice(0, 3);
 
   // Scroll reveal
   useEffect(() => {

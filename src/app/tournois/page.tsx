@@ -47,6 +47,7 @@ function TournoisContent() {
   const [sort, setSort] = useState("date");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [page, setPage] = useState(1);
+  const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
 
   // Delete confirmation
   const [deleteTarget, setDeleteTarget] = useState<Tournament | null>(null);
@@ -139,7 +140,7 @@ function TournoisContent() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Reset page on filter change
-  useEffect(() => setPage(1), [search, typeFilter, region, dateFilter, sort]);
+  useEffect(() => setPage(1), [search, typeFilter, region, dateFilter, sort, activeTab]);
 
   async function handleDelete() {
     if (!deleteTarget) return;
@@ -181,30 +182,60 @@ function TournoisContent() {
     setRegisterLoadingId(null);
   }
 
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
+  // Compteurs pour les onglets
+  const upcomingCount = useMemo(
+    () => tournaments.filter((t) => new Date(t.date_tournoi) >= today).length,
+    [tournaments, today]
+  );
+  const pastCount = useMemo(
+    () => tournaments.filter((t) => new Date(t.date_tournoi) < today).length,
+    [tournaments, today]
+  );
+
   const filtered = useMemo(() => {
     let data = [...tournaments];
     const q = search.toLowerCase();
-    const now = new Date();
+
+    // Onglet : à venir ou passés
+    if (activeTab === "upcoming") {
+      data = data.filter((t) => new Date(t.date_tournoi) >= today);
+    } else {
+      data = data.filter((t) => new Date(t.date_tournoi) < today);
+    }
 
     if (q) data = data.filter((t) => t.nom.toLowerCase().includes(q) || t.ville.toLowerCase().includes(q) || t.region.toLowerCase().includes(q));
     if (typeFilter) data = data.filter((t) => t.type_jeu === typeFilter);
     if (region) data = data.filter((t) => t.region === region);
-    if (dateFilter === "week") {
-      const end = new Date(now); end.setDate(end.getDate() + 7);
-      data = data.filter((t) => { const d = new Date(t.date_tournoi); return d >= now && d <= end; });
-    } else if (dateFilter === "month") {
-      data = data.filter((t) => { const d = new Date(t.date_tournoi); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); });
-    } else if (dateFilter === "next") {
-      const end = new Date(now); end.setMonth(end.getMonth() + 3);
-      data = data.filter((t) => { const d = new Date(t.date_tournoi); return d >= now && d <= end; });
+
+    // Filtre date uniquement sur les tournois à venir
+    if (activeTab === "upcoming") {
+      const now = new Date();
+      if (dateFilter === "week") {
+        const end = new Date(now); end.setDate(end.getDate() + 7);
+        data = data.filter((t) => { const d = new Date(t.date_tournoi); return d >= now && d <= end; });
+      } else if (dateFilter === "month") {
+        data = data.filter((t) => { const d = new Date(t.date_tournoi); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); });
+      } else if (dateFilter === "next") {
+        const end = new Date(now); end.setMonth(end.getMonth() + 3);
+        data = data.filter((t) => { const d = new Date(t.date_tournoi); return d >= now && d <= end; });
+      }
     }
 
-    if (sort === "date") data.sort((a, b) => new Date(a.date_tournoi).getTime() - new Date(b.date_tournoi).getTime());
-    else if (sort === "prize") data.sort((a, b) => (b.prize ?? 0) - (a.prize ?? 0));
+    if (sort === "date") {
+      // Passés : du plus récent au plus ancien
+      const dir = activeTab === "past" ? -1 : 1;
+      data.sort((a, b) => dir * (new Date(a.date_tournoi).getTime() - new Date(b.date_tournoi).getTime()));
+    } else if (sort === "prize") data.sort((a, b) => (b.prize ?? 0) - (a.prize ?? 0));
     else if (sort === "places") data.sort((a, b) => (a.nb_joueurs - (a.players ?? 0)) - (b.nb_joueurs - (b.players ?? 0)));
 
     return data;
-  }, [tournaments, search, typeFilter, region, dateFilter, sort]);
+  }, [tournaments, search, typeFilter, region, dateFilter, sort, activeTab, today]);
 
   const paged = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
@@ -252,15 +283,53 @@ function TournoisContent() {
 
       {/* Page header */}
       <div className="pt-[80px] xs:pt-[88px] px-3 xs:px-4 sm:px-6 lg:px-10 bg-gradient-to-b from-[rgba(232,34,10,0.04)] to-transparent border-b border-[rgba(255,255,255,0.08)]">
-        <div className="max-w-[1200px] xl:max-w-[1400px] mx-auto pb-6">
+        <div className="max-w-[1200px] xl:max-w-[1400px] mx-auto pb-5">
           <div className="font-barlow-condensed font-black text-[1.5rem] xs:text-[1.8rem] sm:text-[2.4rem] uppercase tracking-[0.5px]">Tous les tournois</div>
-          <div className="text-[0.88rem] text-[#777] mt-1">
+          <div className="text-[0.88rem] text-[#777] mt-1 mb-4">
             {loading ? (
               <span className="text-[#555]">Chargement...</span>
             ) : (
               <><span className="text-[#e8220a] font-bold">{filtered.length}</span> tournois trouvés</>
             )}
           </div>
+
+          {/* Onglets À venir / Passés */}
+          {!loading && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveTab("upcoming")}
+                className={`flex items-center gap-2 px-4 py-[8px] rounded-[10px] font-barlow-condensed font-bold text-[0.9rem] sm:text-[0.95rem] uppercase tracking-[0.5px] border cursor-pointer transition-all ${
+                  activeTab === "upcoming"
+                    ? "bg-[#e8220a] border-[#e8220a] text-white shadow-red-glow"
+                    : "bg-transparent border-[rgba(255,255,255,0.08)] text-[#777] hover:text-white hover:border-[rgba(255,255,255,0.2)]"
+                }`}
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                À venir
+                <span className={`text-[0.75rem] px-[7px] py-[1px] rounded-full font-bold ${activeTab === "upcoming" ? "bg-[rgba(255,255,255,0.2)] text-white" : "bg-[rgba(255,255,255,0.06)] text-[#777]"}`}>
+                  {upcomingCount}
+                </span>
+              </button>
+              <button
+                onClick={() => setActiveTab("past")}
+                className={`flex items-center gap-2 px-4 py-[8px] rounded-[10px] font-barlow-condensed font-bold text-[0.9rem] sm:text-[0.95rem] uppercase tracking-[0.5px] border cursor-pointer transition-all ${
+                  activeTab === "past"
+                    ? "bg-[rgba(255,255,255,0.08)] border-[rgba(255,255,255,0.15)] text-white"
+                    : "bg-transparent border-[rgba(255,255,255,0.08)] text-[#777] hover:text-white hover:border-[rgba(255,255,255,0.2)]"
+                }`}
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Historique
+                <span className={`text-[0.75rem] px-[7px] py-[1px] rounded-full font-bold ${activeTab === "past" ? "bg-[rgba(255,255,255,0.12)] text-[#ccc]" : "bg-[rgba(255,255,255,0.06)] text-[#777]"}`}>
+                  {pastCount}
+                </span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -352,6 +421,7 @@ function TournoisContent() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 xs:gap-4">
                   {paged.map((t, i) => {
                     const tid = String(t.id);
+                    const effectiveStatut = activeTab === "past" ? "closed" : t.statut;
                     return (
                       <TournamentCard
                         key={t.id}
@@ -365,14 +435,14 @@ function TournoisContent() {
                         nb_joueurs={t.nb_joueurs}
                         players={inscriptionCounts[tid] ?? t.players ?? 0}
                         prize={t.prize ?? 0}
-                        statut={t.statut}
+                        statut={effectiveStatut}
                         delay={i}
                         isOwner={!!currentUserId && t.user_id === currentUserId}
                         onDelete={() => setDeleteTarget(t)}
                         isRegistered={myInscriptions.has(tid)}
-                        onToggleRegister={currentUserId ? () => handleToggleRegister(tid) : undefined}
+                        onToggleRegister={activeTab === "past" ? undefined : (currentUserId ? () => handleToggleRegister(tid) : undefined)}
                         registerLoading={registerLoadingId === tid}
-                        currentUserId={currentUserId}
+                        currentUserId={activeTab === "past" ? null : currentUserId}
                         avgRating={ratings[tid]?.avg ?? 0}
                         ratingCount={ratings[tid]?.count ?? 0}
                         sessionsCount={sessionsCount[tid] ?? 1}
@@ -390,6 +460,7 @@ function TournoisContent() {
                 <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-3 xs:gap-4">
                   {paged.map((t, i) => {
                     const tid = String(t.id);
+                    const effectiveStatut = activeTab === "past" ? "closed" : t.statut;
                     return (
                       <TournamentCard
                         key={t.id}
@@ -403,14 +474,14 @@ function TournoisContent() {
                         nb_joueurs={t.nb_joueurs}
                         players={inscriptionCounts[tid] ?? t.players ?? 0}
                         prize={t.prize ?? 0}
-                        statut={t.statut}
+                        statut={effectiveStatut}
                         delay={i}
                         isOwner={!!currentUserId && t.user_id === currentUserId}
                         onDelete={() => setDeleteTarget(t)}
                         isRegistered={myInscriptions.has(tid)}
-                        onToggleRegister={currentUserId ? () => handleToggleRegister(tid) : undefined}
+                        onToggleRegister={activeTab === "past" ? undefined : (currentUserId ? () => handleToggleRegister(tid) : undefined)}
                         registerLoading={registerLoadingId === tid}
-                        currentUserId={currentUserId}
+                        currentUserId={activeTab === "past" ? null : currentUserId}
                         avgRating={ratings[tid]?.avg ?? 0}
                         ratingCount={ratings[tid]?.count ?? 0}
                         sessionsCount={sessionsCount[tid] ?? 1}
@@ -425,6 +496,7 @@ function TournoisContent() {
                   </div>
                   {paged.map((t, i) => {
                     const tid = String(t.id);
+                    const effectiveStatut = activeTab === "past" ? "closed" : t.statut;
                     return (
                       <TournamentRow
                         key={t.id}
@@ -438,14 +510,14 @@ function TournoisContent() {
                         nb_joueurs={t.nb_joueurs}
                         players={inscriptionCounts[tid] ?? t.players ?? 0}
                         prize={t.prize ?? 0}
-                        statut={t.statut}
+                        statut={effectiveStatut}
                         delay={i}
                         isOwner={!!currentUserId && t.user_id === currentUserId}
                         onDelete={() => setDeleteTarget(t)}
                         isRegistered={myInscriptions.has(tid)}
-                        onToggleRegister={currentUserId ? () => handleToggleRegister(tid) : undefined}
+                        onToggleRegister={activeTab === "past" ? undefined : (currentUserId ? () => handleToggleRegister(tid) : undefined)}
                         registerLoading={registerLoadingId === tid}
-                        currentUserId={currentUserId}
+                        currentUserId={activeTab === "past" ? null : currentUserId}
                         avgRating={ratings[tid]?.avg ?? 0}
                         ratingCount={ratings[tid]?.count ?? 0}
                         sessionsCount={sessionsCount[tid] ?? 1}
