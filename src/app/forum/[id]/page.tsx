@@ -86,21 +86,37 @@ export default function ForumDetailPage({ params }: { params: Promise<{ id: stri
 
   async function fetchData() {
     setLoading(true);
+
     const [{ data: q }, { data: r }] = await Promise.all([
       supabase
         .from("forum_questions")
-        .select("id, user_id, titre, contenu, created_at, profiles(pseudo, avatar_url)")
+        .select("id, user_id, titre, contenu, created_at")
         .eq("id", id)
         .single(),
       supabase
         .from("forum_reponses")
-        .select("id, user_id, contenu, created_at, profiles(pseudo, avatar_url)")
+        .select("id, user_id, contenu, created_at")
         .eq("question_id", id)
         .order("created_at", { ascending: true }),
     ]);
+
     if (!q) { setNotFound(true); setLoading(false); return; }
-    setQuestion(q as unknown as Question);
-    setReponses((r as unknown as Reponse[]) ?? []);
+
+    // Récupère les profils de tous les auteurs en une seule requête
+    const allUserIds = [...new Set([q.user_id, ...(r ?? []).map((rep) => rep.user_id)])];
+    const { data: profilesData } = await supabase
+      .from("profiles")
+      .select("id, pseudo, avatar_url")
+      .in("id", allUserIds);
+
+    const profilesMap = Object.fromEntries(
+      (profilesData ?? []).map((p) => [p.id, p])
+    );
+
+    setQuestion({ ...q, profiles: profilesMap[q.user_id] ?? null } as unknown as Question);
+    setReponses(
+      (r ?? []).map((rep) => ({ ...rep, profiles: profilesMap[rep.user_id] ?? null })) as unknown as Reponse[]
+    );
     setLoading(false);
   }
 

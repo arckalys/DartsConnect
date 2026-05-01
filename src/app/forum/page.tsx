@@ -57,11 +57,37 @@ export default function ForumPage() {
 
   async function fetchQuestions() {
     setLoading(true);
-    const { data } = await supabase
+
+    // 1. Récupère les questions + count réponses
+    const { data: qData } = await supabase
       .from("forum_questions")
-      .select("id, user_id, titre, contenu, created_at, profiles(pseudo, avatar_url), forum_reponses(id)")
+      .select("id, user_id, titre, contenu, created_at, forum_reponses(id)")
       .order("created_at", { ascending: false });
-    setQuestions((data as unknown as Question[]) ?? []);
+
+    if (!qData || qData.length === 0) {
+      setQuestions([]);
+      setLoading(false);
+      return;
+    }
+
+    // 2. Récupère les profils des auteurs en une seule requête
+    const userIds = [...new Set(qData.map((q) => q.user_id))];
+    const { data: profilesData } = await supabase
+      .from("profiles")
+      .select("id, pseudo, avatar_url")
+      .in("id", userIds);
+
+    const profilesMap = Object.fromEntries(
+      (profilesData ?? []).map((p) => [p.id, p])
+    );
+
+    // 3. Fusionne
+    const merged = qData.map((q) => ({
+      ...q,
+      profiles: profilesMap[q.user_id] ?? null,
+    }));
+
+    setQuestions(merged as unknown as Question[]);
     setLoading(false);
   }
 
