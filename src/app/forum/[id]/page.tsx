@@ -138,13 +138,15 @@ export default function ForumDetailPage({ params }: { params: Promise<{ id: stri
 
   async function deleteQuestion() {
     if (!confirm("Supprimer cette question ?")) return;
-    await supabase.from("forum_questions").delete().eq("id", id);
+    const { error: err } = await supabase.from("forum_questions").delete().eq("id", id);
+    if (err) return setError("Erreur suppression : " + err.message);
     router.push("/forum");
   }
 
   async function deleteReponse(reponseId: number) {
     if (!confirm("Supprimer cette réponse ?")) return;
-    await supabase.from("forum_reponses").delete().eq("id", reponseId);
+    const { error: err } = await supabase.from("forum_reponses").delete().eq("id", reponseId);
+    if (err) return setError("Erreur suppression : " + err.message);
     setReponses((prev) => prev.filter((r) => r.id !== reponseId));
   }
 
