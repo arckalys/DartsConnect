@@ -15,6 +15,7 @@ export default function Navbar() {
   const links = [
     { href: "/", label: "Accueil", id: "home" },
     { href: "/tournois", label: "Tournois", id: "tournois" },
+    { href: "/forum", label: "Forum", id: "forum" },
     { href: "/inscriptions", label: "Mes inscriptions", id: "inscriptions" },
   ];
 
