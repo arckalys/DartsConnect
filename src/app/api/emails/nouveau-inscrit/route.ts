@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       </p>
       <table cellpadding="0" cellspacing="0" style="background:#f9fafb;border-radius:8px;padding:16px 20px;width:100%;margin:16px 0;">
         <tr><td>
-          <span style="font-size:32px;font-weight:900;color:#e8220a;">${inscrits ?? "?"}</span>
+          <span style="font-size:32px;font-weight:900;color:#b91c0a;">${inscrits ?? "?"}</span>
           <span style="font-size:14px;color:#999;"> / ${max ?? "?"} joueurs inscrits</span>
         </td></tr>
       </table>

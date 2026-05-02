@@ -6,7 +6,7 @@ export const runtime = "edge";
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-7 mb-4">
-      <h2 className="font-barlow-condensed font-extrabold text-[1rem] sm:text-[1.1rem] uppercase tracking-[0.5px] text-[#e8220a] mb-4">{title}</h2>
+      <h2 className="font-barlow-condensed font-extrabold text-[1rem] sm:text-[1.1rem] uppercase tracking-[0.5px] text-[#b91c0a] mb-4">{title}</h2>
       <div className="text-[0.88rem] sm:text-[0.9rem] text-[#ccc] leading-[1.8] space-y-2">{children}</div>
     </div>
   );
@@ -35,7 +35,7 @@ export default function MentionsLegalesPage() {
           </div>
 
           <h1 className="font-barlow-condensed font-black text-[1.8rem] xs:text-[2.2rem] sm:text-[2.6rem] uppercase leading-[1.1] mb-8">
-            Mentions <span className="text-[#e8220a]">légales</span>
+            Mentions <span className="text-[#b91c0a]">légales</span>
           </h1>
 
           <Section title="Éditeur du site">
@@ -44,15 +44,15 @@ export default function MentionsLegalesPage() {
             <Row label="SIRET" value="10340225100013" />
             <Row label="SIREN" value="103402251" />
             <Row label="Adresse" value="15 Rue Anatole Le Bras, 22300 Ploubezre, France" />
-            <Row label="Email" value={<a href="mailto:contact@dartstournois.fr" className="text-[#e8220a] hover:underline">contact@dartstournois.fr</a>} />
-            <Row label="Site web" value={<a href="https://dartstournois.fr" className="text-[#e8220a] hover:underline">dartstournois.fr</a>} />
+            <Row label="Email" value={<a href="mailto:contact@dartstournois.fr" className="text-[#b91c0a] hover:underline">contact@dartstournois.fr</a>} />
+            <Row label="Site web" value={<a href="https://dartstournois.fr" className="text-[#b91c0a] hover:underline">dartstournois.fr</a>} />
             <Row label="Date de création" value="15/04/2026" />
           </Section>
 
           <Section title="Hébergement">
             <Row label="Hébergeur" value="Cloudflare Inc." />
             <Row label="Adresse" value="101 Townsend St, San Francisco, CA 94107, USA" />
-            <Row label="Site" value={<a href="https://cloudflare.com" target="_blank" rel="noopener noreferrer" className="text-[#e8220a] hover:underline">cloudflare.com</a>} />
+            <Row label="Site" value={<a href="https://cloudflare.com" target="_blank" rel="noopener noreferrer" className="text-[#b91c0a] hover:underline">cloudflare.com</a>} />
           </Section>
 
           <Section title="Propriété intellectuelle">
@@ -71,7 +71,7 @@ export default function MentionsLegalesPage() {
           </Section>
 
           <div className="mt-6 flex gap-4 flex-wrap">
-            <Link href="/confidentialite" className="text-[0.85rem] text-[#e8220a] hover:underline">
+            <Link href="/confidentialite" className="text-[0.85rem] text-[#b91c0a] hover:underline">
               Politique de confidentialité →
             </Link>
             <Link href="/" className="text-[0.85rem] text-[#777] hover:text-white transition-colors">

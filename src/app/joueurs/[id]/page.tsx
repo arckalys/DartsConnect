@@ -38,7 +38,7 @@ const niveauClass: Record<string, string> = {
   Débutant: "bg-[rgba(156,163,175,0.15)] border-[rgba(156,163,175,0.3)] text-[#9ca3af]",
   Intermédiaire: "bg-[rgba(59,130,246,0.15)] border-[rgba(59,130,246,0.3)] text-[#3b82f6]",
   Confirmé: "bg-[rgba(168,85,247,0.15)] border-[rgba(168,85,247,0.3)] text-[#a855f7]",
-  Expert: "bg-[rgba(232,34,10,0.15)] border-[rgba(232,34,10,0.3)] text-[#e8220a]",
+  Expert: "bg-[rgba(232,34,10,0.15)] border-[rgba(232,34,10,0.3)] text-[#b91c0a]",
 };
 
 export default function JoueurPage() {
@@ -117,7 +117,7 @@ export default function JoueurPage() {
   if (loading) {
     return (
       <div className="animate-page-in min-h-screen pt-[80px] flex items-center justify-center">
-        <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#b91c0a] rounded-full animate-spin" />
       </div>
     );
   }
@@ -128,7 +128,7 @@ export default function JoueurPage() {
         <UserIcon className="w-12 h-12 text-[#777] mx-auto mb-4 opacity-40" />
         <div className="font-barlow-condensed font-black text-[1.6rem] uppercase mb-2">Joueur introuvable</div>
         <div className="text-[0.88rem] text-[#777] mb-6">Ce profil n&apos;existe pas.</div>
-        <Link href="/tournois" className="bg-[#e8220a] text-white no-underline font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] transition-all shadow-red-glow-lg hover:bg-[#b81a08]">
+        <Link href="/tournois" className="bg-[#b91c0a] text-white no-underline font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] transition-all shadow-red-glow-lg hover:bg-[#b81a08]">
           ← Voir les tournois
         </Link>
       </div>
@@ -170,7 +170,7 @@ export default function JoueurPage() {
                 />
               ) : (
                 <div className="w-[80px] h-[80px] sm:w-[96px] sm:h-[96px] rounded-full bg-[rgba(232,34,10,0.15)] border-2 border-[rgba(232,34,10,0.3)] flex items-center justify-center">
-                  <span className="font-barlow-condensed font-black text-[2rem] sm:text-[2.4rem] text-[#e8220a]">
+                  <span className="font-barlow-condensed font-black text-[2rem] sm:text-[2.4rem] text-[#b91c0a]">
                     {initials}
                   </span>
                 </div>
@@ -222,7 +222,7 @@ export default function JoueurPage() {
         {/* Stats grid */}
         <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4">
           <StatCard
-            icon={<Trophy className="w-[18px] h-[18px] text-[#e8220a]" />}
+            icon={<Trophy className="w-[18px] h-[18px] text-[#b91c0a]" />}
             label="Tournois joués"
             value={tournoisJoues.length}
             tint="red"
@@ -253,7 +253,7 @@ export default function JoueurPage() {
           <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6 mb-4">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0">
-                <Trophy className="w-[18px] h-[18px] text-[#e8220a]" />
+                <Trophy className="w-[18px] h-[18px] text-[#b91c0a]" />
               </div>
               <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777]">
                 Tournois joués ({tournoisJoues.length})
@@ -362,7 +362,7 @@ function TournoiListItem({ t }: { t: TournoiLite }) {
             </span>
           </div>
         </div>
-        <span className="text-[#e8220a] text-[0.82rem] font-bold shrink-0">Voir →</span>
+        <span className="text-[#b91c0a] text-[0.82rem] font-bold shrink-0">Voir →</span>
       </div>
     </Link>
   );

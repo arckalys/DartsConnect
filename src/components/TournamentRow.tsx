@@ -44,7 +44,7 @@ export default function TournamentRow({ id, nom, region, date_tournoi, format, t
       style={{ animationDelay: `${delay * 0.04}s` }}
     >
       <Link href={id ? `/tournois/${id}` : "#"} className="no-underline text-white">
-        <div className="font-barlow-condensed font-extrabold text-[1rem] hover:text-[#e8220a] transition-colors">{nom}</div>
+        <div className="font-barlow-condensed font-extrabold text-[1rem] hover:text-[#b91c0a] transition-colors">{nom}</div>
         <div className="text-[0.78rem] text-[#777] mt-[2px] flex items-center gap-[5px]">
           <span className={`inline-block text-[0.6rem] font-bold uppercase tracking-[1px] px-[7px] py-[2px] rounded-full ${statusClass[statut]}`}>
             {STATUS_LABELS[statut]}
@@ -75,7 +75,7 @@ export default function TournamentRow({ id, nom, region, date_tournoi, format, t
       </Link>
       <div className="text-[0.85rem] text-[#ccc]">{sessionsCount > 1 ? "Plusieurs dates" : fmtShort(date_tournoi)}</div>
       <div className="text-[0.82rem] text-[#777]">{region.split("-")[0].trim()}</div>
-      <div className="font-barlow-condensed font-extrabold text-[1.1rem] text-[#e8220a]">{prize}€</div>
+      <div className="font-barlow-condensed font-extrabold text-[1.1rem] text-[#b91c0a]">{prize}€</div>
       <div className="text-[0.8rem] text-[#777]">
         <strong className="text-white">{players}</strong>/{nb_joueurs}
       </div>
@@ -104,7 +104,7 @@ export default function TournamentRow({ id, nom, region, date_tournoi, format, t
             className={`text-[0.78rem] font-bold px-[14px] py-[6px] rounded-lg whitespace-nowrap transition-all duration-200 cursor-pointer border disabled:opacity-50 disabled:cursor-not-allowed ${
               isRegistered
                 ? "bg-[rgba(248,113,113,0.08)] border-[rgba(248,113,113,0.2)] text-[#f87171] hover:bg-[rgba(248,113,113,0.15)]"
-                : "bg-[rgba(232,34,10,0.1)] border-[rgba(232,34,10,0.25)] text-[#e8220a] hover:bg-[rgba(232,34,10,0.2)]"
+                : "bg-[rgba(232,34,10,0.1)] border-[rgba(232,34,10,0.25)] text-[#b91c0a] hover:bg-[rgba(232,34,10,0.2)]"
             }`}
           >
             {registerLoading ? "..." : isRegistered ? "Se désinscrire" : isFull ? "Complet" : "S'inscrire"}
@@ -112,7 +112,7 @@ export default function TournamentRow({ id, nom, region, date_tournoi, format, t
         ) : (
           <Link
             href={currentUserId === null ? "/auth" : "#"}
-            className="bg-[rgba(232,34,10,0.1)] border border-[rgba(232,34,10,0.25)] text-[#e8220a] text-[0.78rem] font-bold px-[14px] py-[6px] rounded-lg whitespace-nowrap transition-all duration-200 hover:bg-[rgba(232,34,10,0.2)] no-underline"
+            className="bg-[rgba(232,34,10,0.1)] border border-[rgba(232,34,10,0.25)] text-[#b91c0a] text-[0.78rem] font-bold px-[14px] py-[6px] rounded-lg whitespace-nowrap transition-all duration-200 hover:bg-[rgba(232,34,10,0.2)] no-underline"
           >
             S&apos;inscrire
           </Link>

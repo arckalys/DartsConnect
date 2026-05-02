@@ -353,7 +353,7 @@ export default function TournoiDetailPage() {
   if (loading) {
     return (
       <div className="animate-page-in min-h-screen pt-[80px] flex items-center justify-center">
-        <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#b91c0a] rounded-full animate-spin" />
       </div>
     );
   }
@@ -364,7 +364,7 @@ export default function TournoiDetailPage() {
         <Target className="w-12 h-12 text-[#777] mx-auto mb-4 opacity-40" />
         <div className="font-barlow-condensed font-black text-[1.6rem] uppercase mb-2">Tournoi introuvable</div>
         <div className="text-[0.88rem] text-[#777] mb-6">Ce tournoi n&apos;existe pas ou a été supprimé.</div>
-        <button onClick={() => router.push("/tournois")} className="bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08]">
+        <button onClick={() => router.push("/tournois")} className="bg-[#b91c0a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08]">
           ← Voir les tournois
         </button>
       </div>
@@ -427,7 +427,7 @@ export default function TournoiDetailPage() {
             {isOwner && (
               <Link
                 href={`/tournois/${tournoiId}/dashboard`}
-                className="inline-flex items-center gap-2 bg-[rgba(232,34,10,0.1)] border border-[rgba(232,34,10,0.25)] text-[#e8220a] text-[0.82rem] font-bold px-3 py-[6px] rounded-lg no-underline transition-all hover:bg-[rgba(232,34,10,0.2)]"
+                className="inline-flex items-center gap-2 bg-[rgba(232,34,10,0.1)] border border-[rgba(232,34,10,0.25)] text-[#b91c0a] text-[0.82rem] font-bold px-3 py-[6px] rounded-lg no-underline transition-all hover:bg-[rgba(232,34,10,0.2)]"
               >
                 <LayoutDashboard className="w-3.5 h-3.5" />
                 Tableau de bord
@@ -449,7 +449,7 @@ export default function TournoiDetailPage() {
               </div>
               <div className="h-[6px] bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-[#e8220a] transition-all duration-500"
+                  className="h-full rounded-full bg-[#b91c0a] transition-all duration-500"
                   style={{ width: `${Math.min(pct, 100)}%` }}
                 />
               </div>
@@ -478,7 +478,7 @@ export default function TournoiDetailPage() {
                 className={`w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] cursor-pointer border transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
                   isRegistered
                     ? "bg-[rgba(248,113,113,0.1)] border-[rgba(248,113,113,0.25)] text-[#f87171] hover:bg-[rgba(248,113,113,0.2)]"
-                    : "bg-[#e8220a] border-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08]"
+                    : "bg-[#b91c0a] border-[#b91c0a] text-white shadow-red-glow-lg hover:bg-[#b81a08]"
                 }`}
               >
                 {registerLoading ? (
@@ -494,7 +494,7 @@ export default function TournoiDetailPage() {
             ) : (
               <Link
                 href="/auth"
-                className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] border-none bg-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08] no-underline flex items-center justify-center gap-2 transition-all"
+                className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] border-none bg-[#b91c0a] text-white shadow-red-glow-lg hover:bg-[#b81a08] no-underline flex items-center justify-center gap-2 transition-all"
               >
                 Se connecter pour s&apos;inscrire
               </Link>
@@ -510,7 +510,7 @@ export default function TournoiDetailPage() {
             <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
               <div className="flex flex-col gap-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0"><Calendar className="w-[18px] h-[18px] text-[#e8220a]" /></div>
+                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0"><Calendar className="w-[18px] h-[18px] text-[#b91c0a]" /></div>
                   <div>
                     <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777] mb-1">Date et heure</div>
                     <div className="text-[0.95rem] text-white font-medium">{fmtDate(tournoi.date_tournoi)}</div>
@@ -521,7 +521,7 @@ export default function TournoiDetailPage() {
                 <div className="h-px bg-[rgba(255,255,255,0.06)]" />
 
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0"><MapPin className="w-[18px] h-[18px] text-[#e8220a]" /></div>
+                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0"><MapPin className="w-[18px] h-[18px] text-[#b91c0a]" /></div>
                   <div>
                     <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777] mb-1">Lieu</div>
                     <div className="text-[0.95rem] text-white font-medium">{tournoi.ville}, {tournoi.region}</div>
@@ -536,7 +536,7 @@ export default function TournoiDetailPage() {
               <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0">
-                    <Calendar className="w-[18px] h-[18px] text-[#e8220a]" />
+                    <Calendar className="w-[18px] h-[18px] text-[#b91c0a]" />
                   </div>
                   <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777]">Sessions</div>
                 </div>
@@ -590,7 +590,7 @@ export default function TournoiDetailPage() {
                           </div>
                           <div className="h-[3px] bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-[#e8220a] transition-all duration-500"
+                              className="h-full bg-[#b91c0a] transition-all duration-500"
                               style={{ width: `${Math.min(sessPct, 100)}%` }}
                             />
                           </div>
@@ -603,7 +603,7 @@ export default function TournoiDetailPage() {
                             className={`w-full py-[10px] rounded-[10px] font-barlow-condensed font-bold text-[0.95rem] cursor-pointer border transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
                               mine
                                 ? "bg-[rgba(248,113,113,0.1)] border-[rgba(248,113,113,0.25)] text-[#f87171] hover:bg-[rgba(248,113,113,0.2)]"
-                                : "bg-[#e8220a] border-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08]"
+                                : "bg-[#b91c0a] border-[#b91c0a] text-white shadow-red-glow-lg hover:bg-[#b81a08]"
                             }`}
                           >
                             {sessLoading ? (
@@ -619,7 +619,7 @@ export default function TournoiDetailPage() {
                         ) : (
                           <Link
                             href="/auth"
-                            className="w-full py-[10px] rounded-[10px] font-barlow-condensed font-bold text-[0.95rem] border-none bg-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08] no-underline flex items-center justify-center gap-2 transition-all"
+                            className="w-full py-[10px] rounded-[10px] font-barlow-condensed font-bold text-[0.95rem] border-none bg-[#b91c0a] text-white shadow-red-glow-lg hover:bg-[#b81a08] no-underline flex items-center justify-center gap-2 transition-all"
                           >
                             Se connecter pour s&apos;inscrire
                           </Link>
@@ -635,7 +635,7 @@ export default function TournoiDetailPage() {
             {tournoi.description && (
               <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0"><FileText className="w-[18px] h-[18px] text-[#e8220a]" /></div>
+                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0"><FileText className="w-[18px] h-[18px] text-[#b91c0a]" /></div>
                   <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777]">Description</div>
                 </div>
                 <div className="text-[0.9rem] text-[#ccc] leading-[1.7] whitespace-pre-line">{tournoi.description}</div>
@@ -646,7 +646,7 @@ export default function TournoiDetailPage() {
             {tournoi.infos_pratiques && (
               <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0"><Info className="w-[18px] h-[18px] text-[#e8220a]" /></div>
+                  <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0"><Info className="w-[18px] h-[18px] text-[#b91c0a]" /></div>
                   <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777]">Informations pratiques</div>
                 </div>
                 <div className="text-[0.9rem] text-[#ccc] leading-[1.7] whitespace-pre-line">{tournoi.infos_pratiques}</div>
@@ -727,7 +727,7 @@ export default function TournoiDetailPage() {
               <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0">
-                    <Star className="w-[18px] h-[18px] text-[#e8220a]" />
+                    <Star className="w-[18px] h-[18px] text-[#b91c0a]" />
                   </div>
                   <div className="text-[0.75rem] font-bold uppercase tracking-[1px] text-[#777]">
                     Avis des joueurs ({allReviews.filter((r) => r.commentaire && r.commentaire.trim()).length})
@@ -743,10 +743,10 @@ export default function TournoiDetailPage() {
                             href={`/joueurs/${r.user_id}`}
                             className="flex items-center gap-2 no-underline group"
                           >
-                            <div className="w-7 h-7 rounded-full bg-[rgba(232,34,10,0.15)] text-[#e8220a] flex items-center justify-center font-bold text-[0.78rem] group-hover:bg-[rgba(232,34,10,0.25)] transition-colors">
+                            <div className="w-7 h-7 rounded-full bg-[rgba(232,34,10,0.15)] text-[#b91c0a] flex items-center justify-center font-bold text-[0.78rem] group-hover:bg-[rgba(232,34,10,0.25)] transition-colors">
                               {r.pseudo.charAt(0).toUpperCase()}
                             </div>
-                            <div className="font-bold text-[0.88rem] text-white group-hover:text-[#e8220a] transition-colors">{r.pseudo}</div>
+                            <div className="font-bold text-[0.88rem] text-white group-hover:text-[#b91c0a] transition-colors">{r.pseudo}</div>
                           </Link>
                           <div className="flex items-center gap-2">
                             <StarRating value={r.note} readonly size={14} />
@@ -776,7 +776,7 @@ export default function TournoiDetailPage() {
                 </div>
                 <div className="h-[6px] bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-[#e8220a] transition-all duration-500"
+                    className="h-full rounded-full bg-[#b91c0a] transition-all duration-500"
                     style={{ width: `${Math.min(pct, 100)}%` }}
                   />
                 </div>
@@ -805,7 +805,7 @@ export default function TournoiDetailPage() {
                   className={`w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] cursor-pointer border transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
                     isRegistered
                       ? "bg-[rgba(248,113,113,0.1)] border-[rgba(248,113,113,0.25)] text-[#f87171] hover:bg-[rgba(248,113,113,0.2)]"
-                      : "bg-[#e8220a] border-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08]"
+                      : "bg-[#b91c0a] border-[#b91c0a] text-white shadow-red-glow-lg hover:bg-[#b81a08]"
                   }`}
                 >
                   {registerLoading ? (
@@ -821,7 +821,7 @@ export default function TournoiDetailPage() {
               ) : (
                 <Link
                   href="/auth"
-                  className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] border-none bg-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08] no-underline flex items-center justify-center gap-2 transition-all"
+                  className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] border-none bg-[#b91c0a] text-white shadow-red-glow-lg hover:bg-[#b81a08] no-underline flex items-center justify-center gap-2 transition-all"
                 >
                   Se connecter pour s&apos;inscrire
                 </Link>

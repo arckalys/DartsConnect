@@ -39,7 +39,18 @@
       "Bash(taskkill //F //IM \"node.exe\")",
       "Bash(node scripts/test-email.js)",
       "Bash(node -e \"const s = require\\('stripe'\\); console.log\\(s.Stripe?.PACKAGE_VERSION || 'unknown'\\)\")",
-      "Bash(git reset *)"
+      "Bash(git reset *)",
+      "Bash(npx tsc *)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(python -c \"from PIL import Image; print\\('Pillow OK'\\)\")",
+      "Bash(python -c \"from PIL import Image; print\\('OK'\\)\")",
+      "Bash(git -C C:/Users/arthu/flechette add public/icons/icon-192.png public/icons/icon-512.png)",
+      "Bash(git -C C:/Users/arthu/flechette commit -m \"feat: update PWA icons to match navbar Target logo\")",
+      "Bash(git -C C:/Users/arthu/flechette commit -m \"feat: refine PWA icons - larger target, no center dot, softer red\")",
+      "Bash(git -C C:/Users/arthu/flechette push)",
+      "Bash(xargs sed *)",
+      "Bash(git -C C:/Users/arthu/flechette add -A)",
+      "Bash(git -C C:/Users/arthu/flechette commit -m \"test: replace brand red #e8220a with softer red #b91c0a sitewide\")"
     ]
   }
 }

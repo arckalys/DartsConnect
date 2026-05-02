@@ -23,7 +23,7 @@ export default function TournoisPage() {
           </div>
         </div>
         <div className="flex items-center justify-center py-16">
-          <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
+          <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#b91c0a] rounded-full animate-spin" />
         </div>
       </div>
     }>
@@ -289,7 +289,7 @@ function TournoisContent() {
             {loading ? (
               <span className="text-[#555]">Chargement...</span>
             ) : (
-              <><span className="text-[#e8220a] font-bold">{filtered.length}</span> tournois trouvés</>
+              <><span className="text-[#b91c0a] font-bold">{filtered.length}</span> tournois trouvés</>
             )}
           </div>
 
@@ -300,7 +300,7 @@ function TournoisContent() {
                 onClick={() => setActiveTab("upcoming")}
                 className={`flex items-center gap-2 px-4 py-[8px] rounded-[10px] font-barlow-condensed font-bold text-[0.9rem] sm:text-[0.95rem] uppercase tracking-[0.5px] border cursor-pointer transition-all ${
                   activeTab === "upcoming"
-                    ? "bg-[#e8220a] border-[#e8220a] text-white shadow-red-glow"
+                    ? "bg-[#b91c0a] border-[#b91c0a] text-white shadow-red-glow"
                     : "bg-transparent border-[rgba(255,255,255,0.08)] text-[#777] hover:text-white hover:border-[rgba(255,255,255,0.2)]"
                 }`}
               >
@@ -382,13 +382,13 @@ function TournoisContent() {
             <div className="hidden md:flex bg-[#0a0a0a] border border-[rgba(255,255,255,0.08)] rounded-lg overflow-hidden ml-auto md:ml-0">
               <button
                 onClick={() => setView("grid")}
-                className={`w-9 h-9 border-none cursor-pointer flex items-center justify-center transition-all ${view === "grid" ? "bg-[#e8220a] text-white" : "bg-transparent text-[#777]"}`}
+                className={`w-9 h-9 border-none cursor-pointer flex items-center justify-center transition-all ${view === "grid" ? "bg-[#b91c0a] text-white" : "bg-transparent text-[#777]"}`}
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
               </button>
               <button
                 onClick={() => setView("list")}
-                className={`w-9 h-9 border-none cursor-pointer flex items-center justify-center transition-all ${view === "list" ? "bg-[#e8220a] text-white" : "bg-transparent text-[#777]"}`}
+                className={`w-9 h-9 border-none cursor-pointer flex items-center justify-center transition-all ${view === "list" ? "bg-[#b91c0a] text-white" : "bg-transparent text-[#777]"}`}
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
               </button>
@@ -401,7 +401,7 @@ function TournoisContent() {
       <div className="max-w-[1200px] xl:max-w-[1400px] mx-auto px-3 xs:px-4 sm:px-6 lg:px-10 py-5 sm:py-8">
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
+            <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#b91c0a] rounded-full animate-spin" />
           </div>
         ) : (
           <>
@@ -545,7 +545,7 @@ function TournoisContent() {
             {totalPages > 1 && (
               <div className="flex justify-center gap-[6px] mt-8 sm:mt-10 flex-wrap">
                 {page > 1 && (
-                  <button onClick={() => { setPage(page - 1); window.scrollTo({ top: 200, behavior: "smooth" }); }} className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#777] text-[0.85rem] cursor-pointer flex items-center justify-center transition-all hover:bg-[#e8220a] hover:text-white hover:border-[#e8220a] font-barlow">
+                  <button onClick={() => { setPage(page - 1); window.scrollTo({ top: 200, behavior: "smooth" }); }} className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#777] text-[0.85rem] cursor-pointer flex items-center justify-center transition-all hover:bg-[#b91c0a] hover:text-white hover:border-[#b91c0a] font-barlow">
                     ‹
                   </button>
                 )}
@@ -553,13 +553,13 @@ function TournoisContent() {
                   <button
                     key={p}
                     onClick={() => { setPage(p); window.scrollTo({ top: 200, behavior: "smooth" }); }}
-                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg border text-[0.85rem] cursor-pointer flex items-center justify-center transition-all font-barlow ${p === page ? "bg-[#e8220a] text-white border-[#e8220a]" : "border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#777] hover:bg-[#e8220a] hover:text-white hover:border-[#e8220a]"}`}
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg border text-[0.85rem] cursor-pointer flex items-center justify-center transition-all font-barlow ${p === page ? "bg-[#b91c0a] text-white border-[#b91c0a]" : "border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#777] hover:bg-[#b91c0a] hover:text-white hover:border-[#b91c0a]"}`}
                   >
                     {p}
                   </button>
                 ))}
                 {page < totalPages && (
-                  <button onClick={() => { setPage(page + 1); window.scrollTo({ top: 200, behavior: "smooth" }); }} className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#777] text-[0.85rem] cursor-pointer flex items-center justify-center transition-all hover:bg-[#e8220a] hover:text-white hover:border-[#e8220a] font-barlow">
+                  <button onClick={() => { setPage(page + 1); window.scrollTo({ top: 200, behavior: "smooth" }); }} className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#777] text-[0.85rem] cursor-pointer flex items-center justify-center transition-all hover:bg-[#b91c0a] hover:text-white hover:border-[#b91c0a] font-barlow">
                     ›
                   </button>
                 )}

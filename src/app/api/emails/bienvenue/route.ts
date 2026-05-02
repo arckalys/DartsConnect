@@ -36,17 +36,17 @@ export async function POST(req: Request) {
             <table cellpadding="0" cellspacing="0" width="100%">
               <tr>
                 <td style="padding:6px 0;font-size:14px;color:#333;">
-                  <span style="color:#e8220a;font-weight:700;">1.</span> Chercher un tournoi près de chez toi
+                  <span style="color:#b91c0a;font-weight:700;">1.</span> Chercher un tournoi près de chez toi
                 </td>
               </tr>
               <tr>
                 <td style="padding:6px 0;font-size:14px;color:#333;">
-                  <span style="color:#e8220a;font-weight:700;">2.</span> T'inscrire en quelques clics
+                  <span style="color:#b91c0a;font-weight:700;">2.</span> T'inscrire en quelques clics
                 </td>
               </tr>
               <tr>
                 <td style="padding:6px 0;font-size:14px;color:#333;">
-                  <span style="color:#e8220a;font-weight:700;">3.</span> Créer ton propre tournoi
+                  <span style="color:#b91c0a;font-weight:700;">3.</span> Créer ton propre tournoi
                 </td>
               </tr>
             </table>

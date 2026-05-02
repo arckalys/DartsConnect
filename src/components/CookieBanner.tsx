@@ -51,7 +51,7 @@ export default function CookieBanner() {
         {/* Header */}
         <div className="flex items-start gap-3 p-4 sm:p-5">
           <div className="shrink-0 w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.3)] rounded-[10px] flex items-center justify-center mt-[2px]">
-            <Cookie className="w-[18px] h-[18px] text-[#e8220a]" />
+            <Cookie className="w-[18px] h-[18px] text-[#b91c0a]" />
           </div>
 
           <div className="flex-1 min-w-0">
@@ -60,7 +60,7 @@ export default function CookieBanner() {
             </div>
             <p className="text-[0.82rem] text-[#aaa] leading-[1.6]">
               Nous utilisons des cookies de session strictement nécessaires pour l&apos;authentification et le bon fonctionnement du site. Aucun cookie publicitaire ou de traçage n&apos;est utilisé.{" "}
-              <Link href="/confidentialite" className="text-[#e8220a] no-underline hover:underline">
+              <Link href="/confidentialite" className="text-[#b91c0a] no-underline hover:underline">
                 En savoir plus
               </Link>
             </p>
@@ -101,7 +101,7 @@ export default function CookieBanner() {
         <div className="flex flex-col xs:flex-row gap-2 px-4 sm:px-5 pb-4 sm:pb-5">
           <button
             onClick={accept}
-            className="flex-1 flex items-center justify-center gap-2 py-[10px] px-4 bg-[#e8220a] text-white font-barlow-condensed font-bold text-[0.95rem] rounded-[9px] border-none cursor-pointer transition-all hover:bg-[#b81a08] shadow-red-glow"
+            className="flex-1 flex items-center justify-center gap-2 py-[10px] px-4 bg-[#b91c0a] text-white font-barlow-condensed font-bold text-[0.95rem] rounded-[9px] border-none cursor-pointer transition-all hover:bg-[#b81a08] shadow-red-glow"
           >
             <Check className="w-4 h-4" />
             Accepter

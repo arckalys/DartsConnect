@@ -201,7 +201,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="animate-page-in min-h-screen pt-[80px] flex items-center justify-center">
-        <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#b91c0a] rounded-full animate-spin" />
       </div>
     );
   }
@@ -218,7 +218,7 @@ export default function DashboardPage() {
             ? "Ce tournoi n'existe pas ou a été supprimé."
             : "Seul le créateur du tournoi peut accéder au tableau de bord."}
         </div>
-        <button onClick={() => router.push("/tournois")} className="bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08]">
+        <button onClick={() => router.push("/tournois")} className="bg-[#b91c0a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08]">
           ← Retour aux tournois
         </button>
       </div>
@@ -276,13 +276,13 @@ export default function DashboardPage() {
         <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6 mb-6 sm:mb-8">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center">
-              <Users className="w-[18px] h-[18px] text-[#e8220a]" />
+              <Users className="w-[18px] h-[18px] text-[#b91c0a]" />
             </div>
             <div className="font-barlow-condensed font-extrabold text-[1.1rem] uppercase">Statistiques</div>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
             <div>
-              <div className="font-barlow-condensed text-[2rem] font-black text-[#e8220a] leading-none">{inscriptions.length}</div>
+              <div className="font-barlow-condensed text-[2rem] font-black text-[#b91c0a] leading-none">{inscriptions.length}</div>
               <div className="text-[0.78rem] text-[#777] mt-1">Inscrits</div>
             </div>
             <div>
@@ -299,7 +299,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="h-[8px] bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden">
-            <div className="h-full rounded-full bg-[#e8220a] transition-all duration-500" style={{ width: `${Math.min(pct, 100)}%` }} />
+            <div className="h-full rounded-full bg-[#b91c0a] transition-all duration-500" style={{ width: `${Math.min(pct, 100)}%` }} />
           </div>
           <div className="text-[0.75rem] text-[#777] mt-2 text-right">
             {inscriptions.length}/{tournoi.nb_joueurs} joueurs ({Math.min(pct, 100)}%)
@@ -311,14 +311,14 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between gap-3 mb-5">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center">
-                <LayoutGrid className="w-[18px] h-[18px] text-[#e8220a]" />
+                <LayoutGrid className="w-[18px] h-[18px] text-[#b91c0a]" />
               </div>
               <div className="font-barlow-condensed font-extrabold text-[1.1rem] uppercase">Tableau de tournoi</div>
             </div>
             {tableau && (
               <Link
                 href={`/tournois/${tournoiId}/tableau`}
-                className="flex items-center gap-2 text-[0.82rem] font-bold text-[#e8220a] no-underline hover:underline"
+                className="flex items-center gap-2 text-[0.82rem] font-bold text-[#b91c0a] no-underline hover:underline"
               >
                 <Printer className="w-4 h-4" />
                 Voir &amp; Imprimer
@@ -361,7 +361,7 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2">
                 <Link
                   href={`/tournois/${tournoiId}/tableau`}
-                  className="flex items-center gap-2 bg-[#e8220a] text-white font-barlow-condensed font-bold text-[0.9rem] px-4 py-2 rounded-[8px] no-underline hover:bg-[#b81a08] transition-all"
+                  className="flex items-center gap-2 bg-[#b91c0a] text-white font-barlow-condensed font-bold text-[0.9rem] px-4 py-2 rounded-[8px] no-underline hover:bg-[#b81a08] transition-all"
                 >
                   <Printer className="w-4 h-4" />
                   Voir le tableau
@@ -392,7 +392,7 @@ export default function DashboardPage() {
                   <button
                     onClick={doGenerate}
                     disabled={generationLoading}
-                    className="flex items-center gap-2 bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[0.95rem] px-5 py-[10px] rounded-[10px] cursor-pointer hover:bg-[#b81a08] transition-all shadow-red-glow-lg disabled:opacity-60 whitespace-nowrap"
+                    className="flex items-center gap-2 bg-[#b91c0a] text-white border-none font-barlow-condensed font-bold text-[0.95rem] px-5 py-[10px] rounded-[10px] cursor-pointer hover:bg-[#b81a08] transition-all shadow-red-glow-lg disabled:opacity-60 whitespace-nowrap"
                   >
                     {generationLoading ? (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -415,10 +415,10 @@ export default function DashboardPage() {
                   <button
                     onClick={doGenerate}
                     disabled={generationLoading || inscriptions.length < 4}
-                    className="flex items-center gap-2 bg-transparent border border-[rgba(232,34,10,0.4)] text-[#e8220a] font-barlow-condensed font-bold text-[0.9rem] px-5 py-[10px] rounded-[10px] cursor-pointer hover:bg-[rgba(232,34,10,0.08)] transition-all disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                    className="flex items-center gap-2 bg-transparent border border-[rgba(232,34,10,0.4)] text-[#b91c0a] font-barlow-condensed font-bold text-[0.9rem] px-5 py-[10px] rounded-[10px] cursor-pointer hover:bg-[rgba(232,34,10,0.08)] transition-all disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
                   >
                     {generationLoading ? (
-                      <div className="w-4 h-4 border-2 border-[#e8220a] border-t-transparent rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-[#b91c0a] border-t-transparent rounded-full animate-spin" />
                     ) : (
                       <LayoutGrid className="w-4 h-4" />
                     )}
@@ -434,7 +434,7 @@ export default function DashboardPage() {
         <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center">
-              <Target className="w-[18px] h-[18px] text-[#e8220a]" />
+              <Target className="w-[18px] h-[18px] text-[#b91c0a]" />
             </div>
             <div className="font-barlow-condensed font-extrabold text-[1.1rem] uppercase">
               Joueurs inscrits ({inscriptions.length})
@@ -470,7 +470,7 @@ export default function DashboardPage() {
                     <div>
                       <Link
                         href={`/joueurs/${ins.user_id}`}
-                        className="text-[0.9rem] text-white font-medium no-underline hover:text-[#e8220a] transition-colors"
+                        className="text-[0.9rem] text-white font-medium no-underline hover:text-[#b91c0a] transition-colors"
                       >
                         {displayName}
                       </Link>

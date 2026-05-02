@@ -13,7 +13,7 @@ export function emailLayout(content: string) {
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;">
         <!-- Header -->
         <tr>
-          <td style="background:#e8220a;padding:24px 32px;text-align:center;">
+          <td style="background:#b91c0a;padding:24px 32px;text-align:center;">
             <span style="font-size:24px;font-weight:900;color:#ffffff;letter-spacing:1px;text-transform:uppercase;">DartsTournois</span>
           </td>
         </tr>
@@ -26,7 +26,7 @@ export function emailLayout(content: string) {
         <!-- Footer -->
         <tr>
           <td style="padding:20px 32px;background:#fafafa;border-top:1px solid #eee;text-align:center;">
-            <span style="font-size:12px;color:#999;">&copy; 2026 DartsTournois | <a href="${SITE_URL}" style="color:#e8220a;text-decoration:none;">dartstournois.fr</a></span>
+            <span style="font-size:12px;color:#999;">&copy; 2026 DartsTournois | <a href="${SITE_URL}" style="color:#b91c0a;text-decoration:none;">dartstournois.fr</a></span>
           </td>
         </tr>
       </table>
@@ -38,7 +38,7 @@ export function emailLayout(content: string) {
 
 export function emailButton(text: string, href: string) {
   return `<table cellpadding="0" cellspacing="0" style="margin:24px 0 8px;">
-  <tr><td style="background:#e8220a;border-radius:8px;padding:14px 32px;text-align:center;">
+  <tr><td style="background:#b91c0a;border-radius:8px;padding:14px 32px;text-align:center;">
     <a href="${href}" style="color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;display:inline-block;">${text}</a>
   </td></tr>
 </table>`;

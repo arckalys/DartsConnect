@@ -256,7 +256,7 @@ export default function AuthPage() {
         <div className="w-full max-w-[440px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-6 sm:p-10 animate-fade-up">
           {/* Header */}
           <div className="mb-6 xs:mb-8 text-center">
-            <div className="w-[44px] h-[44px] xs:w-[52px] xs:h-[52px] bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.3)] rounded-[12px] xs:rounded-[14px] flex items-center justify-center mx-auto mb-3 xs:mb-4"><Target className="w-5 h-5 xs:w-6 xs:h-6 text-[#e8220a]" /></div>
+            <div className="w-[44px] h-[44px] xs:w-[52px] xs:h-[52px] bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.3)] rounded-[12px] xs:rounded-[14px] flex items-center justify-center mx-auto mb-3 xs:mb-4"><Target className="w-5 h-5 xs:w-6 xs:h-6 text-[#b91c0a]" /></div>
             <div className="font-barlow-condensed font-black text-[1.5rem] xs:text-[1.8rem] uppercase">DartsTournois</div>
             <div className="text-[0.88rem] text-[#777] mt-[6px]">Rejoins la communauté des fléchettes</div>
           </div>
@@ -290,13 +290,13 @@ export default function AuthPage() {
                 </div>
               </div>
               <div className="text-right mb-5">
-                <button onClick={() => setView("forgot")} className="text-[#e8220a] font-semibold cursor-pointer bg-transparent border-none text-[0.82rem] font-barlow hover:underline">Mot de passe oublié ?</button>
+                <button onClick={() => setView("forgot")} className="text-[#b91c0a] font-semibold cursor-pointer bg-transparent border-none text-[0.82rem] font-barlow hover:underline">Mot de passe oublié ?</button>
               </div>
-              <button onClick={doLogin} disabled={loading} className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] tracking-[0.5px] cursor-pointer border-none bg-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+              <button onClick={doLogin} disabled={loading} className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] tracking-[0.5px] cursor-pointer border-none bg-[#b91c0a] text-white shadow-red-glow-lg hover:bg-[#b81a08] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                 {loading ? <div className="spinner" /> : "Se connecter"}
               </button>
               <p className="text-center text-[0.84rem] text-[#777] mt-5">
-                Pas de compte ? <button onClick={() => setTab("register")} className="text-[#e8220a] font-semibold cursor-pointer bg-transparent border-none font-barlow text-inherit hover:underline">S&apos;inscrire</button>
+                Pas de compte ? <button onClick={() => setTab("register")} className="text-[#b91c0a] font-semibold cursor-pointer bg-transparent border-none font-barlow text-inherit hover:underline">S&apos;inscrire</button>
               </p>
             </div>
           )}
@@ -341,11 +341,11 @@ export default function AuthPage() {
                   {REGIONS.map((r) => <option key={r}>{r}</option>)}
                 </select>
               </div>
-              <button onClick={doRegister} disabled={loading} className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] tracking-[0.5px] cursor-pointer border-none bg-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+              <button onClick={doRegister} disabled={loading} className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] tracking-[0.5px] cursor-pointer border-none bg-[#b91c0a] text-white shadow-red-glow-lg hover:bg-[#b81a08] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                 {loading ? <div className="spinner" /> : "Créer mon compte"}
               </button>
               <p className="text-center text-[0.84rem] text-[#777] mt-5">
-                Déjà un compte ? <button onClick={() => setTab("login")} className="text-[#e8220a] font-semibold cursor-pointer bg-transparent border-none font-barlow text-inherit hover:underline">Se connecter</button>
+                Déjà un compte ? <button onClick={() => setTab("login")} className="text-[#b91c0a] font-semibold cursor-pointer bg-transparent border-none font-barlow text-inherit hover:underline">Se connecter</button>
               </p>
             </div>
           )}
@@ -356,7 +356,7 @@ export default function AuthPage() {
       {view === "forgot" && (
         <div className="w-full max-w-[440px] bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-6 sm:p-10 animate-fade-up">
           <div className="mb-6 xs:mb-8 text-center">
-            <div className="w-[44px] h-[44px] xs:w-[52px] xs:h-[52px] bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.3)] rounded-[12px] xs:rounded-[14px] flex items-center justify-center mx-auto mb-3 xs:mb-4"><KeyRound className="w-5 h-5 xs:w-6 xs:h-6 text-[#e8220a]" /></div>
+            <div className="w-[44px] h-[44px] xs:w-[52px] xs:h-[52px] bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.3)] rounded-[12px] xs:rounded-[14px] flex items-center justify-center mx-auto mb-3 xs:mb-4"><KeyRound className="w-5 h-5 xs:w-6 xs:h-6 text-[#b91c0a]" /></div>
             <div className="font-barlow-condensed font-black text-[1.5rem] xs:text-[1.8rem] uppercase">Mot de passe oublié</div>
             <div className="text-[0.88rem] text-[#777] mt-[6px]">On t&apos;envoie un lien de réinitialisation</div>
           </div>
@@ -366,7 +366,7 @@ export default function AuthPage() {
             <label className="block text-[0.82rem] font-semibold text-[#ccc] mb-[6px]">Email</label>
             <input type="email" value={fEmail} onChange={(e) => setFEmail(e.target.value)} placeholder="ton@email.fr" />
           </div>
-          <button onClick={doForgot} disabled={loading} className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] tracking-[0.5px] cursor-pointer border-none bg-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+          <button onClick={doForgot} disabled={loading} className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] tracking-[0.5px] cursor-pointer border-none bg-[#b91c0a] text-white shadow-red-glow-lg hover:bg-[#b81a08] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
             {loading ? <div className="spinner" /> : "Envoyer le lien"}
           </button>
           <button onClick={() => { setView("main"); setError(""); setSuccess(""); }} className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[0.9rem] cursor-pointer bg-transparent text-white border border-[rgba(255,255,255,0.08)] mt-[10px] hover:bg-[rgba(255,255,255,0.05)]">
@@ -390,7 +390,7 @@ export default function AuthPage() {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={avatarLoading}
-              className="relative w-[84px] h-[84px] rounded-full bg-[#111] border-2 border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[1.8rem] cursor-pointer group overflow-hidden transition-all hover:border-[#e8220a] disabled:cursor-wait"
+              className="relative w-[84px] h-[84px] rounded-full bg-[#111] border-2 border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[1.8rem] cursor-pointer group overflow-hidden transition-all hover:border-[#b91c0a] disabled:cursor-wait"
             >
               {avatarUrl ? (
                 <Image
@@ -424,15 +424,15 @@ export default function AuthPage() {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-2 xs:gap-[10px] mb-6">
             <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] p-2 xs:p-3 text-center">
-              <div className="font-barlow-condensed text-[1.3rem] xs:text-[1.6rem] font-black text-[#e8220a]">0</div>
+              <div className="font-barlow-condensed text-[1.3rem] xs:text-[1.6rem] font-black text-[#b91c0a]">0</div>
               <div className="text-[0.68rem] xs:text-[0.72rem] text-[#777] mt-[2px]">Tournois</div>
             </div>
             <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] p-2 xs:p-3 text-center">
-              <div className="font-barlow-condensed text-[1.3rem] xs:text-[1.6rem] font-black text-[#e8220a]">0</div>
+              <div className="font-barlow-condensed text-[1.3rem] xs:text-[1.6rem] font-black text-[#b91c0a]">0</div>
               <div className="text-[0.68rem] xs:text-[0.72rem] text-[#777] mt-[2px]">Victoires</div>
             </div>
             <div className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[10px] p-2 xs:p-3 text-center">
-              <div className="font-barlow-condensed text-[1.3rem] xs:text-[1.6rem] font-black text-[#e8220a]">{(meta.region || "—").substring(0, 8)}</div>
+              <div className="font-barlow-condensed text-[1.3rem] xs:text-[1.6rem] font-black text-[#b91c0a]">{(meta.region || "—").substring(0, 8)}</div>
               <div className="text-[0.68rem] xs:text-[0.72rem] text-[#777] mt-[2px]">Région</div>
             </div>
           </div>
@@ -481,13 +481,13 @@ export default function AuthPage() {
               type="button"
               onClick={() => setENotifsRegion(!eNotifsRegion)}
               aria-pressed={eNotifsRegion}
-              className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors duration-200 border-none cursor-pointer ${eNotifsRegion ? "bg-[#e8220a]" : "bg-[#333]"}`}
+              className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors duration-200 border-none cursor-pointer ${eNotifsRegion ? "bg-[#b91c0a]" : "bg-[#333]"}`}
             >
               <span className={`absolute top-[2px] left-[2px] w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${eNotifsRegion ? "translate-x-5" : "translate-x-0"}`} />
             </button>
           </div>
 
-          <button onClick={doSave} disabled={loading} className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] tracking-[0.5px] cursor-pointer border-none bg-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+          <button onClick={doSave} disabled={loading} className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] tracking-[0.5px] cursor-pointer border-none bg-[#b91c0a] text-white shadow-red-glow-lg hover:bg-[#b81a08] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
             {loading ? <div className="spinner" /> : "Sauvegarder"}
           </button>
           <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2 xs:gap-[10px] mt-[10px]">

@@ -98,13 +98,13 @@ export default function HomePage() {
 
           {/* Gauche : texte + recherche */}
           <div className="flex-1 min-w-0 max-w-[580px] animate-fade-up">
-            <div className="inline-flex items-center gap-2 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.4)] rounded-full px-3 sm:px-[14px] py-[5px] text-[0.62rem] xs:text-[0.65rem] sm:text-[0.72rem] font-bold tracking-[1.5px] uppercase text-[#e8220a] mb-4 sm:mb-6">
+            <div className="inline-flex items-center gap-2 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.4)] rounded-full px-3 sm:px-[14px] py-[5px] text-[0.62rem] xs:text-[0.65rem] sm:text-[0.72rem] font-bold tracking-[1.5px] uppercase text-[#b91c0a] mb-4 sm:mb-6">
               <Target className="w-[14px] h-[14px]" />
               Tournois de fléchettes
             </div>
             <h1 className="font-barlow-condensed font-black text-[1.8rem] xs:text-[2.2rem] sm:text-[clamp(2.8rem,5vw,4rem)] lg:text-[clamp(2.6rem,4.5vw,3.8rem)] xl:text-[clamp(3rem,5vw,4.4rem)] leading-[1.0] mb-4 sm:mb-5 uppercase tracking-tight">
               Trouvez votre<br />
-              <span className="text-[#e8220a]">prochain tournoi</span>
+              <span className="text-[#b91c0a]">prochain tournoi</span>
             </h1>
             <p className="text-[0.85rem] xs:text-[0.9rem] sm:text-[1rem] text-[#aaa] leading-[1.7] mb-6 sm:mb-9 max-w-[480px]">
               Tous les tournois de fléchettes en France réunis sur une seule plateforme. Cherchez, trouvez et inscrivez-vous en quelques clics.
@@ -119,7 +119,7 @@ export default function HomePage() {
               />
               <button
                 onClick={heroSearch}
-                className="bg-[#e8220a] text-white font-barlow-condensed font-bold text-[0.95rem] xs:text-[1rem] px-[18px] xs:px-[26px] py-[11px] xs:py-[13px] rounded-[10px] flex items-center justify-center gap-2 transition-all shadow-red-glow-lg hover:bg-[#b81a08] whitespace-nowrap"
+                className="bg-[#b91c0a] text-white font-barlow-condensed font-bold text-[0.95rem] xs:text-[1rem] px-[18px] xs:px-[26px] py-[11px] xs:py-[13px] rounded-[10px] flex items-center justify-center gap-2 transition-all shadow-red-glow-lg hover:bg-[#b81a08] whitespace-nowrap"
               >
                 Chercher
                 <ArrowRight className="w-[14px] h-[14px]" />
@@ -142,15 +142,15 @@ export default function HomePage() {
       <div className="bg-[#111] border-t border-b border-[rgba(255,255,255,0.08)] px-3 xs:px-4 sm:px-6 lg:px-10 py-5 sm:py-8 flex justify-center">
         <div className="flex flex-col sm:flex-row w-full max-w-[840px]">
           <div className="flex-1 text-center px-3 xs:px-4 sm:px-8 py-2 sm:py-0 border-b sm:border-b-0 sm:border-r border-[rgba(255,255,255,0.08)] last:border-0">
-            <div className="font-barlow-condensed text-[1.8rem] xs:text-[2.2rem] sm:text-[2.8rem] xl:text-[3.2rem] font-black text-[#e8220a] leading-none mb-1">{tournaments.length}</div>
+            <div className="font-barlow-condensed text-[1.8rem] xs:text-[2.2rem] sm:text-[2.8rem] xl:text-[3.2rem] font-black text-[#b91c0a] leading-none mb-1">{tournaments.length}</div>
             <div className="text-[0.82rem] xs:text-[0.85rem] text-[#777] font-medium">Tournois</div>
           </div>
           <div className="flex-1 text-center px-3 xs:px-4 sm:px-8 py-2 sm:py-0 border-b sm:border-b-0 sm:border-r border-[rgba(255,255,255,0.08)] last:border-0">
-            <div className="font-barlow-condensed text-[1.8rem] xs:text-[2.2rem] sm:text-[2.8rem] xl:text-[3.2rem] font-black text-[#e8220a] leading-none mb-1">{totalRegions}</div>
+            <div className="font-barlow-condensed text-[1.8rem] xs:text-[2.2rem] sm:text-[2.8rem] xl:text-[3.2rem] font-black text-[#b91c0a] leading-none mb-1">{totalRegions}</div>
             <div className="text-[0.82rem] xs:text-[0.85rem] text-[#777] font-medium">Régions</div>
           </div>
           <div className="flex-1 text-center px-3 xs:px-4 sm:px-8 py-2 sm:py-0">
-            <div className="font-barlow-condensed text-[1.8rem] xs:text-[2.2rem] sm:text-[2.8rem] xl:text-[3.2rem] font-black text-[#e8220a] leading-none mb-1">{inscriptionsCount}</div>
+            <div className="font-barlow-condensed text-[1.8rem] xs:text-[2.2rem] sm:text-[2.8rem] xl:text-[3.2rem] font-black text-[#b91c0a] leading-none mb-1">{inscriptionsCount}</div>
             <div className="text-[0.82rem] xs:text-[0.85rem] text-[#777] font-medium">Joueurs inscrits</div>
           </div>
         </div>
@@ -161,12 +161,12 @@ export default function HomePage() {
         {/* Quick nav cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-14 reveal">
           <Link href="/tournois" className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] px-4 xs:px-5 sm:px-6 py-3 xs:py-4 sm:py-5 flex items-center gap-3 xs:gap-4 no-underline text-white transition-all hover:border-[rgba(232,34,10,0.35)] hover:bg-[rgba(232,34,10,0.05)] hover:-translate-y-[2px] group">
-            <div className="w-9 h-9 xs:w-10 xs:h-10 sm:w-11 sm:h-11 rounded-[10px] flex items-center justify-center shrink-0 bg-[rgba(232,34,10,0.15)]"><Calendar className="w-5 h-5 text-[#e8220a]" /></div>
+            <div className="w-9 h-9 xs:w-10 xs:h-10 sm:w-11 sm:h-11 rounded-[10px] flex items-center justify-center shrink-0 bg-[rgba(232,34,10,0.15)]"><Calendar className="w-5 h-5 text-[#b91c0a]" /></div>
             <div>
               <h3 className="font-barlow-condensed font-bold text-[1rem] sm:text-[1.05rem] mb-[2px]">Tous les tournois</h3>
               <p className="text-[0.8rem] text-[#777]">Parcourir les événements</p>
             </div>
-            <span className="ml-auto text-[#777] text-[1.1rem] transition-all group-hover:translate-x-1 group-hover:text-[#e8220a]">→</span>
+            <span className="ml-auto text-[#777] text-[1.1rem] transition-all group-hover:translate-x-1 group-hover:text-[#b91c0a]">→</span>
           </Link>
           <Link href="/inscriptions" className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] px-4 xs:px-5 sm:px-6 py-3 xs:py-4 sm:py-5 flex items-center gap-3 xs:gap-4 no-underline text-white transition-all hover:border-[rgba(232,34,10,0.35)] hover:bg-[rgba(232,34,10,0.05)] hover:-translate-y-[2px] group">
             <div className="w-9 h-9 xs:w-10 xs:h-10 sm:w-11 sm:h-11 rounded-[10px] flex items-center justify-center shrink-0 bg-[rgba(34,197,94,0.12)]"><Trophy className="w-5 h-5 text-[#22c55e]" /></div>
@@ -174,7 +174,7 @@ export default function HomePage() {
               <h3 className="font-barlow-condensed font-bold text-[1rem] sm:text-[1.05rem] mb-[2px]">Mes inscriptions</h3>
               <p className="text-[0.8rem] text-[#777]">Suivre mes tournois</p>
             </div>
-            <span className="ml-auto text-[#777] text-[1.1rem] transition-all group-hover:translate-x-1 group-hover:text-[#e8220a]">→</span>
+            <span className="ml-auto text-[#777] text-[1.1rem] transition-all group-hover:translate-x-1 group-hover:text-[#b91c0a]">→</span>
           </Link>
           <Link href="/tournois/creer" className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] px-4 xs:px-5 sm:px-6 py-3 xs:py-4 sm:py-5 flex items-center gap-3 xs:gap-4 no-underline text-white transition-all hover:border-[rgba(232,34,10,0.35)] hover:bg-[rgba(232,34,10,0.05)] hover:-translate-y-[2px] group sm:col-span-2 md:col-span-1">
             <div className="w-9 h-9 xs:w-10 xs:h-10 sm:w-11 sm:h-11 rounded-[10px] flex items-center justify-center shrink-0 bg-[rgba(255,140,0,0.12)]"><Plus className="w-5 h-5 text-[#ff8c00]" /></div>
@@ -182,7 +182,7 @@ export default function HomePage() {
               <h3 className="font-barlow-condensed font-bold text-[1rem] sm:text-[1.05rem] mb-[2px]">Créer un tournoi</h3>
               <p className="text-[0.8rem] text-[#777]">Publier mon événement</p>
             </div>
-            <span className="ml-auto text-[#777] text-[1.1rem] transition-all group-hover:translate-x-1 group-hover:text-[#e8220a]">→</span>
+            <span className="ml-auto text-[#777] text-[1.1rem] transition-all group-hover:translate-x-1 group-hover:text-[#b91c0a]">→</span>
           </Link>
         </div>
 
@@ -190,14 +190,14 @@ export default function HomePage() {
         <div className="reveal">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-barlow-condensed font-extrabold text-[1.2rem] xs:text-[1.4rem] sm:text-[1.8rem] uppercase tracking-[0.5px]">Prochains tournois</h2>
-            <Link href="/tournois" className="text-[0.85rem] text-[#e8220a] no-underline font-semibold flex items-center gap-1 hover:gap-2 transition-all">
+            <Link href="/tournois" className="text-[0.85rem] text-[#b91c0a] no-underline font-semibold flex items-center gap-1 hover:gap-2 transition-all">
               Voir tout →
             </Link>
           </div>
 
           {loading ? (
             <div className="flex items-center justify-center py-16">
-              <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
+              <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#b91c0a] rounded-full animate-spin" />
             </div>
           ) : upcoming.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

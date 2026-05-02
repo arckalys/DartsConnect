@@ -33,7 +33,7 @@ export default function Navbar() {
       <div className="flex items-center justify-between px-3 xs:px-4 sm:px-6 lg:px-10 h-[56px] xs:h-[60px]">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 xs:gap-[10px] font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] text-white no-underline">
-          <div className="w-7 h-7 xs:w-8 xs:h-8 bg-[#e8220a] rounded-lg flex items-center justify-center shadow-[0_0_12px_rgba(232,34,10,0.3)]">
+          <div className="w-7 h-7 xs:w-8 xs:h-8 bg-[#b91c0a] rounded-lg flex items-center justify-center shadow-[0_0_12px_rgba(232,34,10,0.3)]">
             <Target className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-white" />
           </div>
           <span className="hidden xs:inline">DartsTournois</span>
@@ -67,13 +67,13 @@ export default function Navbar() {
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/tournois/creer"
-            className="hidden sm:inline-block bg-[#e8220a] text-white font-semibold text-[0.88rem] px-[18px] py-2 rounded-lg transition-all duration-200 shadow-red-glow hover:bg-[#b81a08] no-underline"
+            className="hidden sm:inline-block bg-[#b91c0a] text-white font-semibold text-[0.88rem] px-[18px] py-2 rounded-lg transition-all duration-200 shadow-red-glow hover:bg-[#b81a08] no-underline"
           >
             + Cr&eacute;er un tournoi
           </Link>
           <Link
             href="/auth"
-            className="relative w-[30px] h-[30px] xs:w-[34px] xs:h-[34px] rounded-full bg-[#181818] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[1rem] transition-colors duration-200 hover:border-[#e8220a] no-underline overflow-hidden"
+            className="relative w-[30px] h-[30px] xs:w-[34px] xs:h-[34px] rounded-full bg-[#181818] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[1rem] transition-colors duration-200 hover:border-[#b91c0a] no-underline overflow-hidden"
           >
             {avatarUrl ? (
               <Image
@@ -91,7 +91,7 @@ export default function Navbar() {
           {/* Hamburger button - mobile/tablet */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden w-[30px] h-[30px] xs:w-[34px] xs:h-[34px] rounded-lg bg-[#181818] border border-[rgba(255,255,255,0.08)] flex items-center justify-center cursor-pointer transition-colors hover:border-[#e8220a]"
+            className="md:hidden w-[30px] h-[30px] xs:w-[34px] xs:h-[34px] rounded-lg bg-[#181818] border border-[rgba(255,255,255,0.08)] flex items-center justify-center cursor-pointer transition-colors hover:border-[#b91c0a]"
             aria-label="Menu"
           >
             {menuOpen ? (
@@ -129,7 +129,7 @@ export default function Navbar() {
           <Link
             href="/tournois/creer"
             onClick={() => setMenuOpen(false)}
-            className="sm:hidden text-center bg-[#e8220a] text-white font-semibold text-[0.95rem] px-4 py-3 rounded-lg no-underline mt-1"
+            className="sm:hidden text-center bg-[#b91c0a] text-white font-semibold text-[0.95rem] px-4 py-3 rounded-lg no-underline mt-1"
           >
             + Cr&eacute;er un tournoi
           </Link>

@@ -29,7 +29,7 @@ export default function StepForm({ steps, currentStep }: Props) {
                   isDone
                     ? "bg-[rgba(34,197,94,0.15)] border-[#22c55e] text-[#22c55e]"
                     : isActive
-                    ? "bg-[#e8220a] border-[#e8220a] text-white shadow-[0_0_16px_rgba(232,34,10,0.3)]"
+                    ? "bg-[#b91c0a] border-[#b91c0a] text-white shadow-[0_0_16px_rgba(232,34,10,0.3)]"
                     : "bg-[#111] border-[rgba(255,255,255,0.08)] text-[#777]"
                 }`}
               >

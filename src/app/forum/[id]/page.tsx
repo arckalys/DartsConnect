@@ -153,7 +153,7 @@ export default function ForumDetailPage({ params }: { params: Promise<{ id: stri
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#b91c0a] rounded-full animate-spin" />
       </div>
     );
   }
@@ -163,7 +163,7 @@ export default function ForumDetailPage({ params }: { params: Promise<{ id: stri
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-[#555]">
         <MessageSquare className="w-14 h-14 opacity-30" />
         <div className="font-barlow-condensed font-bold text-[1.4rem]">Question introuvable</div>
-        <Link href="/forum" className="text-[#e8220a] hover:underline text-[0.9rem]">← Retour au forum</Link>
+        <Link href="/forum" className="text-[#b91c0a] hover:underline text-[0.9rem]">← Retour au forum</Link>
       </div>
     );
   }
@@ -282,7 +282,7 @@ export default function ForumDetailPage({ params }: { params: Promise<{ id: stri
 
             {user ? (
               <>
-                <div className="font-barlow-condensed font-extrabold text-[1rem] uppercase tracking-[0.5px] mb-3 text-[#e8220a]">
+                <div className="font-barlow-condensed font-extrabold text-[1rem] uppercase tracking-[0.5px] mb-3 text-[#b91c0a]">
                   Ta réponse
                 </div>
                 <textarea
@@ -297,7 +297,7 @@ export default function ForumDetailPage({ params }: { params: Promise<{ id: stri
                   <button
                     onClick={postReponse}
                     disabled={posting || !reponse.trim()}
-                    className="flex items-center gap-2 bg-[#e8220a] text-white font-barlow-condensed font-bold text-[0.95rem] px-5 py-[10px] rounded-[10px] border-none cursor-pointer transition-all hover:bg-[#b81a08] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 bg-[#b91c0a] text-white font-barlow-condensed font-bold text-[0.95rem] px-5 py-[10px] rounded-[10px] border-none cursor-pointer transition-all hover:bg-[#b81a08] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {posting ? <div className="spinner" /> : <><Send className="w-4 h-4" /> Répondre</>}
                   </button>
@@ -308,7 +308,7 @@ export default function ForumDetailPage({ params }: { params: Promise<{ id: stri
                 <div className="text-[0.88rem] text-[#777] mb-3">Connecte-toi pour répondre à cette question</div>
                 <Link
                   href="/auth"
-                  className="inline-flex items-center gap-2 bg-[#e8220a] text-white font-barlow-condensed font-bold text-[0.95rem] px-6 py-[10px] rounded-[10px] no-underline hover:bg-[#b81a08] transition-all"
+                  className="inline-flex items-center gap-2 bg-[#b91c0a] text-white font-barlow-condensed font-bold text-[0.95rem] px-6 py-[10px] rounded-[10px] no-underline hover:bg-[#b81a08] transition-all"
                 >
                   Se connecter
                 </Link>

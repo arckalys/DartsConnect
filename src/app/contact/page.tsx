@@ -47,7 +47,7 @@ export default function ContactPage() {
   }
 
   const inputClass =
-    "w-full bg-[#0a0a0a] border border-[rgba(255,255,255,0.12)] rounded-[10px] px-4 py-3 text-[0.9rem] text-white placeholder-[#555] outline-none transition-all focus:border-[#e8220a] focus:shadow-[0_0_0_3px_rgba(232,34,10,0.15)]";
+    "w-full bg-[#0a0a0a] border border-[rgba(255,255,255,0.12)] rounded-[10px] px-4 py-3 text-[0.9rem] text-white placeholder-[#555] outline-none transition-all focus:border-[#b91c0a] focus:shadow-[0_0_0_3px_rgba(232,34,10,0.15)]";
 
   return (
     <div className="animate-page-in min-h-screen flex flex-col">
@@ -57,7 +57,7 @@ export default function ContactPage() {
           {/* Header */}
           <div className="text-center mb-8 sm:mb-10 pt-6 sm:pt-10">
             <h1 className="font-barlow-condensed font-black text-[1.8rem] xs:text-[2.2rem] sm:text-[3rem] uppercase leading-[1.1] mb-3">
-              Nous <span className="text-[#e8220a]">contacter</span>
+              Nous <span className="text-[#b91c0a]">contacter</span>
             </h1>
             <p className="text-[0.9rem] sm:text-[0.95rem] text-[#999] leading-[1.6]">
               Une question, un problème ou une idée ? Écrivez-nous.
@@ -145,7 +145,7 @@ export default function ContactPage() {
               <button
                 type="submit"
                 disabled={sending}
-                className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] cursor-pointer border-none bg-[#e8220a] text-white shadow-red-glow-lg hover:bg-[#b81a08] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-[13px] rounded-[10px] font-barlow-condensed font-bold text-[1.05rem] cursor-pointer border-none bg-[#b91c0a] text-white shadow-red-glow-lg hover:bg-[#b81a08] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {sending ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

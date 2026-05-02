@@ -71,7 +71,7 @@ export default function TournamentCard({ id, nom, ville, region, date_tournoi, f
           </div>
           <div className="flex justify-between items-start gap-2 min-w-0">
             <div className="font-barlow-condensed font-extrabold text-[0.95rem] xs:text-[1rem] sm:text-[1.05rem] leading-[1.25] min-w-0 truncate">{nom}</div>
-            <div className="font-barlow-condensed font-extrabold text-[1rem] xs:text-[1.05rem] sm:text-[1.1rem] text-[#e8220a] whitespace-nowrap shrink-0">{prize}€</div>
+            <div className="font-barlow-condensed font-extrabold text-[1rem] xs:text-[1.05rem] sm:text-[1.1rem] text-[#b91c0a] whitespace-nowrap shrink-0">{prize}€</div>
           </div>
         </div>
 
@@ -108,7 +108,7 @@ export default function TournamentCard({ id, nom, ville, region, date_tournoi, f
                 <strong className="text-white">{players}</strong>/{nb_joueurs} joueurs
               </div>
               <div className="h-[3px] bg-[rgba(255,255,255,0.06)] rounded-sm">
-                <div className="h-full rounded-sm bg-[#e8220a] transition-all duration-400" style={{ width: `${Math.min(pct, 100)}%` }} />
+                <div className="h-full rounded-sm bg-[#b91c0a] transition-all duration-400" style={{ width: `${Math.min(pct, 100)}%` }} />
               </div>
             </div>
           </div>
@@ -121,7 +121,7 @@ export default function TournamentCard({ id, nom, ville, region, date_tournoi, f
               className={`w-full text-[0.82rem] font-bold py-[8px] rounded-lg cursor-pointer transition-all border flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed ${
                 isRegistered
                   ? "bg-[rgba(248,113,113,0.08)] border-[rgba(248,113,113,0.2)] text-[#f87171] hover:bg-[rgba(248,113,113,0.15)]"
-                  : "bg-[rgba(232,34,10,0.1)] border-[rgba(232,34,10,0.25)] text-[#e8220a] hover:bg-[rgba(232,34,10,0.2)]"
+                  : "bg-[rgba(232,34,10,0.1)] border-[rgba(232,34,10,0.25)] text-[#b91c0a] hover:bg-[rgba(232,34,10,0.2)]"
               }`}
             >
               {registerLoading ? (
@@ -140,7 +140,7 @@ export default function TournamentCard({ id, nom, ville, region, date_tournoi, f
           {!onToggleRegister && currentUserId === null && statut !== "closed" && (
             <Link
               href="/auth"
-              className="w-full text-[0.82rem] font-bold py-[8px] rounded-lg transition-all border flex items-center justify-center gap-1 no-underline bg-[rgba(232,34,10,0.1)] border-[rgba(232,34,10,0.25)] text-[#e8220a] hover:bg-[rgba(232,34,10,0.2)]"
+              className="w-full text-[0.82rem] font-bold py-[8px] rounded-lg transition-all border flex items-center justify-center gap-1 no-underline bg-[rgba(232,34,10,0.1)] border-[rgba(232,34,10,0.25)] text-[#b91c0a] hover:bg-[rgba(232,34,10,0.2)]"
             >
               S&apos;inscrire →
             </Link>

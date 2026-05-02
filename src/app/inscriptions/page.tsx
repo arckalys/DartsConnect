@@ -67,7 +67,7 @@ export default function InscriptionsPage() {
   if (loading) {
     return (
       <div className="animate-page-in min-h-screen pt-[80px] flex items-center justify-center">
-        <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#b91c0a] rounded-full animate-spin" />
       </div>
     );
   }
@@ -80,7 +80,7 @@ export default function InscriptionsPage() {
         <div className="text-[0.88rem] text-[#777] mb-6">Connecte-toi pour voir tes inscriptions aux tournois.</div>
         <button
           onClick={() => router.push("/auth")}
-          className="bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08]"
+          className="bg-[#b91c0a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08]"
         >
           Se connecter →
         </button>
@@ -126,7 +126,7 @@ export default function InscriptionsPage() {
         <div className="max-w-[1200px] xl:max-w-[1400px] mx-auto pb-6">
           <div className="font-barlow-condensed font-black text-[1.5rem] xs:text-[1.8rem] sm:text-[2.4rem] uppercase tracking-[0.5px]">Mes inscriptions</div>
           <div className="text-[0.88rem] text-[#777] mt-1">
-            <span className="text-[#e8220a] font-bold">{inscriptions.length}</span> tournoi{inscriptions.length > 1 ? "s" : ""}
+            <span className="text-[#b91c0a] font-bold">{inscriptions.length}</span> tournoi{inscriptions.length > 1 ? "s" : ""}
           </div>
         </div>
       </div>
@@ -139,7 +139,7 @@ export default function InscriptionsPage() {
             <div className="text-[0.88rem] mb-6">Tu n&apos;es inscrit à aucun tournoi pour le moment.</div>
             <Link
               href="/tournois"
-              className="inline-block bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] transition-all shadow-red-glow-lg hover:bg-[#b81a08] no-underline"
+              className="inline-block bg-[#b91c0a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] transition-all shadow-red-glow-lg hover:bg-[#b81a08] no-underline"
             >
               Voir les tournois →
             </Link>

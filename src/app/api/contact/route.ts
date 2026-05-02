@@ -27,7 +27,7 @@ export async function POST(req: Request) {
         </tr>
         <tr>
           <td style="padding:8px 0;font-size:13px;color:#999;vertical-align:top;">Email</td>
-          <td style="padding:8px 0;font-size:14px;color:#333;font-weight:500;"><a href="mailto:${email}" style="color:#e8220a;">${email}</a></td>
+          <td style="padding:8px 0;font-size:14px;color:#333;font-weight:500;"><a href="mailto:${email}" style="color:#b91c0a;">${email}</a></td>
         </tr>
         <tr>
           <td style="padding:8px 0;font-size:13px;color:#999;vertical-align:top;">Sujet</td>

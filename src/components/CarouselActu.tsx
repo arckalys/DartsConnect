@@ -125,7 +125,7 @@ export default function CarouselActu({ slides }: Props) {
               aria-label={`Aller à l'image ${i + 1}`}
               className={`rounded-full transition-all duration-300 border-none cursor-pointer p-0 ${
                 i === current
-                  ? "w-5 h-[5px] bg-[#e8220a]"
+                  ? "w-5 h-[5px] bg-[#b91c0a]"
                   : "w-[5px] h-[5px] bg-[rgba(255,255,255,0.35)] hover:bg-[rgba(255,255,255,0.6)]"
               }`}
             />

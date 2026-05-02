@@ -125,14 +125,14 @@ export default function ForumPage() {
           <div className="flex items-start justify-between gap-4 mt-6 mb-8">
             <div>
               <h1 className="font-barlow-condensed font-black text-[1.8rem] xs:text-[2.2rem] sm:text-[2.6rem] uppercase leading-[1.1]">
-                Forum <span className="text-[#e8220a]">Communauté</span>
+                Forum <span className="text-[#b91c0a]">Communauté</span>
               </h1>
               <p className="text-[0.88rem] text-[#777] mt-[6px]">Pose tes questions, partage ton expérience</p>
             </div>
             {user ? (
               <button
                 onClick={() => setFormOpen(!formOpen)}
-                className="flex-shrink-0 flex items-center gap-2 bg-[#e8220a] text-white font-barlow-condensed font-bold text-[0.9rem] sm:text-[1rem] px-4 sm:px-5 py-[10px] sm:py-[11px] rounded-[10px] border-none cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08]"
+                className="flex-shrink-0 flex items-center gap-2 bg-[#b91c0a] text-white font-barlow-condensed font-bold text-[0.9rem] sm:text-[1rem] px-4 sm:px-5 py-[10px] sm:py-[11px] rounded-[10px] border-none cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08]"
               >
                 {formOpen ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                 <span className="hidden xs:inline">{formOpen ? "Annuler" : "Poser une question"}</span>
@@ -140,7 +140,7 @@ export default function ForumPage() {
             ) : (
               <Link
                 href="/auth"
-                className="flex-shrink-0 flex items-center gap-2 bg-[#141414] border border-[rgba(255,255,255,0.08)] text-[#ccc] font-barlow-condensed font-bold text-[0.9rem] sm:text-[1rem] px-4 sm:px-5 py-[10px] sm:py-[11px] rounded-[10px] no-underline transition-all hover:border-[#e8220a] hover:text-white"
+                className="flex-shrink-0 flex items-center gap-2 bg-[#141414] border border-[rgba(255,255,255,0.08)] text-[#ccc] font-barlow-condensed font-bold text-[0.9rem] sm:text-[1rem] px-4 sm:px-5 py-[10px] sm:py-[11px] rounded-[10px] no-underline transition-all hover:border-[#b91c0a] hover:text-white"
               >
                 Connexion pour participer
               </Link>
@@ -162,7 +162,7 @@ export default function ForumPage() {
           {/* Formulaire nouvelle question */}
           {formOpen && (
             <div className="bg-[#141414] border border-[rgba(232,34,10,0.3)] rounded-[16px] p-5 sm:p-6 mb-6 animate-fade-up">
-              <div className="font-barlow-condensed font-extrabold text-[1.1rem] uppercase tracking-[0.5px] mb-4 text-[#e8220a]">
+              <div className="font-barlow-condensed font-extrabold text-[1.1rem] uppercase tracking-[0.5px] mb-4 text-[#b91c0a]">
                 Nouvelle question
               </div>
               <div className="mb-4">
@@ -191,7 +191,7 @@ export default function ForumPage() {
                 <button
                   onClick={postQuestion}
                   disabled={posting}
-                  className="flex-1 py-[12px] rounded-[10px] font-barlow-condensed font-bold text-[1rem] cursor-pointer border-none bg-[#e8220a] text-white hover:bg-[#b81a08] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 py-[12px] rounded-[10px] font-barlow-condensed font-bold text-[1rem] cursor-pointer border-none bg-[#b91c0a] text-white hover:bg-[#b81a08] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {posting ? <div className="spinner" /> : "Publier la question"}
                 </button>
@@ -226,7 +226,7 @@ export default function ForumPage() {
           {/* Liste des questions */}
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
+              <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#b91c0a] rounded-full animate-spin" />
             </div>
           ) : filtered.length === 0 ? (
             <div className="text-center py-20 text-[#555]">
@@ -254,7 +254,7 @@ export default function ForumPage() {
                   >
                     {/* Badge réponses */}
                     <div className={`flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded-[10px] text-center ${nbReponses > 0 ? "bg-[rgba(232,34,10,0.1)] border border-[rgba(232,34,10,0.25)]" : "bg-[#111] border border-[rgba(255,255,255,0.07)]"}`}>
-                      <div className={`font-barlow-condensed font-black text-[1.2rem] leading-none ${nbReponses > 0 ? "text-[#e8220a]" : "text-[#444]"}`}>
+                      <div className={`font-barlow-condensed font-black text-[1.2rem] leading-none ${nbReponses > 0 ? "text-[#b91c0a]" : "text-[#444]"}`}>
                         {nbReponses}
                       </div>
                       <div className="text-[0.6rem] text-[#555] mt-[1px]">rép.</div>
@@ -262,7 +262,7 @@ export default function ForumPage() {
 
                     {/* Contenu */}
                     <div className="flex-1 min-w-0">
-                      <div className="font-barlow-condensed font-extrabold text-[1rem] sm:text-[1.1rem] uppercase tracking-[0.3px] mb-[5px] group-hover:text-[#e8220a] transition-colors line-clamp-2">
+                      <div className="font-barlow-condensed font-extrabold text-[1rem] sm:text-[1.1rem] uppercase tracking-[0.3px] mb-[5px] group-hover:text-[#b91c0a] transition-colors line-clamp-2">
                         {q.titre}
                       </div>
                       <div className="text-[0.8rem] sm:text-[0.82rem] text-[#666] line-clamp-2 leading-[1.6] mb-3">
@@ -284,7 +284,7 @@ export default function ForumPage() {
                     </div>
 
                     {/* Flèche */}
-                    <ChevronRight className="w-4 h-4 text-[#444] flex-shrink-0 mt-1 group-hover:text-[#e8220a] group-hover:translate-x-1 transition-all" />
+                    <ChevronRight className="w-4 h-4 text-[#444] flex-shrink-0 mt-1 group-hover:text-[#b91c0a] group-hover:translate-x-1 transition-all" />
                   </Link>
                 );
               })}

@@ -112,7 +112,7 @@ export async function POST(req: Request) {
 
         <p style="margin:24px 0 0;font-size:12px;color:#bbb;line-height:1.6;">
           Tu reçois cet email car tu as activé les alertes tournois dans ton profil DartsTournois.<br />
-          Pour les désactiver, rends-toi dans <a href="${SITE_URL}/auth" style="color:#e8220a;">ton profil</a> et désactive l'option.
+          Pour les désactiver, rends-toi dans <a href="${SITE_URL}/auth" style="color:#b91c0a;">ton profil</a> et désactive l'option.
         </p>
       `);
 

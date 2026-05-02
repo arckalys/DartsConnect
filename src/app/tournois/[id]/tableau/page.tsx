@@ -20,7 +20,7 @@ interface TableauRow {
 const ROUND_COLORS: Record<string, string> = {
   "Huitièmes de finale": "#6366f1",
   "Quarts de finale": "#f97316",
-  "Demi-finales": "#e8220a",
+  "Demi-finales": "#b91c0a",
   "Finale": "#f59e0b",
 };
 
@@ -57,7 +57,7 @@ export default function TableauPage() {
   if (loading) {
     return (
       <div className="animate-page-in min-h-screen pt-[80px] flex items-center justify-center">
-        <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#e8220a] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-[3px] border-[rgba(232,34,10,0.3)] border-t-[#b91c0a] rounded-full animate-spin" />
       </div>
     );
   }
@@ -67,7 +67,7 @@ export default function TableauPage() {
       <div className="animate-page-in min-h-screen pt-[80px] flex flex-col items-center justify-center text-center px-4">
         <Target className="w-12 h-12 text-[#777] mb-4 opacity-40" />
         <div className="font-barlow-condensed font-black text-[1.6rem] uppercase mb-2">Tournoi introuvable</div>
-        <Link href="/tournois" className="text-[#e8220a] text-[0.88rem] font-bold mt-4">← Retour aux tournois</Link>
+        <Link href="/tournois" className="text-[#b91c0a] text-[0.88rem] font-bold mt-4">← Retour aux tournois</Link>
       </div>
     );
   }
@@ -119,7 +119,7 @@ export default function TableauPage() {
                 <span className="text-white">Tableau</span>
               </div>
               <div className="font-barlow-condensed font-black text-[1.4rem] xs:text-[1.8rem] sm:text-[2.2rem] uppercase leading-none">
-                Tableau <span className="text-[#e8220a]">officiel</span>
+                Tableau <span className="text-[#b91c0a]">officiel</span>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -133,7 +133,7 @@ export default function TableauPage() {
               {tableau && (
                 <button
                   onClick={() => window.print()}
-                  className="flex items-center gap-2 bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[0.9rem] px-4 py-[10px] rounded-[10px] cursor-pointer hover:bg-[#b81a08] transition-all shadow-red-glow-lg"
+                  className="flex items-center gap-2 bg-[#b91c0a] text-white border-none font-barlow-condensed font-bold text-[0.9rem] px-4 py-[10px] rounded-[10px] cursor-pointer hover:bg-[#b81a08] transition-all shadow-red-glow-lg"
                 >
                   <Printer className="w-4 h-4" />
                   Imprimer
@@ -148,7 +148,7 @@ export default function TableauPage() {
 
           {/* Print logo header */}
           <div className="print-only print-logo mb-6">
-            <div style={{ width: 36, height: 36, background: "#e8220a", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ width: 36, height: 36, background: "#b91c0a", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
             </div>
             <div>
@@ -181,7 +181,7 @@ export default function TableauPage() {
               <LayoutGrid className="w-12 h-12 mx-auto mb-4 opacity-30" />
               <div className="font-barlow-condensed font-extrabold text-[1.4rem] text-[#666] mb-2">Tableau non généré</div>
               <div className="text-[0.88rem] mb-6">L&apos;organisateur n&apos;a pas encore généré le tableau de ce tournoi.</div>
-              <Link href={`/tournois/${tournoiId}/dashboard`} className="text-[#e8220a] font-bold text-[0.88rem] no-underline hover:underline">
+              <Link href={`/tournois/${tournoiId}/dashboard`} className="text-[#b91c0a] font-bold text-[0.88rem] no-underline hover:underline">
                 Aller au dashboard →
               </Link>
             </div>
@@ -193,7 +193,7 @@ export default function TableauPage() {
               <div className="print-section mb-8">
                 <div className="flex items-center gap-3 mb-5 no-print">
                   <div className="h-px flex-1 bg-[rgba(255,255,255,0.08)]" />
-                  <div className="font-barlow-condensed font-black text-[1.1rem] uppercase tracking-[1px] text-[#e8220a]">Phase de poules</div>
+                  <div className="font-barlow-condensed font-black text-[1.1rem] uppercase tracking-[1px] text-[#b91c0a]">Phase de poules</div>
                   <div className="h-px flex-1 bg-[rgba(255,255,255,0.08)]" />
                 </div>
                 <div className="print-only round-title" style={{ display: "none" }}>Phase de poules</div>
@@ -202,7 +202,7 @@ export default function TableauPage() {
                   {tableau.poules.map((poule) => (
                     <div key={poule.id} className="bg-[#141414] print-card border border-[rgba(255,255,255,0.08)] rounded-[14px] overflow-hidden">
                       {/* Poule header */}
-                      <div className="poule-header bg-[#e8220a] px-4 py-3 font-barlow-condensed font-black text-[1.05rem] uppercase tracking-[0.5px] text-white">
+                      <div className="poule-header bg-[#b91c0a] px-4 py-3 font-barlow-condensed font-black text-[1.05rem] uppercase tracking-[0.5px] text-white">
                         {poule.nom}
                         <span className="font-normal text-[0.75rem] ml-2 opacity-80">— {poule.joueurs.length} joueurs</span>
                       </div>
@@ -258,14 +258,14 @@ export default function TableauPage() {
               <div className="print-section">
                 <div className="flex items-center gap-3 mb-5 no-print">
                   <div className="h-px flex-1 bg-[rgba(255,255,255,0.08)]" />
-                  <div className="font-barlow-condensed font-black text-[1.1rem] uppercase tracking-[1px] text-[#e8220a]">Phase finale</div>
+                  <div className="font-barlow-condensed font-black text-[1.1rem] uppercase tracking-[1px] text-[#b91c0a]">Phase finale</div>
                   <div className="h-px flex-1 bg-[rgba(255,255,255,0.08)]" />
                 </div>
                 <div className="print-only round-title" style={{ display: "none" }}>Phase finale</div>
 
                 <div className="bracket-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {tableau.bracket.map((round) => {
-                    const color = ROUND_COLORS[round.nom] || "#e8220a";
+                    const color = ROUND_COLORS[round.nom] || "#b91c0a";
                     const isFinal = round.nom === "Finale";
                     return (
                       <div

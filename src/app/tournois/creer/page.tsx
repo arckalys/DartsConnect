@@ -207,7 +207,7 @@ export default function CreerTournoiPage() {
       {/* Header */}
       <div className="mb-6 xs:mb-8 sm:mb-10">
         <div className="font-barlow-condensed font-black text-[1.5rem] xs:text-[1.8rem] sm:text-[2.6rem] uppercase tracking-[0.5px]">
-          Créer un <span className="text-[#e8220a]">tournoi</span>
+          Créer un <span className="text-[#b91c0a]">tournoi</span>
         </div>
         <div className="text-[0.9rem] text-[#777] mt-[6px]">
           Remplissez les informations pour publier votre événement.
@@ -228,11 +228,11 @@ export default function CreerTournoiPage() {
       {success && (
         <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[18px] p-5 sm:p-8">
           <div className="text-center py-8 sm:py-12 px-2 sm:px-8">
-            <Target className="w-16 h-16 text-[#e8220a] mx-auto mb-5 animate-pop" />
+            <Target className="w-16 h-16 text-[#b91c0a] mx-auto mb-5 animate-pop" />
             <div className="font-barlow-condensed font-black text-[2rem] uppercase mb-2">Tournoi publié !</div>
             <div className="text-[0.92rem] text-[#777] mb-8">Votre tournoi est maintenant en ligne et visible par tous les joueurs.</div>
             <div className="flex gap-3 justify-center flex-wrap">
-              <button onClick={() => router.push("/tournois")} className="bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08] flex items-center gap-2">
+              <button onClick={() => router.push("/tournois")} className="bg-[#b91c0a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08] flex items-center gap-2">
                 Voir les tournois →
               </button>
               <button onClick={resetForm} className="bg-transparent text-[#777] border border-[rgba(255,255,255,0.08)] font-barlow-condensed font-bold text-[1rem] px-6 py-3 rounded-[10px] cursor-pointer transition-all hover:text-white hover:border-[rgba(255,255,255,0.2)]">
@@ -248,7 +248,7 @@ export default function CreerTournoiPage() {
         <>
           <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-5 sm:p-6 md:p-8 mb-5 sm:mb-6 animate-fade-up">
             <div className="flex items-center gap-3 mb-5 sm:mb-7">
-              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><Target className="w-5 h-5 text-[#e8220a]" /></div>
+              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><Target className="w-5 h-5 text-[#b91c0a]" /></div>
               <h2 className="font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] sm:text-[1.3rem] uppercase">Informations générales</h2>
             </div>
             <div className="mb-5">
@@ -259,11 +259,11 @@ export default function CreerTournoiPage() {
                   onClick={() => setTypeJeu("traditionnel")}
                   className={`flex flex-col items-center gap-2 p-4 xs:p-5 rounded-[12px] cursor-pointer border-2 transition-all text-center ${
                     typeJeu === "traditionnel"
-                      ? "bg-[rgba(232,34,10,0.08)] border-[#e8220a] shadow-red-glow"
+                      ? "bg-[rgba(232,34,10,0.08)] border-[#b91c0a] shadow-red-glow"
                       : "bg-[#111] border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.2)]"
                   }`}
                 >
-                  <Target className={`w-7 h-7 xs:w-8 xs:h-8 ${typeJeu === "traditionnel" ? "text-[#e8220a]" : "text-[#555]"}`} />
+                  <Target className={`w-7 h-7 xs:w-8 xs:h-8 ${typeJeu === "traditionnel" ? "text-[#b91c0a]" : "text-[#555]"}`} />
                   <div className={`font-barlow-condensed font-bold text-[0.95rem] xs:text-[1.05rem] ${typeJeu === "traditionnel" ? "text-white" : "text-[#999]"}`}>Traditionnel</div>
                   <div className={`text-[0.72rem] xs:text-[0.75rem] leading-[1.4] ${typeJeu === "traditionnel" ? "text-[#aaa]" : "text-[#555]"}`}>Fléchettes acier, cible sisal</div>
                 </button>
@@ -272,11 +272,11 @@ export default function CreerTournoiPage() {
                   onClick={() => setTypeJeu("electronique")}
                   className={`flex flex-col items-center gap-2 p-4 xs:p-5 rounded-[12px] cursor-pointer border-2 transition-all text-center ${
                     typeJeu === "electronique"
-                      ? "bg-[rgba(232,34,10,0.08)] border-[#e8220a] shadow-red-glow"
+                      ? "bg-[rgba(232,34,10,0.08)] border-[#b91c0a] shadow-red-glow"
                       : "bg-[#111] border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.2)]"
                   }`}
                 >
-                  <Zap className={`w-7 h-7 xs:w-8 xs:h-8 ${typeJeu === "electronique" ? "text-[#e8220a]" : "text-[#555]"}`} />
+                  <Zap className={`w-7 h-7 xs:w-8 xs:h-8 ${typeJeu === "electronique" ? "text-[#b91c0a]" : "text-[#555]"}`} />
                   <div className={`font-barlow-condensed font-bold text-[0.95rem] xs:text-[1.05rem] ${typeJeu === "electronique" ? "text-white" : "text-[#999]"}`}>Électronique</div>
                   <div className={`text-[0.72rem] xs:text-[0.75rem] leading-[1.4] ${typeJeu === "electronique" ? "text-[#aaa]" : "text-[#555]"}`}>Fléchettes plastique, cible électronique</div>
                 </button>
@@ -312,7 +312,7 @@ export default function CreerTournoiPage() {
             <button onClick={() => router.push("/")} className="bg-transparent text-[#777] border border-[rgba(255,255,255,0.08)] font-barlow-condensed font-bold text-[0.9rem] xs:text-[1rem] px-4 xs:px-6 py-[10px] xs:py-3 rounded-[10px] cursor-pointer transition-all hover:text-white hover:border-[rgba(255,255,255,0.2)]">
               ← Annuler
             </button>
-            <button onClick={() => nextStep(1)} className="bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[0.9rem] xs:text-[1rem] px-5 xs:px-8 py-[10px] xs:py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08] flex items-center gap-2">
+            <button onClick={() => nextStep(1)} className="bg-[#b91c0a] text-white border-none font-barlow-condensed font-bold text-[0.9rem] xs:text-[1rem] px-5 xs:px-8 py-[10px] xs:py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08] flex items-center gap-2">
               Étape suivante →
             </button>
           </div>
@@ -324,7 +324,7 @@ export default function CreerTournoiPage() {
         <>
           <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-5 sm:p-6 md:p-8 mb-5 sm:mb-6 animate-fade-up">
             <div className="flex items-center gap-3 mb-5 sm:mb-7">
-              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><MapPin className="w-5 h-5 text-[#e8220a]" /></div>
+              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><MapPin className="w-5 h-5 text-[#b91c0a]" /></div>
               <h2 className="font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] sm:text-[1.3rem] uppercase">Lieu et date</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
@@ -352,7 +352,7 @@ export default function CreerTournoiPage() {
                   type="button"
                   onClick={addSession}
                   disabled={sessions.length >= 10}
-                  className="bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] text-[#e8220a] font-barlow-condensed font-bold text-[0.85rem] px-3 py-[6px] rounded-[8px] cursor-pointer hover:bg-[rgba(232,34,10,0.2)] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+                  className="bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] text-[#b91c0a] font-barlow-condensed font-bold text-[0.85rem] px-3 py-[6px] rounded-[8px] cursor-pointer hover:bg-[rgba(232,34,10,0.2)] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
                 >
                   <Plus className="w-4 h-4" /> Ajouter une session
                 </button>
@@ -364,7 +364,7 @@ export default function CreerTournoiPage() {
                 {sessions.map((s, idx) => (
                   <div key={idx} className="bg-[#111] border border-[rgba(255,255,255,0.08)] rounded-[12px] p-3 xs:p-4">
                     <div className="flex items-center justify-between mb-3">
-                      <div className="text-[0.8rem] font-bold text-[#e8220a] uppercase tracking-[1px]">Session {idx + 1}</div>
+                      <div className="text-[0.8rem] font-bold text-[#b91c0a] uppercase tracking-[1px]">Session {idx + 1}</div>
                       {sessions.length > 1 && (
                         <button
                           type="button"
@@ -415,7 +415,7 @@ export default function CreerTournoiPage() {
             <button onClick={() => prevStep(2)} className="bg-transparent text-[#777] border border-[rgba(255,255,255,0.08)] font-barlow-condensed font-bold text-[1rem] px-6 py-3 rounded-[10px] cursor-pointer transition-all hover:text-white hover:border-[rgba(255,255,255,0.2)]">
               ← Retour
             </button>
-            <button onClick={() => nextStep(2)} className="bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08] flex items-center gap-2">
+            <button onClick={() => nextStep(2)} className="bg-[#b91c0a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08] flex items-center gap-2">
               Étape suivante →
             </button>
           </div>
@@ -427,7 +427,7 @@ export default function CreerTournoiPage() {
         <>
           <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-5 sm:p-6 md:p-8 mb-5 sm:mb-6 animate-fade-up">
             <div className="flex items-center gap-3 mb-5 sm:mb-7">
-              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><Phone className="w-5 h-5 text-[#e8220a]" /></div>
+              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><Phone className="w-5 h-5 text-[#b91c0a]" /></div>
               <h2 className="font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] sm:text-[1.3rem] uppercase">Contact et infos pratiques</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
@@ -453,7 +453,7 @@ export default function CreerTournoiPage() {
           {/* Recap */}
           <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] xs:rounded-[18px] p-4 xs:p-5 sm:p-6 md:p-8 mb-5 sm:mb-6 animate-fade-up">
             <div className="flex items-center gap-3 mb-5 sm:mb-7">
-              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><ClipboardList className="w-5 h-5 text-[#e8220a]" /></div>
+              <div className="w-9 h-9 xs:w-10 xs:h-10 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[10px] flex items-center justify-center"><ClipboardList className="w-5 h-5 text-[#b91c0a]" /></div>
               <h2 className="font-barlow-condensed font-extrabold text-[1.1rem] xs:text-[1.2rem] sm:text-[1.3rem] uppercase">Récapitulatif</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
@@ -470,7 +470,7 @@ export default function CreerTournoiPage() {
             <button onClick={() => prevStep(3)} className="bg-transparent text-[#777] border border-[rgba(255,255,255,0.08)] font-barlow-condensed font-bold text-[1rem] px-6 py-3 rounded-[10px] cursor-pointer transition-all hover:text-white hover:border-[rgba(255,255,255,0.2)]">
               ← Retour
             </button>
-            <button onClick={publier} disabled={loading} className="bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08] flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+            <button onClick={publier} disabled={loading} className="bg-[#b91c0a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] cursor-pointer transition-all shadow-red-glow-lg hover:bg-[#b81a08] flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
               {loading ? <div className="spinner" /> : <><Rocket className="w-4 h-4" /> Publier le tournoi</>}
             </button>
           </div>

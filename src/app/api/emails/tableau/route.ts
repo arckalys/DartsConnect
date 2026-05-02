@@ -35,17 +35,17 @@ export async function POST(req: Request) {
             <table cellpadding="0" cellspacing="0" width="100%">
               <tr>
                 <td style="padding:6px 0;font-size:14px;color:#333;">
-                  <span style="color:#e8220a;font-weight:700;">1.</span> Consulter et imprimer le tableau
+                  <span style="color:#b91c0a;font-weight:700;">1.</span> Consulter et imprimer le tableau
                 </td>
               </tr>
               <tr>
                 <td style="padding:6px 0;font-size:14px;color:#333;">
-                  <span style="color:#e8220a;font-weight:700;">2.</span> Afficher les poules sur place
+                  <span style="color:#b91c0a;font-weight:700;">2.</span> Afficher les poules sur place
                 </td>
               </tr>
               <tr>
                 <td style="padding:6px 0;font-size:14px;color:#333;">
-                  <span style="color:#e8220a;font-weight:700;">3.</span> Partager le lien avec vos joueurs
+                  <span style="color:#b91c0a;font-weight:700;">3.</span> Partager le lien avec vos joueurs
                 </td>
               </tr>
             </table>

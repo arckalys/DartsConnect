@@ -49,7 +49,7 @@ export default function AProposPage() {
           {/* Hero */}
           <div className="text-center mb-12 sm:mb-16 pt-6 sm:pt-10">
             <h1 className="font-barlow-condensed font-black text-[1.8rem] xs:text-[2.2rem] sm:text-[3rem] uppercase leading-[1.1] mb-4">
-              À propos de <span className="text-[#e8220a]">DartsTournois</span>
+              À propos de <span className="text-[#b91c0a]">DartsTournois</span>
             </h1>
             <p className="text-[0.95rem] sm:text-[1.05rem] text-[#999] max-w-[560px] mx-auto leading-[1.7]">
               La plateforme qui connecte les joueurs de fléchettes à travers toute la France.
@@ -87,7 +87,7 @@ export default function AProposPage() {
             <div className="grid grid-cols-3 gap-4">
               {chiffres.map((c, i) => (
                 <div key={i} className="text-center">
-                  <div className="font-barlow-condensed font-black text-[2rem] sm:text-[2.8rem] text-[#e8220a] leading-none">{c.value}</div>
+                  <div className="font-barlow-condensed font-black text-[2rem] sm:text-[2.8rem] text-[#b91c0a] leading-none">{c.value}</div>
                   <div className="text-[0.78rem] sm:text-[0.85rem] text-[#777] mt-1">{c.label}</div>
                 </div>
               ))}
@@ -98,7 +98,7 @@ export default function AProposPage() {
           <div className="text-center">
             <Link
               href="/tournois"
-              className="inline-flex items-center gap-2 bg-[#e8220a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] no-underline transition-all shadow-red-glow-lg hover:bg-[#b81a08]"
+              className="inline-flex items-center gap-2 bg-[#b91c0a] text-white border-none font-barlow-condensed font-bold text-[1rem] px-8 py-3 rounded-[10px] no-underline transition-all shadow-red-glow-lg hover:bg-[#b81a08]"
             >
               Voir les tournois
             </Link>

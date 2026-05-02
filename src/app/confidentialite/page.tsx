@@ -6,7 +6,7 @@ export const runtime = "edge";
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-7 mb-4">
-      <h2 className="font-barlow-condensed font-extrabold text-[1rem] sm:text-[1.1rem] uppercase tracking-[0.5px] text-[#e8220a] mb-4">{title}</h2>
+      <h2 className="font-barlow-condensed font-extrabold text-[1rem] sm:text-[1.1rem] uppercase tracking-[0.5px] text-[#b91c0a] mb-4">{title}</h2>
       <div className="text-[0.88rem] sm:text-[0.9rem] text-[#ccc] leading-[1.8] space-y-2">{children}</div>
     </div>
   );
@@ -15,7 +15,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Item({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-2">
-      <span className="text-[#e8220a] mt-[3px] shrink-0">•</span>
+      <span className="text-[#b91c0a] mt-[3px] shrink-0">•</span>
       <span>{children}</span>
     </div>
   );
@@ -35,7 +35,7 @@ export default function ConfidentialitePage() {
           </div>
 
           <h1 className="font-barlow-condensed font-black text-[1.8rem] xs:text-[2.2rem] sm:text-[2.6rem] uppercase leading-[1.1] mb-8">
-            Politique de <span className="text-[#e8220a]">confidentialité</span>
+            Politique de <span className="text-[#b91c0a]">confidentialité</span>
           </h1>
 
           <Section title="Données collectées">
@@ -68,7 +68,7 @@ export default function ConfidentialitePage() {
             <Item><strong className="text-white">Droit de rectification</strong> — modifier vos informations depuis votre profil</Item>
             <Item><strong className="text-white">Droit à l&apos;effacement</strong> — demander la suppression de votre compte et données</Item>
             <Item><strong className="text-white">Droit à la portabilité</strong> — recevoir vos données dans un format lisible</Item>
-            <p className="mt-3">Pour exercer ces droits, contactez-nous à : <a href="mailto:contact@dartstournois.fr" className="text-[#e8220a] hover:underline">contact@dartstournois.fr</a></p>
+            <p className="mt-3">Pour exercer ces droits, contactez-nous à : <a href="mailto:contact@dartstournois.fr" className="text-[#b91c0a] hover:underline">contact@dartstournois.fr</a></p>
             <p className="text-[#777]">Toute demande sera traitée dans un délai de 30 jours.</p>
           </Section>
 
@@ -87,14 +87,14 @@ export default function ConfidentialitePage() {
           <Section title="Contact & réclamations">
             <p>Pour toute question relative à vos données personnelles :</p>
             <p className="mt-2">
-              <a href="mailto:contact@dartstournois.fr" className="text-[#e8220a] hover:underline">contact@dartstournois.fr</a>
+              <a href="mailto:contact@dartstournois.fr" className="text-[#b91c0a] hover:underline">contact@dartstournois.fr</a>
             </p>
-            <p className="mt-3 text-[#777]">Vous avez également le droit de déposer une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="text-[#e8220a] hover:underline">CNIL</a>.</p>
+            <p className="mt-3 text-[#777]">Vous avez également le droit de déposer une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="text-[#b91c0a] hover:underline">CNIL</a>.</p>
             <p className="text-[#777] text-[0.82rem] mt-4">Dernière mise à jour : avril 2026</p>
           </Section>
 
           <div className="mt-6 flex gap-4 flex-wrap">
-            <Link href="/mentions-legales" className="text-[0.85rem] text-[#e8220a] hover:underline">
+            <Link href="/mentions-legales" className="text-[0.85rem] text-[#b91c0a] hover:underline">
               Mentions légales →
             </Link>
             <Link href="/" className="text-[0.85rem] text-[#777] hover:text-white transition-colors">
