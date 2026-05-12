@@ -5,9 +5,10 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { Target, Check, Calendar, MapPin, FileText, Info, LayoutDashboard, Star } from "lucide-react";
 import StarRating from "@/components/StarRating";
+import TeamRegistrationModal from "@/components/TeamRegistrationModal";
 import { createClient } from "@/lib/supabase";
-import { Tournament, STATUS_LABELS } from "@/lib/types";
-import type { TournamentStatus, SessionTournoi } from "@/lib/types";
+import { Tournament, STATUS_LABELS, formatNeedsTeam } from "@/lib/types";
+import type { TournamentStatus, SessionTournoi, TeamInfo } from "@/lib/types";
 import { fmtDate } from "@/lib/data";
 
 export const runtime = "edge";
@@ -34,6 +35,10 @@ export default function TournoiDetailPage() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [inscriptionCount, setInscriptionCount] = useState(0);
   const [registerLoading, setRegisterLoading] = useState(false);
+
+  // Team modal state
+  const [teamModalOpen, setTeamModalOpen] = useState(false);
+  const [teamModalContext, setTeamModalContext] = useState<{ kind: "main" } | { kind: "session"; sessionId: string; format: string } | null>(null);
 
   // Multi-session state
   const [sessions, setSessions] = useState<SessionTournoi[]>([]);
@@ -172,9 +177,10 @@ export default function TournoiDetailPage() {
 
   async function handleToggleRegister() {
     if (!currentUserId || !tournoi) return;
-    setRegisterLoading(true);
 
+    // Désinscription : pas de modale
     if (isRegistered) {
+      setRegisterLoading(true);
       const { error } = await supabase
         .from("inscriptions")
         .delete()
@@ -184,14 +190,33 @@ export default function TournoiDetailPage() {
         setIsRegistered(false);
         setInscriptionCount((c) => Math.max(c - 1, 0));
       }
-    } else {
-      const { error } = await supabase
-        .from("inscriptions")
-        .insert([{ user_id: currentUserId, tournoi_id: tournoiId }]);
-      if (!error) {
-        setIsRegistered(true);
-        const newCount = inscriptionCount + 1;
-        setInscriptionCount(newCount);
+      setRegisterLoading(false);
+      return;
+    }
+
+    // Inscription : si format équipe → modale
+    if (formatNeedsTeam(tournoi.format)) {
+      setTeamModalContext({ kind: "main" });
+      setTeamModalOpen(true);
+      return;
+    }
+
+    await doRegisterMain(null);
+  }
+
+  async function doRegisterMain(team: TeamInfo | null) {
+    if (!currentUserId || !tournoi) return;
+    setRegisterLoading(true);
+    const payload: Record<string, unknown> = { user_id: currentUserId, tournoi_id: tournoiId };
+    if (team) {
+      payload.nom_equipe = team.nom_equipe;
+      payload.coequipiers = team.coequipiers;
+    }
+    const { error } = await supabase.from("inscriptions").insert([payload]);
+    if (!error) {
+      setIsRegistered(true);
+      const newCount = inscriptionCount + 1;
+      setInscriptionCount(newCount);
 
         const { data: { session } } = await supabase.auth.getSession();
         const userEmail = session?.user?.email;
@@ -241,18 +266,17 @@ export default function TournoiDetailPage() {
             }),
           }).catch(() => {});
         }
-      }
     }
     setRegisterLoading(false);
   }
 
   async function handleToggleSessionRegister(sessionId: string) {
     if (!currentUserId || !tournoi) return;
-    setSessionLoadingId(sessionId);
 
     const alreadyRegistered = myRegistrations.has(sessionId);
 
     if (alreadyRegistered) {
+      setSessionLoadingId(sessionId);
       const { error } = await supabase
         .from("inscriptions")
         .delete()
@@ -268,23 +292,59 @@ export default function TournoiDetailPage() {
           [sessionId]: Math.max((prev[sessionId] || 0) - 1, 0),
         }));
       }
-    } else {
-      const { error } = await supabase
-        .from("inscriptions")
-        .insert([{ user_id: currentUserId, tournoi_id: tournoiId, session_id: sessionId }]);
-      if (!error) {
-        setMyRegistrations((prev) => {
-          const next = new Set(prev);
-          next.add(sessionId);
-          return next;
-        });
-        setSessionCounts((prev) => ({
-          ...prev,
-          [sessionId]: (prev[sessionId] || 0) + 1,
-        }));
-      }
+      setSessionLoadingId(null);
+      return;
+    }
+
+    // Inscription : si format de la session (ou du tournoi) requiert une équipe → modale
+    const session = sessions.find((s) => s.id === sessionId);
+    const sessFormat = session?.format || tournoi.format;
+    if (formatNeedsTeam(sessFormat)) {
+      setTeamModalContext({ kind: "session", sessionId, format: sessFormat });
+      setTeamModalOpen(true);
+      return;
+    }
+
+    await doRegisterSession(sessionId, null);
+  }
+
+  async function doRegisterSession(sessionId: string, team: TeamInfo | null) {
+    if (!currentUserId || !tournoi) return;
+    setSessionLoadingId(sessionId);
+    const payload: Record<string, unknown> = {
+      user_id: currentUserId,
+      tournoi_id: tournoiId,
+      session_id: sessionId,
+    };
+    if (team) {
+      payload.nom_equipe = team.nom_equipe;
+      payload.coequipiers = team.coequipiers;
+    }
+    const { error } = await supabase.from("inscriptions").insert([payload]);
+    if (!error) {
+      setMyRegistrations((prev) => {
+        const next = new Set(prev);
+        next.add(sessionId);
+        return next;
+      });
+      setSessionCounts((prev) => ({
+        ...prev,
+        [sessionId]: (prev[sessionId] || 0) + 1,
+      }));
     }
     setSessionLoadingId(null);
+  }
+
+  async function handleTeamModalConfirm(team: TeamInfo) {
+    if (!teamModalContext) return;
+    const ctx = teamModalContext;
+    setTeamModalOpen(false);
+    setTeamModalContext(null);
+    if (ctx.kind === "main") {
+      await doRegisterMain(team);
+    } else {
+      await doRegisterSession(ctx.sessionId, team);
+    }
   }
 
   async function persistAvis(note: number, commentaire: string) {
@@ -376,6 +436,16 @@ export default function TournoiDetailPage() {
 
   return (
     <div className="animate-page-in min-h-screen pt-[72px] xs:pt-[80px] px-3 xs:px-4 sm:px-6 pb-10 sm:pb-12">
+      <TeamRegistrationModal
+        open={teamModalOpen}
+        format={teamModalContext?.kind === "session" ? teamModalContext.format : tournoi.format}
+        loading={registerLoading || sessionLoadingId !== null}
+        onClose={() => {
+          setTeamModalOpen(false);
+          setTeamModalContext(null);
+        }}
+        onConfirm={handleTeamModalConfirm}
+      />
       <div className="max-w-[820px] xl:max-w-[960px] mx-auto">
 
         {/* Breadcrumb */}
