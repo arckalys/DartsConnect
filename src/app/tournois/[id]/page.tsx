@@ -7,7 +7,7 @@ import { Target, Check, Calendar, MapPin, FileText, Info, LayoutDashboard, Star 
 import StarRating from "@/components/StarRating";
 import TeamRegistrationModal from "@/components/TeamRegistrationModal";
 import { createClient } from "@/lib/supabase";
-import { Tournament, STATUS_LABELS, formatNeedsTeam } from "@/lib/types";
+import { Tournament, STATUS_LABELS, formatNeedsTeam, inscriptionLabel, inscriptionUnit } from "@/lib/types";
 import type { TournamentStatus, SessionTournoi, TeamInfo } from "@/lib/types";
 import { fmtDate } from "@/lib/data";
 
@@ -514,7 +514,7 @@ export default function TournoiDetailPage() {
             {/* Player count */}
             <div className="mb-4">
               <div className="flex justify-between text-[0.82rem] mb-2">
-                <span className="text-[#777]">Joueurs inscrits</span>
+                <span className="text-[#777]">{inscriptionLabel(tournoi.format)}</span>
                 <span className="text-white font-bold">{inscriptionCount}/{tournoi.nb_joueurs}</span>
               </div>
               <div className="h-[6px] bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden">
@@ -655,7 +655,7 @@ export default function TournoiDetailPage() {
 
                         <div className="mb-3">
                           <div className="flex justify-between text-[0.78rem] mb-[6px]">
-                            <span className="text-[#777]">Joueurs</span>
+                            <span className="text-[#777] capitalize">{inscriptionUnit(s.format || tournoi.format)}</span>
                             <span className="text-white font-bold">{count}/{max}</span>
                           </div>
                           <div className="h-[3px] bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden">
@@ -841,7 +841,7 @@ export default function TournoiDetailPage() {
               {/* Player count */}
               <div className="mb-5">
                 <div className="flex justify-between text-[0.82rem] mb-2">
-                  <span className="text-[#777]">Joueurs inscrits</span>
+                  <span className="text-[#777]">{inscriptionLabel(tournoi.format)}</span>
                   <span className="text-white font-bold">{inscriptionCount}/{tournoi.nb_joueurs}</span>
                 </div>
                 <div className="h-[6px] bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden">
