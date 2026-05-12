@@ -602,7 +602,7 @@ export default function TournoiDetailPage() {
             </div>
 
             {/* Sessions (multi-session tournaments) */}
-            {sessions.length > 0 && (
+            {sessions.length >= 2 && (
               <div className="bg-[#141414] border border-[rgba(255,255,255,0.08)] rounded-[14px] p-5 sm:p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-9 h-9 bg-[rgba(232,34,10,0.12)] border border-[rgba(232,34,10,0.25)] rounded-[8px] flex items-center justify-center shrink-0">
