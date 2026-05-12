@@ -73,6 +73,21 @@ export function defaultCoequipiersCount(format?: string | null): number {
   return 0;
 }
 
+// Libellé de l'unité d'inscription selon le format
+// (1 inscription = 1 joueur / 1 doublette / 1 équipe)
+export function inscriptionUnit(format?: string | null, plural = true): string {
+  if (format === "Doublette" || format === "Mixte") return plural ? "doublettes" : "doublette";
+  if (format === "Équipe") return plural ? "équipes" : "équipe";
+  return plural ? "joueurs" : "joueur";
+}
+
+// "Joueurs inscrits" / "Doublettes inscrites" / "Équipes inscrites" — accord en genre
+export function inscriptionLabel(format?: string | null): string {
+  if (format === "Doublette" || format === "Mixte") return "Doublettes inscrites";
+  if (format === "Équipe") return "Équipes inscrites";
+  return "Joueurs inscrits";
+}
+
 export const REGIONS = [
   // Métropole
   "Auvergne-Rhône-Alpes",

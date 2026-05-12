@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { Target, Users, Ban, Clock, CheckCircle, LayoutGrid, Printer, RefreshCw, AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase";
-import { Tournament, STATUS_LABELS } from "@/lib/types";
+import { Tournament, STATUS_LABELS, inscriptionUnit, inscriptionLabel } from "@/lib/types";
 import { generateTableau, Joueur } from "@/lib/bracket";
 import { fmtDate } from "@/lib/data";
 
@@ -304,7 +304,7 @@ export default function DashboardPage() {
             <div className="h-full rounded-full bg-[#b91c0a] transition-all duration-500" style={{ width: `${Math.min(pct, 100)}%` }} />
           </div>
           <div className="text-[0.75rem] text-[#777] mt-2 text-right">
-            {inscriptions.length}/{tournoi.nb_joueurs} joueurs ({Math.min(pct, 100)}%)
+            {inscriptions.length}/{tournoi.nb_joueurs} {inscriptionUnit(tournoi.format)} ({Math.min(pct, 100)}%)
           </div>
         </div>
 
@@ -439,7 +439,7 @@ export default function DashboardPage() {
               <Target className="w-[18px] h-[18px] text-[#b91c0a]" />
             </div>
             <div className="font-barlow-condensed font-extrabold text-[1.1rem] uppercase">
-              Joueurs inscrits ({inscriptions.length})
+              {inscriptionLabel(tournoi.format)} ({inscriptions.length})
             </div>
           </div>
 

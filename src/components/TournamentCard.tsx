@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Check, Pencil, Trash2, Star } from "lucide-react";
-import { STATUS_LABELS } from "@/lib/types";
+import { STATUS_LABELS, inscriptionUnit } from "@/lib/types";
 import type { TournamentStatus } from "@/lib/types";
 import { fmtDate } from "@/lib/data";
 
@@ -105,7 +105,7 @@ export default function TournamentCard({ id, nom, ville, region, date_tournoi, f
           <div className="flex items-end justify-between gap-2 mb-3">
             <div className="flex-1">
               <div className="text-[0.75rem] text-[#777] mb-1">
-                <strong className="text-white">{players}</strong>/{nb_joueurs} joueurs
+                <strong className="text-white">{players}</strong>/{nb_joueurs} {inscriptionUnit(format)}
               </div>
               <div className="h-[3px] bg-[rgba(255,255,255,0.06)] rounded-sm">
                 <div className="h-full rounded-sm bg-[#b91c0a] transition-all duration-400" style={{ width: `${Math.min(pct, 100)}%` }} />
