@@ -53,6 +53,26 @@ export interface UserProfile {
   bio?: string;
 }
 
+export interface TeamInfo {
+  nom_equipe?: string | null;
+  coequipiers?: string[] | null;
+}
+
+// Formats nécessitant des coéquipiers (tout sauf "Simple")
+export function formatNeedsTeam(format?: string | null): boolean {
+  if (!format) return false;
+  return format !== "Simple";
+}
+
+// Nombre de coéquipiers attendus en plus de l'inscrit pour un format donné.
+// (Doublette/Mixte = 1 coéquipier, Équipe = 2 par défaut, ajustable côté UI)
+export function defaultCoequipiersCount(format?: string | null): number {
+  if (!format) return 0;
+  if (format === "Équipe") return 2;
+  if (format === "Doublette" || format === "Mixte") return 1;
+  return 0;
+}
+
 export const REGIONS = [
   // Métropole
   "Auvergne-Rhône-Alpes",

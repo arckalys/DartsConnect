@@ -50,7 +50,11 @@
       "Bash(git -C C:/Users/arthu/flechette push)",
       "Bash(xargs sed *)",
       "Bash(git -C C:/Users/arthu/flechette add -A)",
-      "Bash(git -C C:/Users/arthu/flechette commit -m \"test: replace brand red #e8220a with softer red #b91c0a sitewide\")"
+      "Bash(git -C C:/Users/arthu/flechette commit -m \"test: replace brand red #e8220a with softer red #b91c0a sitewide\")",
+      "Bash(ls C:/Users/arthu/flechette/node_modules/next/dist/client/components 2>&1 | head -3)",
+      "Bash(cmd //c \"mklink /D node_modules ..\\\\..\\\\..\\\\node_modules\")",
+      "Bash(cmd //c \"rmdir node_modules\")",
+      "Read(//c/Users/arthu/flechette/node_modules/**)"
     ]
   }
 }

@@ -16,6 +16,8 @@ interface Inscription {
   user_id: string;
   created_at: string;
   statut: string;
+  nom_equipe?: string | null;
+  coequipiers?: string[] | null;
   user_meta?: { pseudo?: string; prenom?: string; nom?: string; email?: string };
 }
 
@@ -73,7 +75,7 @@ export default function DashboardPage() {
       // Fetch inscriptions
       const { data: insData } = await supabase
         .from("inscriptions")
-        .select("id, user_id, created_at, statut")
+        .select("id, user_id, created_at, statut, nom_equipe, coequipiers")
         .eq("tournoi_id", tournoiId)
         .order("created_at", { ascending: true });
 
@@ -476,6 +478,19 @@ export default function DashboardPage() {
                       </Link>
                       {fullName && fullName !== displayName && (
                         <div className="text-[0.78rem] text-[#777]">{fullName}</div>
+                      )}
+                      {(ins.nom_equipe || (ins.coequipiers && ins.coequipiers.length > 0)) && (
+                        <div className="text-[0.78rem] mt-1 flex items-start gap-1.5 flex-wrap">
+                          <span className="text-[#777]">Équipe :</span>
+                          {ins.nom_equipe ? (
+                            <span className="text-[#b91c0a] font-bold">{ins.nom_equipe}</span>
+                          ) : (
+                            <span className="text-[#aaa]">{ins.coequipiers!.join(", ")}</span>
+                          )}
+                          {ins.nom_equipe && ins.coequipiers && ins.coequipiers.length > 0 && (
+                            <span className="text-[#777]">— {ins.coequipiers.join(", ")}</span>
+                          )}
+                        </div>
                       )}
                     </div>
                     <div className="text-[0.82rem] text-[#777] mt-1 sm:mt-0">

@@ -14,6 +14,8 @@ interface Inscription {
   id: string;
   created_at: string;
   tournoi_id: string;
+  nom_equipe?: string | null;
+  coequipiers?: string[] | null;
   tournois: Tournament;
 }
 
@@ -38,7 +40,7 @@ export default function InscriptionsPage() {
 
       const { data } = await supabase
         .from("inscriptions")
-        .select("id, created_at, tournoi_id, tournois(*)")
+        .select("id, created_at, tournoi_id, nom_equipe, coequipiers, tournois(*)")
         .eq("user_id", session.user.id)
         .order("created_at", { ascending: false });
 
@@ -173,6 +175,16 @@ export default function InscriptionsPage() {
                       </span>
                       <span className="text-[#aaa]">{t.format}</span>
                     </div>
+                    {(insc.nom_equipe || (insc.coequipiers && insc.coequipiers.length > 0)) && (
+                      <div className="text-[0.78rem] text-[#aaa] mt-1.5 flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[#777]">Équipe :</span>
+                        {insc.nom_equipe ? (
+                          <span className="font-bold text-white">{insc.nom_equipe}</span>
+                        ) : (
+                          <span className="text-white">{insc.coequipiers!.join(", ")}</span>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Actions row */}
