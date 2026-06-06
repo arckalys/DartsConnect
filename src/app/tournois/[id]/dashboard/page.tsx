@@ -135,12 +135,25 @@ export default function DashboardPage() {
 
     try {
       // Build joueurs list from inscriptions
+      const isTeamFormat = tournoi.format !== "Simple";
       const joueurs: Joueur[] = inscriptions.map((ins) => {
         const meta = ins.user_meta || {};
-        const nom =
+        const selfName =
           meta.pseudo ||
           [meta.prenom, meta.nom].filter(Boolean).join(" ") ||
           "Joueur anonyme";
+
+        // Tournois par équipe/doublette : on affiche le nom d'équipe (ou, à
+        // défaut, le joueur + ses coéquipiers). Tournois simple : le joueur.
+        let nom = selfName;
+        if (isTeamFormat) {
+          if (ins.nom_equipe) {
+            nom = ins.nom_equipe;
+          } else if (ins.coequipiers && ins.coequipiers.length > 0) {
+            nom = [selfName, ...ins.coequipiers].join(" / ");
+          }
+        }
+
         return { inscription_id: ins.id, user_id: ins.user_id, nom };
       });
 
