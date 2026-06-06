@@ -13,6 +13,10 @@ export async function POST(req: Request) {
       apiVersion: "2026-03-25.dahlia",
     });
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    // Service role client — requis pour lire l'email via l'API admin
+    const authAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
+      ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY)
+      : null;
 
     const body = await req.text();
     const sig = req.headers.get("stripe-signature");
@@ -78,19 +82,25 @@ export async function POST(req: Request) {
                 .eq("id", tournoi_id)
                 .single();
 
-              // Get user email
+              // Profil (nom/pseudo) — l'email n'est plus stocké dans profiles
               const { data: profile } = await supabase
                 .from("profiles")
-                .select("email, pseudo, prenom, nom")
+                .select("pseudo, prenom, nom")
                 .eq("id", user_id)
                 .maybeSingle();
 
-              if (profile?.email && tournoi) {
+              // Email — vit dans auth.users (API admin, service role)
+              const { data: authData } = authAdmin
+                ? await authAdmin.auth.admin.getUserById(user_id)
+                : { data: null };
+              const userEmail = authData?.user?.email;
+
+              if (userEmail && tournoi) {
                 fetch(`${origin}/api/emails/inscription`, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
-                    to: profile.email,
+                    to: userEmail,
                     tournoi: { id: tournoi_id, ...tournoi },
                   }),
                 }).catch(() => {});

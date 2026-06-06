@@ -16,7 +16,7 @@ interface Inscription {
   user_id: string;
   created_at: string;
   statut: string;
-  user_meta?: { pseudo?: string; prenom?: string; nom?: string; email?: string };
+  user_meta?: { pseudo?: string; prenom?: string; nom?: string };
 }
 
 interface TableauRow {
@@ -81,11 +81,11 @@ export default function DashboardPage() {
         const userIds = insData.map((i: Inscription) => i.user_id);
         const { data: profiles } = await supabase
           .from("profiles")
-          .select("id, pseudo, prenom, nom, email")
+          .select("id, pseudo, prenom, nom")
           .in("id", userIds);
 
         const profileMap = new Map(
-          (profiles || []).map((p: { id: string; pseudo?: string; prenom?: string; nom?: string; email?: string }) => [p.id, p])
+          (profiles || []).map((p: { id: string; pseudo?: string; prenom?: string; nom?: string }) => [p.id, p])
         );
 
         const enriched = insData.map((i: Inscription) => ({
@@ -138,7 +138,6 @@ export default function DashboardPage() {
         const nom =
           meta.pseudo ||
           [meta.prenom, meta.nom].filter(Boolean).join(" ") ||
-          meta.email ||
           "Joueur anonyme";
         return { inscription_id: ins.id, user_id: ins.user_id, nom };
       });
@@ -457,7 +456,7 @@ export default function DashboardPage() {
               </div>
               {inscriptions.map((ins, idx) => {
                 const meta = ins.user_meta || {};
-                const displayName = meta.pseudo || [meta.prenom, meta.nom].filter(Boolean).join(" ") || meta.email || "Joueur anonyme";
+                const displayName = meta.pseudo || [meta.prenom, meta.nom].filter(Boolean).join(" ") || "Joueur anonyme";
                 const fullName = meta.prenom && meta.nom ? `${meta.prenom} ${meta.nom}` : "";
                 const isConfirme = ins.statut === "confirme";
 

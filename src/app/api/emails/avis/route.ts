@@ -12,8 +12,13 @@ export async function POST(req: Request) {
     if (!process.env.RESEND_API_KEY) {
       return Response.json({ error: "RESEND_API_KEY not configured" }, { status: 500 });
     }
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return Response.json({ error: "SUPABASE_SERVICE_ROLE_KEY not configured" }, { status: 500 });
+    }
     const resend = new Resend(process.env.RESEND_API_KEY);
     const supabaseAdmin = createClient(supabaseUrl, supabaseAnonKey);
+    // Service role client — requis pour lire l'email via l'API admin
+    const authAdmin = createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY);
     const { secret } = await req.json().catch(() => ({ secret: undefined }));
     if (process.env.CRON_SECRET && secret !== process.env.CRON_SECRET) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -58,13 +63,16 @@ export async function POST(req: Request) {
 
       const { data: profiles } = await supabaseAdmin
         .from("profiles")
-        .select("id, email")
+        .select("id")
         .in("id", toNotify);
 
       if (!profiles) continue;
 
       for (const profile of profiles) {
-        if (!profile.email) continue;
+        // L'email vit dans auth.users — récupéré via l'API admin (service role)
+        const { data: authData } = await authAdmin.auth.admin.getUserById(profile.id);
+        const email = authData?.user?.email;
+        if (!email) continue;
 
         const html = emailLayout(`
           <h1 style="margin:0 0 8px;font-size:22px;color:#111;">Comment s'est passé votre tournoi ?</h1>
@@ -83,7 +91,7 @@ export async function POST(req: Request) {
 
         await resend.emails.send({
           from: FROM,
-          to: profile.email,
+          to: email,
           subject: `Votre avis — ${tournoi.nom}`,
           html,
         });
