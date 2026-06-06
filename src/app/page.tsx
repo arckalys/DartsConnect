@@ -19,6 +19,7 @@ export default function HomePage() {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
   const [inscriptionsCount, setInscriptionsCount] = useState(0);
+  const [inscriptionCounts, setInscriptionCounts] = useState<Record<string, number>>({});
   const [carouselSlides, setCarouselSlides] = useState<CarouselSlide[]>([]);
 
   useEffect(() => {
@@ -26,13 +27,20 @@ export default function HomePage() {
 
     async function fetchAll() {
       try {
-        const [{ data: tournoiData }, { count }, { data: carouselData }] = await Promise.all([
+        const [{ data: tournoiData }, { data: inscriptionRows }, { data: carouselData }] = await Promise.all([
           supabase.from("tournois").select("*").order("date_tournoi", { ascending: true }),
-          supabase.from("inscriptions").select("id", { count: "exact", head: true }),
+          supabase.from("inscriptions").select("tournoi_id"),
           supabase.from("carousel").select("id, url, titre, description").eq("actif", true).order("ordre", { ascending: true }),
         ]);
         if (tournoiData) setTournaments(tournoiData);
-        setInscriptionsCount(count ?? 0);
+        if (inscriptionRows) {
+          setInscriptionsCount(inscriptionRows.length);
+          const map: Record<string, number> = {};
+          inscriptionRows.forEach((row: { tournoi_id: string }) => {
+            map[row.tournoi_id] = (map[row.tournoi_id] || 0) + 1;
+          });
+          setInscriptionCounts(map);
+        }
         if (carouselData) setCarouselSlides(carouselData);
       } catch {
         // Supabase unavailable — show empty state
@@ -48,8 +56,16 @@ export default function HomePage() {
       .on("postgres_changes", { event: "*", schema: "public", table: "inscriptions" }, () => {
         supabase
           .from("inscriptions")
-          .select("id", { count: "exact", head: true })
-          .then(({ count }) => setInscriptionsCount(count ?? 0));
+          .select("tournoi_id")
+          .then(({ data: rows }) => {
+            if (!rows) return;
+            setInscriptionsCount(rows.length);
+            const map: Record<string, number> = {};
+            rows.forEach((row: { tournoi_id: string }) => {
+              map[row.tournoi_id] = (map[row.tournoi_id] || 0) + 1;
+            });
+            setInscriptionCounts(map);
+          });
       })
       .subscribe();
 
@@ -212,7 +228,7 @@ export default function HomePage() {
                   format={t.format}
                   type_jeu={t.type_jeu}
                   nb_joueurs={t.nb_joueurs}
-                  players={t.players ?? 0}
+                  players={inscriptionCounts[String(t.id)] ?? t.players ?? 0}
                   prize={t.prize ?? 0}
                   statut={t.statut}
                   delay={i}
