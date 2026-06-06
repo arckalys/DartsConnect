@@ -5,8 +5,10 @@ import { useSearchParams } from "next/navigation";
 import { Target, AlertTriangle } from "lucide-react";
 import TournamentCard from "@/components/TournamentCard";
 import TournamentRow from "@/components/TournamentRow";
+import TeamRegistrationModal from "@/components/TeamRegistrationModal";
 import { createClient } from "@/lib/supabase";
-import { Tournament, REGIONS } from "@/lib/types";
+import { Tournament, REGIONS, formatNeedsTeam } from "@/lib/types";
+import type { TeamInfo } from "@/lib/types";
 
 export const runtime = "edge";
 
@@ -57,6 +59,9 @@ function TournoisContent() {
   const [inscriptionCounts, setInscriptionCounts] = useState<Record<string, number>>({});
   const [myInscriptions, setMyInscriptions] = useState<Set<string>>(new Set());
   const [registerLoadingId, setRegisterLoadingId] = useState<string | null>(null);
+
+  // Team modal state
+  const [teamModalTournoi, setTeamModalTournoi] = useState<Tournament | null>(null);
 
   // Ratings
   const [ratings, setRatings] = useState<Record<string, { avg: number; count: number }>>({});
@@ -157,10 +162,10 @@ function TournoisContent() {
 
   async function handleToggleRegister(tournoiId: string) {
     if (!currentUserId) return;
-    setRegisterLoadingId(tournoiId);
     const isRegistered = myInscriptions.has(tournoiId);
 
     if (isRegistered) {
+      setRegisterLoadingId(tournoiId);
       const { error } = await supabase
         .from("inscriptions")
         .delete()
@@ -170,16 +175,41 @@ function TournoisContent() {
         setMyInscriptions((prev) => { const s = new Set(prev); s.delete(tournoiId); return s; });
         setInscriptionCounts((prev) => ({ ...prev, [tournoiId]: Math.max((prev[tournoiId] || 1) - 1, 0) }));
       }
-    } else {
-      const { error } = await supabase
-        .from("inscriptions")
-        .insert([{ user_id: currentUserId, tournoi_id: tournoiId }]);
-      if (!error) {
-        setMyInscriptions((prev) => new Set(prev).add(tournoiId));
-        setInscriptionCounts((prev) => ({ ...prev, [tournoiId]: (prev[tournoiId] || 0) + 1 }));
-      }
+      setRegisterLoadingId(null);
+      return;
+    }
+
+    // Inscription : si format équipe → ouvre la modale
+    const t = tournaments.find((x) => String(x.id) === tournoiId);
+    if (t && formatNeedsTeam(t.format)) {
+      setTeamModalTournoi(t);
+      return;
+    }
+
+    await doRegister(tournoiId, null);
+  }
+
+  async function doRegister(tournoiId: string, team: TeamInfo | null) {
+    if (!currentUserId) return;
+    setRegisterLoadingId(tournoiId);
+    const payload: Record<string, unknown> = { user_id: currentUserId, tournoi_id: tournoiId };
+    if (team) {
+      payload.nom_equipe = team.nom_equipe;
+      payload.coequipiers = team.coequipiers;
+    }
+    const { error } = await supabase.from("inscriptions").insert([payload]);
+    if (!error) {
+      setMyInscriptions((prev) => new Set(prev).add(tournoiId));
+      setInscriptionCounts((prev) => ({ ...prev, [tournoiId]: (prev[tournoiId] || 0) + 1 }));
     }
     setRegisterLoadingId(null);
+  }
+
+  async function handleTeamModalConfirm(team: TeamInfo) {
+    if (!teamModalTournoi) return;
+    const tid = String(teamModalTournoi.id);
+    setTeamModalTournoi(null);
+    await doRegister(tid, team);
   }
 
   const today = useMemo(() => {
@@ -250,6 +280,15 @@ function TournoisContent() {
 
   return (
     <div className="animate-page-in">
+      {/* Team registration modal */}
+      <TeamRegistrationModal
+        open={!!teamModalTournoi}
+        format={teamModalTournoi?.format || ""}
+        loading={!!registerLoadingId}
+        onClose={() => setTeamModalTournoi(null)}
+        onConfirm={handleTeamModalConfirm}
+      />
+
       {/* Delete confirmation modal */}
       {deleteTarget && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(0,0,0,0.7)] backdrop-blur-sm px-4">

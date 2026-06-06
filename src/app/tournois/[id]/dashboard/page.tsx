@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { Target, Users, Ban, Clock, CheckCircle, LayoutGrid, Printer, RefreshCw, AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase";
-import { Tournament, STATUS_LABELS } from "@/lib/types";
+import { Tournament, STATUS_LABELS, inscriptionUnit, inscriptionLabel } from "@/lib/types";
 import { generateTableau, Joueur } from "@/lib/bracket";
 import { fmtDate } from "@/lib/data";
 
@@ -16,6 +16,8 @@ interface Inscription {
   user_id: string;
   created_at: string;
   statut: string;
+  nom_equipe?: string | null;
+  coequipiers?: string[] | null;
   user_meta?: { pseudo?: string; prenom?: string; nom?: string };
 }
 
@@ -73,7 +75,7 @@ export default function DashboardPage() {
       // Fetch inscriptions
       const { data: insData } = await supabase
         .from("inscriptions")
-        .select("id, user_id, created_at, statut")
+        .select("id, user_id, created_at, statut, nom_equipe, coequipiers")
         .eq("tournoi_id", tournoiId)
         .order("created_at", { ascending: true });
 
@@ -301,7 +303,7 @@ export default function DashboardPage() {
             <div className="h-full rounded-full bg-[#b91c0a] transition-all duration-500" style={{ width: `${Math.min(pct, 100)}%` }} />
           </div>
           <div className="text-[0.75rem] text-[#777] mt-2 text-right">
-            {inscriptions.length}/{tournoi.nb_joueurs} joueurs ({Math.min(pct, 100)}%)
+            {inscriptions.length}/{tournoi.nb_joueurs} {inscriptionUnit(tournoi.format)} ({Math.min(pct, 100)}%)
           </div>
         </div>
 
@@ -436,7 +438,7 @@ export default function DashboardPage() {
               <Target className="w-[18px] h-[18px] text-[#b91c0a]" />
             </div>
             <div className="font-barlow-condensed font-extrabold text-[1.1rem] uppercase">
-              Joueurs inscrits ({inscriptions.length})
+              {inscriptionLabel(tournoi.format)} ({inscriptions.length})
             </div>
           </div>
 
@@ -475,6 +477,19 @@ export default function DashboardPage() {
                       </Link>
                       {fullName && fullName !== displayName && (
                         <div className="text-[0.78rem] text-[#777]">{fullName}</div>
+                      )}
+                      {(ins.nom_equipe || (ins.coequipiers && ins.coequipiers.length > 0)) && (
+                        <div className="text-[0.78rem] mt-1 flex items-start gap-1.5 flex-wrap">
+                          <span className="text-[#777]">Équipe :</span>
+                          {ins.nom_equipe ? (
+                            <span className="text-[#b91c0a] font-bold">{ins.nom_equipe}</span>
+                          ) : (
+                            <span className="text-[#aaa]">{ins.coequipiers!.join(", ")}</span>
+                          )}
+                          {ins.nom_equipe && ins.coequipiers && ins.coequipiers.length > 0 && (
+                            <span className="text-[#777]">— {ins.coequipiers.join(", ")}</span>
+                          )}
+                        </div>
                       )}
                     </div>
                     <div className="text-[0.82rem] text-[#777] mt-1 sm:mt-0">
